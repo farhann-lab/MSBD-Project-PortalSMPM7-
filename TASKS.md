@@ -60,15 +60,15 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 
 ## 4. Milestone Summary
 
-| Milestone | Fase | Sasaran Utama | Target Deliverables | Dependensi |
-|---|---|---|---|---|
-| **M0: Foundation Ready** | Phase 0 | Fondasi frontend, build Vite, tokens Tailwind v4 | `app.css` tersinkronisasi, folder resources & dummy terstruktur, Vite build lolos | Tidak ada |
-| **M1: Design System Library** | Phase 1 | Komponen Blade reusable siap pakai | 14+ reusable Blade UI components terdokumentasi dan teruji | M0 |
-| **M2: Global Shell Active** | Phase 2 | Master layout, navbar responsif, dan footer | `layouts/public.blade.php`, `navbar.blade.php`, `footer.blade.php` berfungsi responsif | M1 |
-| **M3: Public Pages Visual MVP** | Phase 3 | Seluruh halaman MVP tampil utuh dengan mock data | Beranda, Profil (4), Direktori (2), Kesiswaan (3), Galeri (1), Berita (2), Pengumuman (2), Login redirect | M2 |
-| **M4: Interactive Experience** | Phase 4 | Interaksi navigasi, filter mockup, search UI, pagination | Hamburger menu mulus, query string filter direktori bekerja, fixture dummy terisolasi | M3 |
-| **M5: Quality & Accessibility Pass** | Phase 5 | Standar performa ringan, responsive lolos, WCAG AA | Laporan audit responsif (<640px, tablet, desktop), validasi privasi DIR-8, Lighthouse score tinggi | M4 |
-| **M6: Production & RKM Integration** | Phase 6 | Repository terhubung ke RKM DB read-only, cache file | Direktori membaca tabel RKM, error handling database aktif, aset build siap rilis | M5, BE-RKM-001 |
+| Milestone | Fase | Sasaran Utama | Target Deliverables | Dependensi | Status |
+|---|---|---|---|---|---|
+| **M0: Foundation Ready** | Phase 0 | Fondasi frontend, build Vite, tokens Tailwind v4 | `app.css` tersinkronisasi, folder resources & dummy terstruktur, Vite build lolos | Tidak ada | Selesai (Completed) |
+| **M1: Design System Library** | Phase 1 | Komponen Blade reusable siap pakai | 14+ reusable Blade UI components terdokumentasi dan teruji | M0 | Selesai (Completed) |
+| **M2: Global Shell Active** | Phase 2 | Master layout, navbar responsif, dan footer | `layouts/public.blade.php`, `navbar.blade.php`, `footer.blade.php` berfungsi responsif | M1 | Siap Dikerjakan |
+| **M3: Public Pages Visual MVP** | Phase 3 | Seluruh halaman MVP tampil utuh dengan mock data | Beranda, Profil (4), Direktori (2), Kesiswaan (3), Galeri (1), Berita (2), Pengumuman (2), Login redirect | M2 | Antrean |
+| **M4: Interactive Experience** | Phase 4 | Interaksi navigasi, filter mockup, search UI, pagination | Hamburger menu mulus, query string filter direktori bekerja, fixture dummy terisolasi | M3 | Antrean |
+| **M5: Quality & Accessibility Pass** | Phase 5 | Standar performa ringan, responsive lolos, WCAG AA | Laporan audit responsif (<640px, tablet, desktop), validasi privasi DIR-8, Lighthouse score tinggi | M4 | Antrean |
+| **M6: Production & RKM Integration** | Phase 6 | Repository terhubung ke RKM DB read-only, cache file | Direktori membaca tabel RKM, error handling database aktif, aset build siap rilis | M5, BE-RKM-001 | Antrean |
 
 ---
 
@@ -79,7 +79,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-SETUP-001] Validasi Lingkungan Proyek dan Konfigurasi Build Tools
 - **Phase:** Phase 0
 - **Priority:** P0
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Setup
 - **Description:** Memeriksa package Vite, Tailwind CSS v4, konfigurasi scripts, dan memastikan `npm run build` serta `npm run dev` berjalan tanpa kendala pada lingkungan lokal.
 - **Source Requirements:** `ARCHITECTURE.md` Bagian 4 & 9; `DESIGN.md` Bab 18.
@@ -88,8 +88,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Proyek sudah memiliki `@tailwindcss/vite` v4.0.0 dan `tailwindcss` v4.0.0 di `package.json`.
   - Pastikan `vite.config.js` mengimpor `laravel-vite-plugin` dan `@tailwindcss/vite` dengan benar.
 - **Acceptance Criteria:**
-  - [ ] Perintah `npm run build` menghasilkan aset di `public/build` tanpa galat.
-  - [ ] Hot module replacement / dev mode `npm run dev` dapat berjalan normal.
+  - [x] Perintah `npm run build` menghasilkan aset di `public/build` tanpa galat.
+  - [x] Hot module replacement / dev mode `npm run dev` dapat berjalan normal.
 - **Verification:** Jalankan `npm run build` melalui terminal dan periksa direktori `public/build/manifest.json`.
 
 ---
@@ -97,7 +97,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-SETUP-002] Definisi Design Tokens dan Tema Tailwind CSS v4
 - **Phase:** Phase 0
 - **Priority:** P0
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Design System
 - **Description:** Mendaftarkan seluruh token warna, tipografi sans-serif, border-radius, dan container utility di `resources/css/app.css` menggunakan sintaks `@theme` bawaan Tailwind CSS v4.
 - **Source Requirements:** `DESIGN.md` Bab 2 (Color Palette), Bab 3 (Tipografi), Bab 4 (Layout), Bab 18 (Aturan Tailwind).
@@ -107,8 +107,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Atur font sans-serif default menggunakan system font stack ringan (`system-ui, -apple-system, sans-serif`).
   - Tentukan border radius standar: button (10-12px / `rounded-xl`), card (16-20px / `rounded-2xl`).
 - **Acceptance Criteria:**
-  - [ ] `@theme` di `resources/css/app.css` memuat utilitas kelas warna kustom (`bg-forest`, `text-darkgreen`, `bg-soft`, `border-border-soft`, `text-sage`, dsb.).
-  - [ ] Kontras warna teks memenuhi standar WCAG AA.
+  - [x] `@theme` di `resources/css/app.css` memuat utilitas kelas warna kustom (`bg-forest`, `text-darkgreen`, `bg-soft`, `border-border-soft`, `text-sage`, dsb.).
+  - [x] Kontras warna teks memenuhi standar WCAG AA.
 - **Verification:** Uji utility kelas di view contoh dan periksa hasil kompilasi CSS dengan `npm run build`.
 
 ---
@@ -116,7 +116,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-SETUP-003] Strukturisasi Folder Frontend Blade dan Storage Aset
 - **Phase:** Phase 0
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Setup
 - **Description:** Menyiapkan struktur subdirektori modular di dalam `resources/views/` dan `public/images/` sesuai arsitektur yang disepakati.
 - **Source Requirements:** `ARCHITECTURE.md` Bagian 7; `DESIGN.md` Bab 17 & 19.
@@ -125,8 +125,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Buat subfolder di `resources/views/`: `layouts/`, `components/`, `pages/home/`, `pages/profile/`, `pages/directory/`, `pages/student-life/`, `pages/gallery/`, `pages/news/`, `pages/announcements/`.
   - Buat subfolder di `public/images/`: `school/`, `principal/`, `facilities/`, `student-life/`, `gallery/`, `news/`, `placeholders/`.
 - **Acceptance Criteria:**
-  - [ ] Seluruh direktori Blade dan aset gambar publik tersedia sesuai konvensi.
-  - [ ] Disediakan file SVG atau WebP placeholder netral di `public/images/placeholders/` untuk gambar yang belum ada.
+  - [x] Seluruh direktori Blade dan aset gambar publik tersedia sesuai konvensi.
+  - [x] Disediakan file SVG atau WebP placeholder netral di `public/images/placeholders/` untuk gambar yang belum ada.
 - **Verification:** Periksa susunan folder dengan perintah CLI file explorer.
 
 ---
@@ -136,7 +136,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-DS-001] Reusable Base UI Components (Button, Badge, Icon Wrapper)
 - **Phase:** Phase 1
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Design System
 - **Description:** Membuat komponen dasar Blade untuk tombol aksi, pill badge/tag kategori, dan wadah ikon SVG sebaris (inline SVG).
 - **Source Requirements:** `PRD.md` NAV-7; `DESIGN.md` Bab 4.3, 15.2, 18.3.
@@ -146,8 +146,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - `resources/views/components/badge.blade.php`: Bentuk pill, latar Mint Green / Soft Green, teks Dark Green / Olive.
   - `resources/views/components/icon.blade.php`: Render inline SVG bersih tanpa font icon eksternal.
 - **Acceptance Criteria:**
-  - [ ] Komponen tombol mendukung tag `<a>` maupun `<button>` via atribut Blade `$attributes`.
-  - [ ] Tombol memiliki status hover, focus-visible dengan outline offset 2px, dan active state yang jelas.
+  - [x] Komponen tombol mendukung tag `<a>` maupun `<button>` via atribut Blade `$attributes`.
+  - [x] Tombol memiliki status hover, focus-visible dengan outline offset 2px, dan active state yang jelas.
 - **Verification:** Render komponen di view pengetesan dan verifikasi tampilan via browser.
 
 ---
@@ -155,7 +155,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-DS-002] Section Heading & Breadcrumb Components
 - **Phase:** Phase 1
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Design System
 - **Description:** Membuat komponen judul seksi (`section-heading.blade.php`) dan remah roti navigasi (`breadcrumb.blade.php`) untuk seluruh halaman sub-level.
 - **Source Requirements:** `DESIGN.md` Bab 3 (Hierarki Tipografi), 7.1, 11.2, 12.2, 15.1.
@@ -164,8 +164,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - `section-heading.blade.php`: Menerima tag pill/kicker atas (Sage Green), judul besar (Dark Green), dan deskripsi pendukung opsional (Muted Text).
   - `breadcrumb.blade.php`: Menampilkan hierarki halaman (contoh: Beranda / Profil / Fasilitas) dengan semantic `<nav aria-label="Breadcrumb">`.
 - **Acceptance Criteria:**
-  - [ ] Hierarki heading menggunakan tag semantik `<h1>` atau `<h2>` yang proporsional di desktop dan mobile.
-  - [ ] Remah roti memiliki aria markup yang valid untuk pembaca layar.
+  - [x] Hierarki heading menggunakan tag semantik `<h1>` atau `<h2>` yang proporsional di desktop dan mobile.
+  - [x] Remah roti memiliki aria markup yang valid untuk pembaca layar.
 - **Verification:** Periksa semantik markup HTML melalui DevTools Elements inspector.
 
 ---
@@ -173,7 +173,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-DS-003] Content Cards (News, Announcement, & Portal Cards)
 - **Phase:** Phase 1
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Design System
 - **Description:** Mengembangkan komponen kartu untuk berita (`news-card`), pengumuman (`announcement-card`), dan pintasan portal (`portal-card`).
 - **Source Requirements:** `PRD.md` BRD-2, BRD-4, BRD-5, BRT-1, PGM-1; `DESIGN.md` Bab 6.2, 6.4, 6.5, 15.2.
@@ -183,8 +183,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - `announcement-card.blade.php`: Desain informatif dengan ikon pengumuman, tanggal terbit, judul jelas, tautan detail.
   - `portal-card.blade.php`: Kartu akses cepat (CBT, Rapor, PPDB), ikon representatif, label besar, indikator panah tautan eksternal (target tab yang sama).
 - **Acceptance Criteria:**
-  - [ ] Kartu memiliki radius membulat 16-20px (`rounded-2xl`), border lembut (`border-border-soft`), dan shadow halus saat di-hover.
-  - [ ] Kartu berita menangani ketiadaan gambar dengan fallback placeholder elegan.
+  - [x] Kartu memiliki radius membulat 16-20px (`rounded-2xl`), border lembut (`border-border-soft`), dan shadow halus saat di-hover.
+  - [x] Kartu berita menangani ketiadaan gambar dengan fallback placeholder elegan.
 - **Verification:** Uji render kartu dengan teks pendek dan teks panjang untuk memastikan konsistensi tinggi kartu (*grid stretch*).
 
 ---
@@ -192,7 +192,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-DS-004] Directory Cards & Table Presentation Components
 - **Phase:** Phase 1
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Design System
 - **Description:** Membuat komponen kartu atau baris daftar direktori guru (`teacher-card.blade.php`) dan siswa (`student-card.blade.php`).
 - **Source Requirements:** `PRD.md` DIR-1, DIR-2, DIR-8; `DESIGN.md` Bab 8.1, 8.2, 15.2.
@@ -201,8 +201,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Guru: Menampilkan nama lengkap, badge mata pelajaran (jika ada), dan badge jabatan (jika ada). Tanpa foto atau NIP.
   - Siswa: Menampilkan nama lengkap dan badge kelas aktif. Tanpa foto, NIS, atau NISN.
 - **Acceptance Criteria:**
-  - [ ] Sama sekali tidak merender kolom NIP, NIK, NIS, NISN, tanggal lahir, kontak, maupun foto (kepatuhan privasi DIR-8).
-  - [ ] Tampilan rapi dan mudah dipindai di perangkat mobile maupun desktop.
+  - [x] Sama sekali tidak merender kolom NIP, NIK, NIS, NISN, tanggal lahir, kontak, maupun foto (kepatuhan privasi DIR-8).
+  - [x] Tampilan rapi dan mudah dipindai di perangkat mobile maupun desktop.
 - **Verification:** Cek kode Blade untuk memastikan tidak ada slot atau variabel sensitif yang terpapar.
 
 ---
@@ -210,7 +210,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-DS-005] Search, Filter, Pagination, & Empty State Components
 - **Phase:** Phase 1
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Design System
 - **Description:** Membuat komponen form pencarian (`search-input.blade.php`), dropdown filter (`filter-select.blade.php`), pagination ramah mobile (`pagination.blade.php`), dan tampilan data kosong (`empty-state.blade.php`).
 - **Source Requirements:** `PRD.md` DIR-3, DIR-4, DIR-10; `DESIGN.md` Bab 8.1, 8.2, 15.2, 21.
@@ -221,8 +221,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - `pagination.blade.php`: Tombol Sebelumnya/Berikutnya dan nomor halaman yang tidak rusak di layar kecil.
   - `empty-state.blade.php`: Ilustrasi/ikon netral, judul "Data tidak ditemukan", dan tombol reset pencarian/filter.
 - **Acceptance Criteria:**
-  - [ ] Komponen form memiliki visual focus ring (`focus-visible:outline-forest`).
-  - [ ] Empty state muncul dengan pesan informatif ketika array data bernilai kosong.
+  - [x] Komponen form memiliki visual focus ring (`focus-visible:outline-forest`).
+  - [x] Empty state muncul dengan pesan informatif ketika array data bernilai kosong.
 - **Verification:** Cek interaksi keyboard (Tab, Enter) pada komponen form dan pagination.
 
 ---

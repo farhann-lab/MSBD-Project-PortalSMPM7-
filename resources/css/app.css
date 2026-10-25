@@ -1,12 +1,29 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source "../**/*.blade.php";
 @source "../**/*.js";
-@source "../**/*.vue";
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+    --color-forest: #344B39;
+    --color-sage: #819A73;
+    --color-mint: #B8CCC3;
+    --color-teal: #3F5F58;
+    --color-darkgreen: #0F1D0F;
+    --color-olive: #697B65;
+    --color-soft: #F7F9F6;
+    --color-border-soft: #E5EAE3;
+    --color-muted-text: #647067;
+}
+
+/* Custom Base Utility Overrides & Smooth Focus */
+@layer base {
+    body {
+        font-family: var(--font-sans);
+        color: var(--color-darkgreen);
+        background-color: var(--color-soft);
+    }
 }

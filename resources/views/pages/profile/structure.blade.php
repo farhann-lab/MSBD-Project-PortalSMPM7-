@@ -79,7 +79,7 @@
                 $level3 = [
                     ['jabatan' => 'Koordinator Kurikulum',          'nama' => '[Nama — Data Dummy]'],
                     ['jabatan' => 'Koordinator Kesiswaan',          'nama' => '[Nama — Data Dummy]'],
-                    ['jabatan' => 'Koordinator Sarana &amp; Prasarana', 'nama' => '[Nama — Data Dummy]'],
+                    ['jabatan' => 'Koordinator Sarana & Prasarana', 'nama' => '[Nama — Data Dummy]'],
                     ['jabatan' => 'Kepala Tata Usaha',              'nama' => '[Nama — Data Dummy]'],
                 ];
             @endphp

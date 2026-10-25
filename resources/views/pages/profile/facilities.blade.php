@@ -1,4 +1,4 @@
-<x-layouts.public title="Sarana &amp; Prasarana" description="Fasilitas dan sarana prasarana yang tersedia di SMP Muhammadiyah 7 Medan.">
+<x-layouts.public title="Sarana & Prasarana" description="Fasilitas dan sarana prasarana yang tersedia di SMP Muhammadiyah 7 Medan.">
 
     {{-- Breadcrumb --}}
     <div class="bg-white border-b border-border-soft">
@@ -16,7 +16,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <x-section-heading
                 kicker="Fasilitas Sekolah"
-                title="Sarana &amp; Prasarana"
+                title="Sarana & Prasarana"
                 subtitle="Berbagai fasilitas penunjang kegiatan belajar-mengajar, keagamaan, dan pengembangan bakat peserta didik SMP Muhammadiyah 7 Medan."
                 align="left"
             />

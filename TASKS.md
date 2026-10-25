@@ -65,7 +65,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 | **M0: Foundation Ready** | Phase 0 | Fondasi frontend, build Vite, tokens Tailwind v4 | `app.css` tersinkronisasi, folder resources & dummy terstruktur, Vite build lolos | Tidak ada | Selesai (Completed) |
 | **M1: Design System Library** | Phase 1 | Komponen Blade reusable siap pakai | 14+ reusable Blade UI components terdokumentasi dan teruji | M0 | Selesai (Completed) |
 | **M2: Global Shell Active** | Phase 2 | Master layout, navbar responsif, dan footer | `layouts/public.blade.php`, `navbar.blade.php`, `footer.blade.php` berfungsi responsif | M1 | Selesai (Completed) |
-| **M3: Public Pages Visual MVP** | Phase 3 | Seluruh halaman MVP tampil utuh dengan mock data | Beranda, Profil (4), Direktori (2), Kesiswaan (3), Galeri (1), Berita (2), Pengumuman (2), Login redirect | M2 | Antrean |
+| **M3: Public Pages Visual MVP** | Phase 3 | Seluruh halaman MVP tampil utuh dengan mock data | Beranda, Profil (4), Direktori (2), Kesiswaan (3), Galeri (1), Berita (2), Pengumuman (2), Login redirect | M2 | Selesai (Completed) |
 | **M4: Interactive Experience** | Phase 4 | Interaksi navigasi, filter mockup, search UI, pagination | Hamburger menu mulus, query string filter direktori bekerja, fixture dummy terisolasi | M3 | Antrean |
 | **M5: Quality & Accessibility Pass** | Phase 5 | Standar performa ringan, responsive lolos, WCAG AA | Laporan audit responsif (<640px, tablet, desktop), validasi privasi DIR-8, Lighthouse score tinggi | M4 | Antrean |
 | **M6: Production & RKM Integration** | Phase 6 | Repository terhubung ke RKM DB read-only, cache file | Direktori membaca tabel RKM, error handling database aktif, aset build siap rilis | M5, BE-RKM-001 | Antrean |
@@ -315,7 +315,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-PAGE-001] Halaman Beranda (Home Page Layout & Sections)
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Page
 - **Description:** Membangun tampilan halaman Beranda lengkap (`resources/views/pages/home/index.blade.php`) dengan 6 seksi utama: Hero, Pintasan Portal, Sambutan Kepala Sekolah, Berita Terbaru, Pengumuman Terbaru, dan Statistik Sekolah.
 - **Source Requirements:** `PRD.md` BRD-1 s.d. BRD-7; `DESIGN.md` Bab 6.
@@ -326,8 +326,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Seksi sambutan kepala sekolah (M. Reza Akbar, S.Pd.) terhubung ke satu sumber data dengan halaman profil kepala sekolah.
   - Statistik dummy (Siswa, Guru, Kelas) diberi komentar penanda jelas bahwa belum bersumber dari DB.
 - **Acceptance Criteria:**
-  - [ ] Rute `/` menampilkan halaman beranda dengan hierarki visual yang solid.
-  - [ ] Gambar hero dioptimasi dengan `fetchpriority="high"`.
+  - [x] Rute `/` menampilkan halaman beranda dengan hierarki visual yang solid.
+  - [x] Gambar hero dioptimasi dengan `fetchpriority="high"`.
 - **Verification:** Akses `http://localhost:8000/` dan periksa kelengkapan ke-6 seksi.
 
 ---
@@ -335,7 +335,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-PAGE-002] Halaman Profil: Tentang Sekolah & Kontak
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Page
 - **Description:** Membangun halaman Tentang Sekolah (`resources/views/pages/profile/index.blade.php`) yang menyajikan profil, visi & misi, sejarah singkat, dan panel kontak resmi sekolah.
 - **Source Requirements:** `PRD.md` PRF-1, PRF-6, PRF-7; `DESIGN.md` Bab 7.1, 7.2, 7.6.
@@ -345,8 +345,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Data statis profil dimuat dari `config/sekolah.php` (NPSN 10257325, alamat, email, telepon).
   - Tautan kontak interaktif: tombol `mailto:smpm7medan@gmail.com` dan tombol `tel:(061)6621557`.
 - **Acceptance Criteria:**
-  - [ ] Struktur visi dan misi tersusun dalam daftar/grid yang mudah dibaca.
-  - [ ] Tautan email dan telepon dapat di-klik pada perangkat seluler.
+  - [x] Struktur visi dan misi tersusun dalam daftar/grid yang mudah dibaca.
+  - [x] Tautan email dan telepon dapat di-klik pada perangkat seluler.
 - **Verification:** Buka rute `/profil` dan uji fungsionalitas klik pada kontak.
 
 ---
@@ -354,7 +354,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-PAGE-003] Halaman Profil: Kepala Sekolah
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Page
 - **Description:** Membangun halaman Kepala Sekolah (`resources/views/pages/profile/principal.blade.php`) dengan sambutan lengkap, foto resmi, dan profil ringkas.
 - **Source Requirements:** `PRD.md` PRF-2, BRD-3; `DESIGN.md` Bab 7.3.
@@ -363,8 +363,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Rute: `/profil/kepala-sekolah`.
   - Menampilkan foto portrait proporsional, nama "M Reza Akbar, S.Pd.", jabatan "Kepala Sekolah", dan paragraf sambutan utuh berjarak nyaman.
 - **Acceptance Criteria:**
-  - [ ] Menggunakan data kepala sekolah dari sumber terpusat yang sama dengan beranda.
-  - [ ] Teks sambutan panjang terformat dalam paragraf bersih dan mudah dibaca.
+  - [x] Menggunakan data kepala sekolah dari sumber terpusat yang sama dengan beranda.
+  - [x] Teks sambutan panjang terformat dalam paragraf bersih dan mudah dibaca.
 - **Verification:** Cocokkan kutipan sambutan beranda dengan sambutan lengkap di `/profil/kepala-sekolah`.
 
 ---
@@ -372,7 +372,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-PAGE-004] Halaman Profil: Struktur Organisasi
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Page
 - **Description:** Membangun halaman Struktur Organisasi (`resources/views/pages/profile/structure.blade.php`) dengan bagan vertikal/grid jabatan sekolah yang responsif.
 - **Source Requirements:** `PRD.md` PRF-3, PRF-4; `DESIGN.md` Bab 7.4.
@@ -382,8 +382,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Menampilkan bagan hierarki sederhana: Kepala Sekolah -> Wakil / Komite -> Tata Usaha / Guru / Staf.
   - Desain mobile runtuh menjadi susunan kartu vertikal dengan garis pembatas halus agar teks tidak mengecil.
 - **Acceptance Criteria:**
-  - [ ] Bagan tidak mengalami pemotongan teks atau horizontal overflow pada layar smartphone.
-  - [ ] Data pejabat dummy diberi penanda komentar penggantian.
+  - [x] Bagan tidak mengalami pemotongan teks atau horizontal overflow pada layar smartphone.
+  - [x] Data pejabat dummy diberi penanda komentar penggantian.
 - **Verification:** Uji visual bagan organisasi pada viewport 360px hingga 1440px.
 
 ---
@@ -391,7 +391,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-PAGE-005] Halaman Profil: Sarana dan Prasarana (Fasilitas)
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Page
 - **Description:** Membangun halaman Fasilitas (`resources/views/pages/profile/facilities.blade.php`) yang menampilkan kartu sarana dan prasarana sekolah.
 - **Source Requirements:** `PRD.md` PRF-5; `DESIGN.md` Bab 7.5.
@@ -400,8 +400,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Rute: `/profil/fasilitas`.
   - Grid kartu fasilitas (Ruang Kelas, Lab Komputer, Perpustakaan, Lapangan Olahraga, Musholla, dll.) dengan foto, nama, dan deskripsi singkat.
 - **Acceptance Criteria:**
-  - [ ] Grid responsif: 3 kolom di desktop, 2 kolom di tablet, 1 kolom di mobile.
-  - [ ] Menggunakan gambar thumbnail teroptimasi dengan `loading="lazy"`.
+  - [x] Grid responsif: 3 kolom di desktop, 2 kolom di tablet, 1 kolom di mobile.
+  - [x] Menggunakan gambar thumbnail teroptimasi dengan `loading="lazy"`.
 - **Verification:** Akses `/profil/fasilitas` dan pastikan tata letak kartu fasilitas seragam.
 
 ---
@@ -409,7 +409,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-PAGE-006] Halaman Direktori Guru
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Page
 - **Description:** Membangun antarmuka Direktori Guru (`resources/views/pages/directory/teachers.blade.php`) dengan bilah pencarian nama, filter mapel, daftar kartu guru, dan pagination.
 - **Source Requirements:** `PRD.md` DIR-1, DIR-3, DIR-5, DIR-6, DIR-7, DIR-8, DIR-10; `DESIGN.md` Bab 8.1.
@@ -420,8 +420,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Bersih dari data sensitif (tanpa NIP, alamat, HP, foto).
   - Dilengkapi komponen pagination dan empty state saat pencarian tidak cocok.
 - **Acceptance Criteria:**
-  - [ ] Kolom pencarian dan filter tertata rapi di bagian atas daftar.
-  - [ ] Tampilan responsif baik menggunakan kartu ringkas maupun tabel adaptif.
+  - [x] Kolom pencarian dan filter tertata rapi di bagian atas daftar.
+  - [x] Tampilan responsif baik menggunakan kartu ringkas maupun tabel adaptif.
 - **Verification:** Akses rute `/guru` dengan fixture data dummy lokal dan periksa penyajiannya.
 
 ---
@@ -429,7 +429,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-PAGE-007] Halaman Direktori Siswa
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Page
 - **Description:** Membangun antarmuka Direktori Siswa (`resources/views/pages/directory/students.blade.php`) dengan pencarian nama, filter kelas (mis. Kelas 7, Kelas 8, Kelas 9), dan pagination.
 - **Source Requirements:** `PRD.md` DIR-2, DIR-3, DIR-4, DIR-7, DIR-8, DIR-10; `DESIGN.md` Bab 8.2.
@@ -439,8 +439,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Hanya menampilkan Nama Siswa dan Kelas Aktif.
   - Bersih mutlak dari NIS, NISN, NIK, tanggal lahir, kontak, nilai, atau foto siswa.
 - **Acceptance Criteria:**
-  - [ ] Filter kelas dapat dipilih dengan mudah di perangkat seluler.
-  - [ ] Daftar siswa mudah dipindai dengan zebra striping atau kartu minimalis.
+  - [x] Filter kelas dapat dipilih dengan mudah di perangkat seluler.
+  - [x] Daftar siswa mudah dipindai dengan zebra striping atau kartu minimalis.
 - **Verification:** Akses rute `/siswa` dan pastikan tidak ada kebocoran field data sensitif pada markup.
 
 ---
@@ -448,7 +448,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-PAGE-008] Halaman Kesiswaan: Organisasi Siswa
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Page
 - **Description:** Membangun halaman Organisasi Siswa (`resources/views/pages/student-life/organizations.blade.php`) yang menyajikan Ikatan Pelajar Muhammadiyah (IPM) dan organisasi kesiswaan lainnya.
 - **Source Requirements:** `PRD.md` KSW-1; `DESIGN.md` Bab 9.1.
@@ -457,8 +457,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Rute: `/kesiswaan/organisasi`.
   - Kartu organisasi memuat: nama organisasi, logo/gambar, deskripsi, dan daftar kegiatan utama.
 - **Acceptance Criteria:**
-  - [ ] Grid 2-3 kolom di desktop, 1 kolom di mobile.
-  - [ ] Data dummy diberi penanda transparan.
+  - [x] Grid 2-3 kolom di desktop, 1 kolom di mobile.
+  - [x] Data dummy diberi penanda transparan.
 - **Verification:** Akses rute `/kesiswaan/organisasi` dan verifikasi visual kartu organisasi.
 
 ---
@@ -466,7 +466,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-PAGE-009] Halaman Kesiswaan: Ekstrakurikuler
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Page
 - **Description:** Membangun halaman Ekstrakurikuler (`resources/views/pages/student-life/extracurriculars.blade.php`) yang menampilkan ragam kegiatan ekskul sekolah.
 - **Source Requirements:** `PRD.md` KSW-2, KSW-4; `DESIGN.md` Bab 9.2.
@@ -475,8 +475,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Rute: `/kesiswaan/ekstrakurikuler` (dan redirect/hub di `/kesiswaan`).
   - Menampilkan kartu ekskul: nama kegiatan, gambar representatif, deskripsi, dan jadwal (jika terkonfirmasi).
 - **Acceptance Criteria:**
-  - [ ] Tata letak visual seragam dengan aspek rasio foto yang konsisten.
-  - [ ] Jadwal hanya ditampilkan pada kartu yang datanya telah terkonfirmasi.
+  - [x] Tata letak visual seragam dengan aspek rasio foto yang konsisten.
+  - [x] Jadwal hanya ditampilkan pada kartu yang datanya telah terkonfirmasi.
 - **Verification:** Buka `/kesiswaan/ekstrakurikuler` di browser.
 
 ---
@@ -484,7 +484,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-PAGE-010] Halaman Kesiswaan: Prestasi Siswa
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Page
 - **Description:** Membangun halaman Prestasi Siswa (`resources/views/pages/student-life/achievements.blade.php`) dengan badge tingkat kejuaraan dan label penanda data contoh.
 - **Source Requirements:** `PRD.md` KSW-3, KSW-5; `DESIGN.md` Bab 9.3.
@@ -494,8 +494,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Kartu prestasi memuat: nama prestasi, jenis, tingkat kompetisi (Kota/Provinsi/Nasional), tahun, deskripsi, dan foto dokumentasi.
   - Terdapat banner / label peringatan bahwa data masih berupa data contoh/dummy.
 - **Acceptance Criteria:**
-  - [ ] Label data contoh terlihat jelas sesuai instruksi `PRD.md` KSW-3.
-  - [ ] Foto prestasi menggunakan foto dokumentasi yang valid/disetujui.
+  - [x] Label data contoh terlihat jelas sesuai instruksi `PRD.md` KSW-3.
+  - [x] Foto prestasi menggunakan foto dokumentasi yang valid/disetujui.
 - **Verification:** Periksa keberadaan badge penanda "Data Contoh" di `/kesiswaan/prestasi`.
 
 ---
@@ -503,7 +503,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-PAGE-011] Halaman Galeri Dokumentasi Sekolah
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Page
 - **Description:** Membangun halaman Galeri Foto Sekolah (`resources/views/pages/gallery/index.blade.php`) dengan layout masonry/grid teroptimasi.
 - **Source Requirements:** `PRD.md` GAL-1, GAL-2, GAL-3; `DESIGN.md` Bab 10.
@@ -514,8 +514,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Setiap foto dilengkapi judul, tanggal/kategori, dan atribut `loading="lazy"`.
   - Tanpa pustaka slider/lightbox eksternal berat yang memperlambat halaman.
 - **Acceptance Criteria:**
-  - [ ] Semua gambar menggunakan dimensi tetap dan `object-fit: cover` untuk menghindari layout shift (CLS).
-  - [ ] Tidak terjadi pemblokiran unduhan gambar di awal rendering.
+  - [x] Semua gambar menggunakan dimensi tetap dan `object-fit: cover` untuk menghindari layout shift (CLS).
+  - [x] Tidak terjadi pemblokiran unduhan gambar di awal rendering.
 - **Verification:** Buka `/galeri` dan lakukan audit layout shift pada DevTools Performance panel.
 
 ---
@@ -523,7 +523,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-PAGE-012] Halaman Berita: Indeks / Daftar Berita
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Page
 - **Description:** Membangun halaman katalog daftar berita (`resources/views/pages/news/index.blade.php`) dengan pagination dan kartu berita konsisten.
 - **Source Requirements:** `PRD.md` BRT-1, BRT-3; `DESIGN.md` Bab 11.1.
@@ -533,8 +533,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Grid 3 kolom desktop, 2 kolom tablet, 1 kolom mobile.
   - Memanfaatkan `news-card.blade.php` dengan tautan detail menuju `/berita/{slug}`.
 - **Acceptance Criteria:**
-  - [ ] Pagination berfungsi mengontrol daftar berita per halaman.
-  - [ ] Struktur data berita dummy konsisten (`title`, `slug`, `summary`, `content`, `image`, `date`).
+  - [x] Pagination berfungsi mengontrol daftar berita per halaman.
+  - [x] Struktur data berita dummy konsisten (`title`, `slug`, `summary`, `content`, `image`, `date`).
 - **Verification:** Buka `/berita` dan klik salah satu kartu untuk menuju halaman detail.
 
 ---
@@ -542,7 +542,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-PAGE-013] Halaman Berita: Detail Berita
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Page
 - **Description:** Membangun halaman baca detail berita (`resources/views/pages/news/show.blade.php`) dengan breadcrumb, tanggal terbit, gambar artikel utama, badan konten berformat rapi, dan tombol kembali ke daftar.
 - **Source Requirements:** `PRD.md` BRT-2; `DESIGN.md` Bab 11.2.
@@ -552,8 +552,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Tipografi badan berita diatur dengan lebar nyaman (`max-w-3xl mx-auto`), *line-height* proporsional (`leading-relaxed`), dan paragraf terpisah rapi.
   - Tombol navigasi kembali yang jelas di bagian atas/bawah artikel.
 - **Acceptance Criteria:**
-  - [ ] Tautan kembali membawa pengunjung kembali ke `/berita`.
-  - [ ] Halaman mengembalikan status 404 yang ramah jika slug berita tidak ditemukan di dataset.
+  - [x] Tautan kembali membawa pengunjung kembali ke `/berita`.
+  - [x] Halaman mengembalikan status 404 yang ramah jika slug berita tidak ditemukan di dataset.
 - **Verification:** Akses berita contoh (mis. `/berita/smp-muhammadiyah-7-medan-juara-lagi`) dan periksa tipografinya.
 
 ---
@@ -561,7 +561,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-PAGE-014] Halaman Pengumuman: Indeks & Detail Pengumuman
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Page
 - **Description:** Membangun halaman daftar pengumuman (`resources/views/pages/announcements/index.blade.php`) dan detail pengumuman (`resources/views/pages/announcements/show.blade.php`).
 - **Source Requirements:** `PRD.md` PGM-1, PGM-2, PGM-3; `DESIGN.md` Bab 12.
@@ -571,8 +571,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Format visual berbeda secara halus dari berita (mengutamakan tipografi pengumuman resmi dan tanggal).
   - Tidak menerapkan logika expired date / status tanggal di tahap pertama sesuai PRD PGM-3.
 - **Acceptance Criteria:**
-  - [ ] Daftar pengumuman terpisah dari berita.
-  - [ ] Detail pengumuman menyediakan tombol kembali ke daftar pengumuman.
+  - [x] Daftar pengumuman terpisah dari berita.
+  - [x] Detail pengumuman menyediakan tombol kembali ke daftar pengumuman.
 - **Verification:** Buka `/pengumuman` dan lakukan navigasi ke detail pengumuman.
 
 ---
@@ -580,7 +580,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-PAGE-015] Halaman / Pintasan Login SIAKAD
 - **Phase:** Phase 3
 - **Priority:** P2
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Page
 - **Description:** Menyiapkan route dan tampilan sementara `/login` sebagai pintu gerbang menuju sistem akademik internal.
 - **Source Requirements:** `PRD.md` NAV-6; `DESIGN.md` Bab 13.1; `ARCHITECTURE.md` Bagian 3.
@@ -589,8 +589,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Rute: `/login`.
   - Menyajikan kartu informasi redirect / placeholder resmi bertema sekolah yang menjelaskan bahwa autentikasi SIAKAD berada pada modul terpisah, dengan tombol menuju portal terkait jika URL sudah disepakati.
 - **Acceptance Criteria:**
-  - [ ] Rute `/login` dapat diakses dan tidak menghasilkan error 500.
-  - [ ] Tampilan konsisten dengan identitas sekolah tanpa form login palsu yang membingungkan pengunjung.
+  - [x] Rute `/login` dapat diakses dan tidak menghasilkan error 500.
+  - [x] Tampilan konsisten dengan identitas sekolah tanpa form login palsu yang membingungkan pengunjung.
 - **Verification:** Klik tombol "Login SIAKAD" di navbar dan pastikan mendarat di halaman redirect/informasi `/login`.
 
 ---

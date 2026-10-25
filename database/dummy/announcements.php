@@ -1,0 +1,66 @@
+<?php
+
+/* DUMMY DATA - SIAP DIGANTI KE DATABASE PADA TAHAP B */
+
+return [
+    [
+        'id'        => 1,
+        'title'     => 'Pengumuman Jadwal Ujian Tengah Semester Ganjil Tahun Ajaran 2026/2027',
+        'slug'      => 'jadwal-ujian-tengah-semester-ganjil-2026-2027',
+        'summary'   => 'Berikut disampaikan jadwal resmi Ujian Tengah Semester (UTS) Ganjil Tahun Ajaran 2026/2027 untuk seluruh siswa SMP Muhammadiyah 7 Medan.',
+        'content'   => '<p>Dengan hormat, disampaikan kepada seluruh siswa dan orang tua/wali murid bahwa Ujian Tengah Semester (UTS) Ganjil Tahun Ajaran 2026/2027 akan dilaksanakan mulai tanggal 13 Oktober s.d. 18 Oktober 2026. Seluruh siswa diwajibkan hadir tepat waktu sesuai jadwal yang telah ditentukan.</p><p>Setiap siswa wajib membawa kartu ujian yang telah ditandatangani oleh orang tua/wali murid dan diserahkan kepada pengawas ujian. Siswa yang tidak membawa kartu ujian tidak diperkenankan mengikuti ujian. Jadwal lengkap per mata pelajaran dapat dilihat di papan pengumuman sekolah atau menghubungi wali kelas masing-masing.</p><p>Diharapkan seluruh siswa mempersiapkan diri dengan sebaik-baiknya dan menjaga kejujuran selama pelaksanaan ujian berlangsung. Semoga Allah SWT memberikan kemudahan dan kelancaran bagi kita semua.</p>',
+        'date'      => '1 Oktober 2026',
+        'tag'       => 'Akademik',
+        'important' => true,
+    ],
+    [
+        'id'        => 2,
+        'title'     => 'Penerimaan Peserta Didik Baru (PPDB) Tahun Ajaran 2026/2027 Dibuka',
+        'slug'      => 'ppdb-tahun-ajaran-2026-2027-dibuka',
+        'summary'   => 'SMP Muhammadiyah 7 Medan resmi membuka Penerimaan Peserta Didik Baru (PPDB) untuk Tahun Ajaran 2026/2027. Pendaftaran dapat dilakukan secara langsung di sekolah.',
+        'content'   => '<p>SMP Muhammadiyah 7 Medan dengan bangga mengumumkan dibukanya Penerimaan Peserta Didik Baru (PPDB) Tahun Ajaran 2026/2027. Pendaftaran dibuka mulai tanggal 1 Juni 2026 hingga 30 Juni 2026, pada hari dan jam kerja sekolah (Senin–Sabtu, pukul 08.00–14.00 WIB).</p><p>Persyaratan pendaftaran meliputi: fotokopi ijazah SD/MI atau surat keterangan lulus, fotokopi Kartu Keluarga, pas foto berwarna ukuran 3x4 sebanyak 2 lembar, dan mengisi formulir pendaftaran yang tersedia di bagian administrasi sekolah. Calon siswa yang berasal dari keluarga kurang mampu dapat mengajukan keringanan biaya melalui jalur khusus yang tersedia.</p>',
+        'date'      => '1 Juni 2026',
+        'tag'       => 'Umum',
+        'important' => true,
+    ],
+    [
+        'id'        => 3,
+        'title'     => 'Tata Tertib Berpakaian Siswa Semester Ganjil 2026/2027',
+        'slug'      => 'tata-tertib-berpakaian-siswa-semester-ganjil-2026-2027',
+        'summary'   => 'Demi menjaga ketertiban dan kedisiplinan, sekolah kembali mengingatkan seluruh siswa untuk mematuhi tata tertib berpakaian yang telah ditetapkan.',
+        'content'   => '<p>Dalam rangka menjaga ketertiban, kerapian, dan kedisiplinan di lingkungan SMP Muhammadiyah 7 Medan, sekolah kembali mengingatkan seluruh siswa untuk mematuhi ketentuan berpakaian yang telah ditetapkan. Ketentuan ini berlaku efektif mulai awal semester ganjil tahun ajaran 2026/2027.</p><p>Siswa wajib mengenakan seragam sesuai ketentuan: hari Senin-Selasa menggunakan seragam putih-biru, hari Rabu-Kamis menggunakan seragam batik sekolah, dan hari Jum\'at-Sabtu menggunakan seragam pramuka/identitas sekolah. Seluruh siswa wajib berpakaian rapi, menutup aurat sesuai syariat Islam, dan tidak diperkenankan menggunakan aksesori yang berlebihan.</p><p>Bagi siswa yang melanggar ketentuan berpakaian akan dikenakan sanksi berupa teguran, catatan pelanggaran, hingga pemanggilan orang tua sesuai dengan tingkat pelanggaran yang dilakukan. Kerja sama seluruh pihak sangat diharapkan demi terciptanya lingkungan sekolah yang tertib dan nyaman.</p>',
+        'date'      => '14 Juli 2026',
+        'tag'       => 'Kesiswaan',
+        'important' => false,
+    ],
+    [
+        'id'        => 4,
+        'title'     => 'Pembagian Rapor Semester Genap Tahun Ajaran 2025/2026',
+        'slug'      => 'pembagian-rapor-semester-genap-2025-2026',
+        'summary'   => 'Pembagian rapor semester genap tahun ajaran 2025/2026 akan dilaksanakan pada hari Sabtu, 28 Juni 2026. Orang tua/wali murid diharapkan hadir langsung ke sekolah.',
+        'content'   => '<p>Disampaikan kepada seluruh orang tua/wali murid SMP Muhammadiyah 7 Medan bahwa pembagian Rapor Semester Genap Tahun Ajaran 2025/2026 akan dilaksanakan pada hari Sabtu, 28 Juni 2026, mulai pukul 08.00 WIB di ruang kelas masing-masing. Orang tua/wali murid diharapkan dapat hadir langsung untuk menerima rapor dari wali kelas.</p><p>Apabila orang tua/wali murid berhalangan hadir, pengambilan rapor dapat dilakukan paling lambat tanggal 5 Juli 2026 di kantor administrasi sekolah dengan membawa surat kuasa. Rapor yang tidak diambil pada batas waktu yang ditentukan akan disimpan di sekolah dan dapat diambil pada awal tahun ajaran baru.</p>',
+        'date'      => '20 Juni 2026',
+        'tag'       => 'Akademik',
+        'important' => false,
+    ],
+    [
+        'id'        => 5,
+        'title'     => 'Jadwal Kegiatan Ekstrakurikuler Semester Ganjil 2026/2027',
+        'slug'      => 'jadwal-ekstrakurikuler-semester-ganjil-2026-2027',
+        'summary'   => 'Berikut disampaikan jadwal resmi kegiatan ekstrakurikuler semester ganjil tahun ajaran 2026/2027. Seluruh siswa diwajibkan memilih minimal satu ekstrakurikuler.',
+        'content'   => '<p>Dalam rangka mengembangkan bakat, minat, dan potensi siswa secara optimal, SMP Muhammadiyah 7 Medan membuka kembali kegiatan ekstrakurikuler untuk semester ganjil tahun ajaran 2026/2027. Seluruh siswa kelas VII dan VIII diwajibkan mengikuti minimal satu kegiatan ekstrakurikuler sesuai minat dan bakat masing-masing.</p><p>Pendaftaran ekstrakurikuler dapat dilakukan melalui wali kelas atau langsung kepada pembina ekstrakurikuler terkait paling lambat tanggal 31 Juli 2026. Kegiatan ekstrakurikuler akan dimulai secara resmi pada minggu pertama bulan Agustus 2026. Jadwal lengkap tersedia di papan pengumuman sekolah dan pada laman resmi portal sekolah.</p>',
+        'date'      => '18 Juli 2026',
+        'tag'       => 'Kesiswaan',
+        'important' => false,
+    ],
+    [
+        'id'        => 6,
+        'title'     => 'Libur Nasional dan Cuti Bersama Hari Kemerdekaan RI ke-81',
+        'slug'      => 'libur-nasional-hari-kemerdekaan-ri-ke-81',
+        'summary'   => 'Sehubungan dengan peringatan Hari Kemerdekaan Republik Indonesia ke-81, seluruh kegiatan belajar mengajar diliburkan pada tanggal 17 Agustus 2026.',
+        'content'   => '<p>Disampaikan kepada seluruh siswa, orang tua/wali murid, guru, dan staf SMP Muhammadiyah 7 Medan bahwa dalam rangka memperingati Hari Kemerdekaan Republik Indonesia yang ke-81, seluruh kegiatan belajar mengajar akan diliburkan pada hari Senin, 17 Agustus 2026.</p><p>Kegiatan belajar mengajar akan kembali normal pada hari Selasa, 18 Agustus 2026. Sekolah mengajak seluruh warga sekolah untuk memperingati Hari Kemerdekaan dengan mengikuti upacara bendera di lingkungan masing-masing dan merefleksikan nilai-nilai perjuangan para pahlawan bangsa. Dirgahayu Republik Indonesia ke-81!</p>',
+        'date'      => '15 Agustus 2026',
+        'tag'       => 'Umum',
+        'important' => false,
+    ],
+];

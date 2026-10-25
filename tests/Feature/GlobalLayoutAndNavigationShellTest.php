@@ -180,9 +180,9 @@ class GlobalLayoutAndNavigationShellTest extends TestCase
             '/kesiswaan/prestasi',
             '/galeri',
             '/berita',
-            '/berita/smp-muhammadiyah-7-medan-juara-lagi',
+            '/berita/siswa-smp-muhammadiyah-7-raih-juara-1-olimpiade-matematika-tingkat-kota',
             '/pengumuman',
-            '/pengumuman/jadwal-pas-ganjil-2026',
+            '/pengumuman/jadwal-ujian-tengah-semester-ganjil-2026-2027',
             '/login',
         ];
 

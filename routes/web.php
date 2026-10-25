@@ -1,20 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes — SIAKAD SMP Muhammadiyah 7 Medan (Portal Publik)
 |--------------------------------------------------------------------------
-| Rute-rute antarmuka publik sesuai PRD.md dan DESIGN.md.
-| Seluruh rute menggunakan master shell <x-layouts.public>.
+| Phase 3: Semua rute halaman MVP terhubung ke data fixture dummy.
+| Sesuai PRD.md dan DESIGN.md.
 */
 
-// Beranda & Layout Showcase
-Route::get('/', function () {
-    return view('pages.layout-preview');
-})->name('home');
-
+// ─── Dev / Debug Showcases ───────────────────────────────────────────────────
 Route::get('/layout-preview', function () {
     return view('pages.layout-preview');
 })->name('layout.preview');
@@ -23,208 +20,178 @@ Route::get('/components-preview', function () {
     return view('pages.components-preview');
 })->name('components.preview');
 
-// Profil Sekolah
+// ─── Beranda ─────────────────────────────────────────────────────────────────
+Route::get('/', function () {
+    $allNews          = require database_path('dummy/news.php');
+    $allAnnouncements = require database_path('dummy/announcements.php');
+
+    // Portal pintasan dari config (filter hanya CBT, Rapor, PPDB — bukan login)
+    $portals = array_filter(config('sekolah.portal', []), fn($p, $key) =>
+        in_array($key, ['cbt', 'rapor', 'ppdb']),
+        ARRAY_FILTER_USE_BOTH
+    );
+
+    return view('pages.home.index', [
+        'news'          => array_slice($allNews, 0, 3),
+        'announcements' => array_slice($allAnnouncements, 0, 3),
+        'portals'       => $portals,
+    ]);
+})->name('home');
+
+// ─── Profil Sekolah ──────────────────────────────────────────────────────────
 Route::prefix('profil')->group(function () {
+
     Route::get('/', function () {
-        return view('pages.placeholder', [
-            'pageTitle' => 'Tentang Sekolah',
-            'kicker' => 'Profil Sekolah',
-            'description' => 'Visi, misi, sejarah pendirian, dan identitas resmi SMP Muhammadiyah 7 Medan.',
-            'breadcrumbs' => [
-                ['label' => 'Beranda', 'url' => url('/')],
-                ['label' => 'Profil', 'url' => url('/profil')],
-                ['label' => 'Tentang Sekolah', 'url' => ''],
-            ],
-        ]);
-    })->name('profile.about');
+        return view('pages.profile.index');
+    })->name('profile.index');
 
     Route::get('/kepala-sekolah', function () {
-        return view('pages.placeholder', [
-            'pageTitle' => 'Kepala Sekolah',
-            'kicker' => 'Profil Pimpinan',
-            'description' => 'Profil dan sambutan lengkap Kepala Sekolah SMP Muhammadiyah 7 Medan (M. Reza Akbar, S.Pd.).',
-            'breadcrumbs' => [
-                ['label' => 'Beranda', 'url' => url('/')],
-                ['label' => 'Profil', 'url' => url('/profil')],
-                ['label' => 'Kepala Sekolah', 'url' => ''],
-            ],
-        ]);
+        return view('pages.profile.principal');
     })->name('profile.principal');
 
     Route::get('/struktur', function () {
-        return view('pages.placeholder', [
-            'pageTitle' => 'Struktur Organisasi',
-            'kicker' => 'Tata Kelola Sekolah',
-            'description' => 'Bagan kepemimpinan, komite sekolah, dewan guru, dan staf tata usaha.',
-            'breadcrumbs' => [
-                ['label' => 'Beranda', 'url' => url('/')],
-                ['label' => 'Profil', 'url' => url('/profil')],
-                ['label' => 'Struktur Organisasi', 'url' => ''],
-            ],
-        ]);
+        return view('pages.profile.structure');
     })->name('profile.structure');
 
     Route::get('/fasilitas', function () {
-        return view('pages.placeholder', [
-            'pageTitle' => 'Sarana & Prasarana',
-            'kicker' => 'Fasilitas Sekolah',
-            'description' => 'Dokumentasi dan informasi sarana belajar, laboratorium komputer, perpustakaan, dan lapangan olahraga.',
-            'breadcrumbs' => [
-                ['label' => 'Beranda', 'url' => url('/')],
-                ['label' => 'Profil', 'url' => url('/profil')],
-                ['label' => 'Sarana & Prasarana', 'url' => ''],
-            ],
-        ]);
+        $facilities = require database_path('dummy/facilities.php');
+        return view('pages.profile.facilities', compact('facilities'));
     })->name('profile.facilities');
 });
 
-// Direktori Guru & Siswa
+// ─── Direktori Guru & Siswa ───────────────────────────────────────────────────
 Route::get('/guru', function () {
-    return view('pages.placeholder', [
-        'pageTitle' => 'Direktori Guru',
-        'kicker' => 'Tenaga Pendidik',
-        'description' => 'Katalog tenaga pendidik dan guru pengampu mata pelajaran SMP Muhammadiyah 7 Medan.',
-        'breadcrumbs' => [
-            ['label' => 'Beranda', 'url' => url('/')],
-            ['label' => 'Direktori', 'url' => url('/guru')],
-            ['label' => 'Direktori Guru', 'url' => ''],
-        ],
+    $allTeachers = require database_path('dummy/teachers_dummy.php');
+
+    // Filter: pencarian nama
+    $q = request('q', '');
+    if ($q) {
+        $allTeachers = array_values(array_filter($allTeachers, fn($t) =>
+            stripos($t['nama_lengkap'], $q) !== false
+        ));
+    }
+
+    // Filter: mata pelajaran
+    $mapel = request('mapel', '');
+    if ($mapel) {
+        $allTeachers = array_values(array_filter($allTeachers, fn($t) =>
+            $t['mapel'] === $mapel
+        ));
+    }
+
+    // Urut alfabetis
+    usort($allTeachers, fn($a, $b) => strcoll($a['nama_lengkap'], $b['nama_lengkap']));
+
+    // Opsi filter mapel (dari semua data asli, tanpa filter aktif)
+    $allRaw     = require database_path('dummy/teachers_dummy.php');
+    $mapelList  = collect($allRaw)->pluck('mapel')->filter()->unique()->sort()->values()->toArray();
+    $mapelOptions = array_combine($mapelList, $mapelList);
+
+    return view('pages.directory.teachers', [
+        'teachers'     => $allTeachers,
+        'mapelOptions' => $mapelOptions,
+        'totalCount'   => count($allTeachers),
     ]);
 })->name('directory.teachers');
 
 Route::get('/siswa', function () {
-    return view('pages.placeholder', [
-        'pageTitle' => 'Direktori Siswa',
-        'kicker' => 'Peserta Didik',
-        'description' => 'Daftar nama peserta didik aktif berdasarkan jenjang kelas dan rombel.',
-        'breadcrumbs' => [
-            ['label' => 'Beranda', 'url' => url('/')],
-            ['label' => 'Direktori', 'url' => url('/siswa')],
-            ['label' => 'Direktori Siswa', 'url' => ''],
-        ],
+    $allStudents = require database_path('dummy/students_dummy.php');
+
+    // Filter: pencarian nama
+    $q = request('q', '');
+    if ($q) {
+        $allStudents = array_values(array_filter($allStudents, fn($s) =>
+            stripos($s['nama_lengkap'], $q) !== false
+        ));
+    }
+
+    // Filter: kelas
+    $kelas = request('kelas', '');
+    if ($kelas) {
+        $allStudents = array_values(array_filter($allStudents, fn($s) =>
+            $s['kelas'] === $kelas
+        ));
+    }
+
+    // Urut nama
+    usort($allStudents, fn($a, $b) => strcoll($a['nama_lengkap'], $b['nama_lengkap']));
+
+    // Opsi kelas
+    $allRaw       = require database_path('dummy/students_dummy.php');
+    $kelasList    = collect($allRaw)->pluck('kelas')->unique()->sort()->values()->toArray();
+    $kelasOptions = array_combine($kelasList, $kelasList);
+
+    return view('pages.directory.students', [
+        'students'     => $allStudents,
+        'kelasOptions' => $kelasOptions,
+        'totalCount'   => count($allStudents),
     ]);
 })->name('directory.students');
 
-// Kesiswaan
+// ─── Kesiswaan ────────────────────────────────────────────────────────────────
 Route::prefix('kesiswaan')->group(function () {
+
     Route::get('/', function () {
         return redirect()->route('student-life.extracurriculars');
     });
 
     Route::get('/organisasi', function () {
-        return view('pages.placeholder', [
-            'pageTitle' => 'Organisasi Siswa',
-            'kicker' => 'Kesiswaan',
-            'description' => 'Ikatan Pelajar Muhammadiyah (IPM) dan wadah kepemimpinan siswa.',
-            'breadcrumbs' => [
-                ['label' => 'Beranda', 'url' => url('/')],
-                ['label' => 'Kesiswaan', 'url' => url('/kesiswaan/organisasi')],
-                ['label' => 'Organisasi Siswa', 'url' => ''],
-            ],
-        ]);
+        $organizations = require database_path('dummy/organizations.php');
+        return view('pages.student-life.organizations', compact('organizations'));
     })->name('student-life.organizations');
 
     Route::get('/ekstrakurikuler', function () {
-        return view('pages.placeholder', [
-            'pageTitle' => 'Ekstrakurikuler',
-            'kicker' => 'Kesiswaan',
-            'description' => 'Kegiatan pengembangan minat, bakat, keagamaan, olahraga, dan seni.',
-            'breadcrumbs' => [
-                ['label' => 'Beranda', 'url' => url('/')],
-                ['label' => 'Kesiswaan', 'url' => url('/kesiswaan/ekstrakurikuler')],
-                ['label' => 'Ekstrakurikuler', 'url' => ''],
-            ],
-        ]);
+        $extracurriculars = require database_path('dummy/extracurriculars.php');
+        return view('pages.student-life.extracurriculars', compact('extracurriculars'));
     })->name('student-life.extracurriculars');
 
     Route::get('/prestasi', function () {
-        return view('pages.placeholder', [
-            'pageTitle' => 'Prestasi Siswa',
-            'kicker' => 'Kesiswaan',
-            'description' => 'Catatan torehan kejuaraan dan capaian prestasi membanggakan siswa.',
-            'breadcrumbs' => [
-                ['label' => 'Beranda', 'url' => url('/')],
-                ['label' => 'Kesiswaan', 'url' => url('/kesiswaan/prestasi')],
-                ['label' => 'Prestasi Siswa', 'url' => ''],
-            ],
-        ]);
+        $achievements = require database_path('dummy/achievements.php');
+        return view('pages.student-life.achievements', compact('achievements'));
     })->name('student-life.achievements');
 });
 
-// Galeri Dokumentasi
+// ─── Galeri ───────────────────────────────────────────────────────────────────
 Route::get('/galeri', function () {
-    return view('pages.placeholder', [
-        'pageTitle' => 'Galeri Foto Kegiatan',
-        'kicker' => 'Dokumentasi',
-        'description' => 'Dokumentasi foto kegiatan akademik, keagamaan, lomba, dan fasilitas sekolah.',
-        'breadcrumbs' => [
-            ['label' => 'Beranda', 'url' => url('/')],
-            ['label' => 'Galeri', 'url' => ''],
-        ],
-    ]);
+    $gallery = require database_path('dummy/gallery.php');
+    return view('pages.gallery.index', compact('gallery'));
 })->name('gallery.index');
 
-// Berita
+// ─── Berita ───────────────────────────────────────────────────────────────────
 Route::get('/berita', function () {
-    return view('pages.placeholder', [
-        'pageTitle' => 'Warta & Berita Terkini',
-        'kicker' => 'Kabar Sekolah',
-        'description' => 'Informasi dan liputan kegiatan terkini di lingkungan SMP Muhammadiyah 7 Medan.',
-        'breadcrumbs' => [
-            ['label' => 'Beranda', 'url' => url('/')],
-            ['label' => 'Berita', 'url' => ''],
-        ],
-    ]);
+    $news = require database_path('dummy/news.php');
+    return view('pages.news.index', compact('news'));
 })->name('news.index');
 
-Route::get('/berita/{slug}', function ($slug) {
-    return view('pages.placeholder', [
-        'pageTitle' => 'Detail Berita: ' . str_replace('-', ' ', ucwords($slug)),
-        'kicker' => 'Berita',
-        'description' => 'Artikel lengkap dan dokumentasi berita sekolah.',
-        'breadcrumbs' => [
-            ['label' => 'Beranda', 'url' => url('/')],
-            ['label' => 'Berita', 'url' => url('/berita')],
-            ['label' => 'Baca Artikel', 'url' => ''],
-        ],
-    ]);
+Route::get('/berita/{slug}', function (string $slug) {
+    $news    = require database_path('dummy/news.php');
+    $article = collect($news)->firstWhere('slug', $slug);
+
+    if (!$article) {
+        abort(404);
+    }
+
+    return view('pages.news.show', compact('article'));
 })->name('news.show');
 
-// Pengumuman
+// ─── Pengumuman ───────────────────────────────────────────────────────────────
 Route::get('/pengumuman', function () {
-    return view('pages.placeholder', [
-        'pageTitle' => 'Pengumuman Resmi',
-        'kicker' => 'Informasi Resmi',
-        'description' => 'Pengumuman dan edaran resmi dari pihak sekolah bagi siswa, orang tua, dan guru.',
-        'breadcrumbs' => [
-            ['label' => 'Beranda', 'url' => url('/')],
-            ['label' => 'Pengumuman', 'url' => ''],
-        ],
-    ]);
+    $announcements = require database_path('dummy/announcements.php');
+    return view('pages.announcements.index', compact('announcements'));
 })->name('announcements.index');
 
-Route::get('/pengumuman/{slug}', function ($slug) {
-    return view('pages.placeholder', [
-        'pageTitle' => 'Detail Pengumuman: ' . str_replace('-', ' ', ucwords($slug)),
-        'kicker' => 'Pengumuman',
-        'description' => 'Surat edaran atau rincian pengumuman resmi.',
-        'breadcrumbs' => [
-            ['label' => 'Beranda', 'url' => url('/')],
-            ['label' => 'Pengumuman', 'url' => url('/pengumuman')],
-            ['label' => 'Lihat Pengumuman', 'url' => ''],
-        ],
-    ]);
+Route::get('/pengumuman/{slug}', function (string $slug) {
+    $all          = require database_path('dummy/announcements.php');
+    $announcement = collect($all)->firstWhere('slug', $slug);
+
+    if (!$announcement) {
+        abort(404);
+    }
+
+    return view('pages.announcements.show', compact('announcement'));
 })->name('announcements.show');
 
-// Login SIAKAD
+// ─── Login SIAKAD ─────────────────────────────────────────────────────────────
 Route::get('/login', function () {
-    return view('pages.placeholder', [
-        'pageTitle' => 'Pintu Masuk Login SIAKAD',
-        'kicker' => 'Autentikasi Internal',
-        'description' => 'Portal autentikasi akademik bagi Guru, Siswa, dan Staf. Modul autentikasi dikelola dalam sistem terpisah.',
-        'breadcrumbs' => [
-            ['label' => 'Beranda', 'url' => url('/')],
-            ['label' => 'Login SIAKAD', 'url' => ''],
-        ],
-    ]);
+    return view('pages.login.index');
 })->name('login');

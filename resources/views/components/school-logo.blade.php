@@ -31,19 +31,15 @@
 @endphp
 
 <a href="{{ $href }}" {{ $attributes->merge(['class' => 'inline-flex items-center gap-3 group focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-forest rounded-xl select-none']) }}>
-    {{-- Emblem / Seal --}}
-    <div class="{{ $badgeSizes }} {{ $crestBg }} rounded-xl flex items-center justify-center shrink-0 p-1.5 shadow-2xs">
-        <svg viewBox="0 0 48 48" class="w-full h-full {{ $crestIconColor }}" fill="currentColor" aria-hidden="true">
-            {{-- Outer Radiating Sun Rays (Muhammadiyah 12 Rays) --}}
-            <path d="M24 2l2.5 6.5 6.8-2-1 6.9 6.7 1.8-4.2 5.5 5 4.8-6.3 3 2.1 6.6-6.8-.7-1.3 6.9-5.1-4.7-5.1 4.7-1.3-6.9-6.8.7 2.1-6.6-6.3-3 5-4.8-4.2-5.5 6.7-1.8-1-6.9 6.8 2z" opacity="0.35"/>
-            {{-- Inner Circle Ring --}}
-            <circle cx="24" cy="24" r="14" fill="none" stroke="currentColor" stroke-width="2.5" />
-            {{-- Central Muhammadiyah Sun Star / Symbol --}}
-            <circle cx="24" cy="24" r="8" opacity="0.2"/>
-            <path d="M24 18l1.6 4.4 4.4.3-3.4 3 1 4.3-3.6-2.5-3.6 2.5 1-4.3-3.4-3 4.4-.3z" fill="currentColor"/>
-            {{-- Small Crescent & Star Detail --}}
-            <circle cx="24" cy="24" r="2.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
-        </svg>
+    {{-- Emblem / Logo Image --}}
+    <div class="{{ $badgeSizes }} {{ $crestBg }} rounded-xl flex items-center justify-center shrink-0 p-1 shadow-2xs overflow-hidden">
+        <img 
+            src="{{ asset('images/school/logo.png') }}" 
+            alt="Logo {{ config('sekolah.nama', 'SMP Muhammadiyah 7 Medan') }}" 
+            class="w-full h-full object-contain"
+            width="48"
+            height="48"
+        />
     </div>
 
     {{-- Brand Text --}}

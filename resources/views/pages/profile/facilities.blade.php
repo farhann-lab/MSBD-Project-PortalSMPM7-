@@ -1,25 +1,35 @@
 <x-layouts.public title="Sarana &amp; Prasarana" description="Fasilitas dan sarana prasarana yang tersedia di SMP Muhammadiyah 7 Medan.">
 
     {{-- Breadcrumb --}}
-    <x-breadcrumb :items="[
-        ['label' => 'Beranda',             'url' => route('home')],
-        ['label' => 'Profil',             'url' => '#'],
-        ['label' => 'Sarana &amp; Prasarana', 'url' => route('profile.facilities')],
-    ]" />
+    <div class="bg-white border-b border-border-soft">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+            <x-breadcrumb :items="[
+                ['label' => 'Beranda', 'url' => route('home')],
+                ['label' => 'Profil', 'url' => route('profile.index')],
+                ['label' => 'Sarana & Prasarana', 'url' => ''],
+            ]" />
+        </div>
+    </div>
 
-    <section class="py-14 md:py-20">
-        <div class="container mx-auto px-4 max-w-6xl">
-
+    {{-- Hero / Page Header --}}
+    <section class="bg-gradient-to-b from-white to-soft py-10 sm:py-14 border-b border-border-soft">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <x-section-heading
                 kicker="Fasilitas Sekolah"
                 title="Sarana &amp; Prasarana"
-                subtitle="Berbagai fasilitas pendukung kegiatan belajar-mengajar dan pengembangan diri peserta didik."
-                align="center"
+                subtitle="Berbagai fasilitas penunjang kegiatan belajar-mengajar, keagamaan, dan pengembangan bakat peserta didik SMP Muhammadiyah 7 Medan."
+                align="left"
             />
+        </div>
+    </section>
+
+    {{-- Main Content Section --}}
+    <section class="py-10 sm:py-14">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Grid Fasilitas --}}
             @if(isset($facilities) && count($facilities) > 0)
-                <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach ($facilities as $facility)
                         <div class="bg-white border border-border-soft rounded-2xl overflow-hidden hover:shadow-md transition-shadow duration-200 flex flex-col">
 

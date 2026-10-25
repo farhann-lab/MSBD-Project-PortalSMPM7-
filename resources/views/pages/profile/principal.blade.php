@@ -21,12 +21,14 @@
 
                 {{-- Kolom Kiri: Foto --}}
                 <div class="lg:col-span-2">
-                    <div class="rounded-2xl overflow-hidden border border-border-soft shadow-md">
-                        <x-image-placeholder
-                            aspect="4/3"
-                            label="Foto Kepala Sekolah"
-                            icon="user"
-                            class="w-full"
+                    <div class="rounded-2xl overflow-hidden border border-border-soft shadow-md bg-white aspect-[4/3] flex items-end justify-center">
+                        <img
+                            src="{{ asset('images/principal/kepala-sekolah.png') }}"
+                            alt="Foto {{ config('sekolah.kepala_sekolah.nama', 'Kepala Sekolah SMP Muhammadiyah 7 Medan') }}"
+                            class="w-full h-full object-contain object-bottom"
+                            width="400"
+                            height="300"
+                            loading="eager"
                         />
                     </div>
                     {{-- Kartu info singkat --}}

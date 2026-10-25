@@ -33,14 +33,18 @@
                     </div>
                 </div>
 
-                {{-- Kolom Kanan — Gambar Placeholder --}}
-                <div>
-                    <x-image-placeholder
-                        aspect="video"
-                        label="Gedung SMP Muhammadiyah 7 Medan"
-                        icon="building-office"
-                        class="rounded-2xl"
-                    />
+                {{-- Kolom Kanan — Foto Gedung Sekolah --}}
+                <div class="relative group">
+                    <div class="overflow-hidden rounded-2xl border border-border-soft shadow-md bg-white aspect-[4/3] sm:aspect-[4/3] lg:aspect-[4/3]">
+                        <img
+                            src="{{ asset('images/school/gedung.jpg') }}"
+                            alt="Gedung SMP Muhammadiyah 7 Medan"
+                            class="w-full h-full object-cover object-[center_68%] transition-transform duration-500 group-hover:scale-105"
+                            width="800"
+                            height="600"
+                            loading="eager"
+                        />
+                    </div>
                 </div>
 
             </div>
@@ -84,15 +88,19 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-                {{-- Foto Portrait Placeholder --}}
+                {{-- Foto Kepala Sekolah --}}
                 <div class="flex justify-center lg:justify-start">
                     <div class="w-full max-w-sm">
-                        <x-image-placeholder
-                            aspect="4/3"
-                            label="Foto Kepala Sekolah"
-                            icon="user-circle"
-                            class="rounded-2xl"
-                        />
+                        <div class="overflow-hidden rounded-2xl border border-border-soft shadow-md bg-white aspect-[4/3] flex items-end justify-center">
+                            <img
+                                src="{{ asset('images/principal/kepala-sekolah.png') }}"
+                                alt="Foto {{ config('sekolah.kepala_sekolah.nama', 'Kepala Sekolah SMP Muhammadiyah 7 Medan') }}"
+                                class="w-full h-full object-contain object-bottom"
+                                width="400"
+                                height="300"
+                                loading="lazy"
+                            />
+                        </div>
                     </div>
                 </div>
 

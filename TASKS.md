@@ -64,7 +64,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 |---|---|---|---|---|---|
 | **M0: Foundation Ready** | Phase 0 | Fondasi frontend, build Vite, tokens Tailwind v4 | `app.css` tersinkronisasi, folder resources & dummy terstruktur, Vite build lolos | Tidak ada | Selesai (Completed) |
 | **M1: Design System Library** | Phase 1 | Komponen Blade reusable siap pakai | 14+ reusable Blade UI components terdokumentasi dan teruji | M0 | Selesai (Completed) |
-| **M2: Global Shell Active** | Phase 2 | Master layout, navbar responsif, dan footer | `layouts/public.blade.php`, `navbar.blade.php`, `footer.blade.php` berfungsi responsif | M1 | Siap Dikerjakan |
+| **M2: Global Shell Active** | Phase 2 | Master layout, navbar responsif, dan footer | `layouts/public.blade.php`, `navbar.blade.php`, `footer.blade.php` berfungsi responsif | M1 | Selesai (Completed) |
 | **M3: Public Pages Visual MVP** | Phase 3 | Seluruh halaman MVP tampil utuh dengan mock data | Beranda, Profil (4), Direktori (2), Kesiswaan (3), Galeri (1), Berita (2), Pengumuman (2), Login redirect | M2 | Antrean |
 | **M4: Interactive Experience** | Phase 4 | Interaksi navigasi, filter mockup, search UI, pagination | Hamburger menu mulus, query string filter direktori bekerja, fixture dummy terisolasi | M3 | Antrean |
 | **M5: Quality & Accessibility Pass** | Phase 5 | Standar performa ringan, responsive lolos, WCAG AA | Laporan audit responsif (<640px, tablet, desktop), validasi privasi DIR-8, Lighthouse score tinggi | M4 | Antrean |
@@ -232,7 +232,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-LAYOUT-001] Master Public Layout Blade Template
 - **Phase:** Phase 2
 - **Priority:** P0
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Layout
 - **Description:** Membangun layout induk `resources/views/layouts/public.blade.php` yang memuat struktur HTML semantik, meta tags viewport, tag Vite, skip-to-content link, navbar, konten utama, dan footer.
 - **Source Requirements:** `PRD.md` NAV-4, NAV-5; `DESIGN.md` Bab 4, 15.1, 21.
@@ -242,8 +242,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Container utama dibatasi maksimal 1200–1280px (`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`).
   - Latar belakang halaman default Soft Background (`#F7F9F6`) atau White.
 - **Acceptance Criteria:**
-  - [ ] Semua halaman publik dapat meng-extend layout induk ini dengan `@extends('layouts.public')` atau `<x-layouts.public>`.
-  - [ ] Tag `@vite(['resources/css/app.css', 'resources/js/app.js'])` tersemat rapi di bagian `<head>`.
+  - [x] Semua halaman publik dapat meng-extend layout induk ini dengan `@extends('layouts.public')` atau `<x-layouts.public>`.
+  - [x] Tag `@vite(['resources/css/app.css', 'resources/js/app.js'])` tersemat rapi di bagian `<head>`.
 - **Verification:** Inspeksi DOM di browser untuk memastikan elemen `<header>`, `<main id="main-content">`, dan `<footer>` tersusun semantik.
 
 ---
@@ -251,7 +251,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-LAYOUT-002] Global Responsive Navbar with Desktop Submenus
 - **Phase:** Phase 2
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Layout
 - **Description:** Mengembangkan komponen navbar (`resources/views/components/navbar.blade.php`) dengan logo identitas sekolah, menu horizontal desktop, submenu dropdown (Profil, Direktori, Kesiswaan), menu mandiri (Galeri, Berita, Pengumuman), dan tombol CTA "Login SIAKAD".
 - **Source Requirements:** `PRD.md` NAV-1, NAV-2, NAV-6; `DESIGN.md` Bab 5.1, 5.2, 5.4, 13.1.
@@ -261,10 +261,10 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Menu aktif ditandai dengan warna Forest Green dan penanda visual jelas.
   - Tombol Login SIAKAD mengarah ke rute `/login` (placeholder atau URL terkonfigurasi).
 - **Acceptance Criteria:**
-  - [ ] Submenu Profil Sekolah mencakup: Tentang Sekolah, Kepala Sekolah, Struktur Organisasi, Sarana & Prasarana.
-  - [ ] Submenu Direktori mencakup: Direktori Guru, Direktori Siswa.
-  - [ ] Submenu Kesiswaan mencakup: Organisasi Siswa, Ekstrakurikuler, Prestasi Siswa.
-  - [ ] Submenu dapat diakses baik melalui hover kursor maupun navigasi keyboard (Enter/Space).
+  - [x] Submenu Profil Sekolah mencakup: Tentang Sekolah, Kepala Sekolah, Struktur Organisasi, Sarana & Prasarana.
+  - [x] Submenu Direktori mencakup: Direktori Guru, Direktori Siswa.
+  - [x] Submenu Kesiswaan mencakup: Organisasi Siswa, Ekstrakurikuler, Prestasi Siswa.
+  - [x] Submenu dapat diakses baik melalui hover kursor maupun navigasi keyboard (Enter/Space).
 - **Verification:** Uji navigasi submenu pada breakpoint desktop (>= 1024px) dengan mouse dan keyboard.
 
 ---
@@ -272,7 +272,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-LAYOUT-003] Mobile Navigation Drawer / Hamburger Menu
 - **Phase:** Phase 2
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Layout
 - **Description:** Mengimplementasikan drawer / dropdown navigasi seluler yang responsif dan ringan pada navbar untuk layar di bawah 1024px.
 - **Source Requirements:** `PRD.md` NAV-5; `DESIGN.md` Bab 5.3, 20.
@@ -282,9 +282,9 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Target sentuh tombol hamburger minimal 44x44 px dengan atribut `aria-expanded="false"`.
   - Panel menu dapat ditutup dengan tombol tutup khusus, menekan tombol `Esc`, atau memilih salah satu tautan menu.
 - **Acceptance Criteria:**
-  - [ ] Menu mobile tidak pernah menutupi konten halaman secara permanen.
-  - [ ] Tombol Login SIAKAD tetap terlihat jelas di dalam menu mobile.
-  - [ ] Tidak terjadi horizontal scrolling pada resolusi layar 320px–414px.
+  - [x] Menu mobile tidak pernah menutupi konten halaman secara permanen.
+  - [x] Tombol Login SIAKAD tetap terlihat jelas di dalam menu mobile.
+  - [x] Tidak terjadi horizontal scrolling pada resolusi layar 320px–414px.
 - **Verification:** Buka toggle menu pada DevTools responsive mode (ukuran 375px) dan uji buka-tutup drawer.
 
 ---
@@ -292,7 +292,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-LAYOUT-004] Global 4-Column Footer Component
 - **Phase:** Phase 2
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Layout
 - **Description:** Membangun footer bersama (`resources/views/components/footer.blade.php`) dengan skema warna Forest Green / Dark Green dan teks kontras tinggi.
 - **Source Requirements:** `PRD.md` NAV-3, NAV-4; `DESIGN.md` Bab 14.
@@ -304,8 +304,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Kolom 4 (Kontak): Alamat resmi (Jl. Pelita II No. 3-5), Telepon ((061) 6621557), Email (smpm7medan@gmail.com).
   - Bagian Bawah: Copyright dinamis (`© {{ date('Y') }} SMP Muhammadiyah 7 Medan. Hak Cipta Dilindungi.`).
 - **Acceptance Criteria:**
-  - [ ] Tata letak otomatis runtuh menjadi 1 kolom yang rapi pada layar mobile tanpa teks terpotong.
-  - [ ] Semua tautan footer memiliki efek hover dan fokus keyboard yang jelas.
+  - [x] Tata letak otomatis runtuh menjadi 1 kolom yang rapi pada layar mobile tanpa teks terpotong.
+  - [x] Semua tautan footer memiliki efek hover dan fokus keyboard yang jelas.
 - **Verification:** Periksa rendering footer di desktop dan smartphone.
 
 ---

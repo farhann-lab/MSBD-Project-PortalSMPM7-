@@ -28,6 +28,7 @@
     <select 
         name="{{ $name }}" 
         id="{{ $selectId }}"
+        onchange="if(this.form) this.form.submit()"
         class="block w-full min-h-11 {{ $icon ? 'pl-9' : 'pl-3.5' }} pr-10 py-2.5 text-sm rounded-xl border border-border-soft bg-white text-darkgreen font-medium transition-colors focus:border-forest focus:outline-2 focus:outline-offset-0 focus:outline-forest cursor-pointer appearance-none"
     >
         @if($placeholder)

@@ -53,7 +53,7 @@
     </header>
 
     {{-- Main Content Area --}}
-    <main id="main-content" class="flex-1 flex flex-col focus:outline-none" tabindex="-1">
+    <main id="main-content" role="main" class="flex-1 flex flex-col focus:outline-none" tabindex="-1">
         @if(isset($slot) && $slot->isNotEmpty())
             {{ $slot }}
         @else

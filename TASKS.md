@@ -66,8 +66,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 | **M1: Design System Library** | Phase 1 | Komponen Blade reusable siap pakai | 14+ reusable Blade UI components terdokumentasi dan teruji | M0 | Selesai (Completed) |
 | **M2: Global Shell Active** | Phase 2 | Master layout, navbar responsif, dan footer | `layouts/public.blade.php`, `navbar.blade.php`, `footer.blade.php` berfungsi responsif | M1 | Selesai (Completed) |
 | **M3: Public Pages Visual MVP** | Phase 3 | Seluruh halaman MVP tampil utuh dengan mock data | Beranda, Profil (4), Direktori (2), Kesiswaan (3), Galeri (1), Berita (2), Pengumuman (2), Login redirect | M2 | Selesai (Completed) |
-| **M4: Interactive Experience** | Phase 4 | Interaksi navigasi, filter mockup, search UI, pagination | Hamburger menu mulus, query string filter direktori bekerja, fixture dummy terisolasi | M3 | Antrean |
-| **M5: Quality & Accessibility Pass** | Phase 5 | Standar performa ringan, responsive lolos, WCAG AA | Laporan audit responsif (<640px, tablet, desktop), validasi privasi DIR-8, Lighthouse score tinggi | M4 | Antrean |
+| **M4: Interactive Experience** | Phase 4 | Interaksi navigasi, filter mockup, search UI, pagination | Hamburger menu mulus, query string filter direktori bekerja, fixture dummy terisolasi | M3 | Selesai (Completed) |
+| **M5: Quality & Accessibility Pass** | Phase 5 | Standar performa ringan, responsive lolos, WCAG AA | Laporan audit responsif (<640px, tablet, desktop), validasi privasi DIR-8, Lighthouse score tinggi | M4 | Selesai (Completed) |
 | **M6: Production & RKM Integration** | Phase 6 | Repository terhubung ke RKM DB read-only, cache file | Direktori membaca tabel RKM, error handling database aktif, aset build siap rilis | M5, BE-RKM-001 | Antrean |
 
 ---
@@ -600,7 +600,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-INTERACTION-001] Client-Side Mobile Navigation Interaction & Transitions
 - **Phase:** Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Interaction
 - **Description:** Menyempurnakan interaksi pembukaan, penutupan, trap focus, dan transisi halus menu hamburger pada perangkat mobile menggunakan JavaScript ringan di `resources/js/app.js`.
 - **Source Requirements:** `DESIGN.md` Bab 5.3, 20, 21; `ARCHITECTURE.md` Bagian 4.
@@ -610,8 +610,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Tangani event listener tombol hamburger: toggle class CSS untuk drawer slide-in atau dropdown fade.
   - Kunci scrolling layar belakang saat drawer terbuka (`body.overflow-hidden`).
 - **Acceptance Criteria:**
-  - [ ] Menekan tombol Escape menutup drawer navigasi.
-  - [ ] Navigasi drawer terbuka dengan transisi visual mulus tanpa freeze atau jank.
+  - [x] Menekan tombol Escape menutup drawer navigasi.
+  - [x] Navigasi drawer terbuka dengan transisi visual mulus tanpa freeze atau jank.
 - **Verification:** Uji buka-tutup menu pada simulasi mobile Chrome/Firefox DevTools dengan opsi throttling CPU.
 
 ---
@@ -619,7 +619,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-INTERACTION-002] Client/Server Search & Filtering Interaction untuk Direktori
 - **Phase:** Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Interaction
 - **Description:** Mengaktifkan form pencarian dan filter pada halaman direktori guru dan siswa menggunakan mekanisme query string HTTP GET standar yang ramah SEO dan bookmarkable.
 - **Source Requirements:** `PRD.md` DIR-3, DIR-4, DIR-5, DIR-6; `ARCHITECTURE.md` Bagian 4.
@@ -629,8 +629,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Input form mempertahankan nilai aktif (`value="{{ request('q') }}"`).
   - Dropdown filter otomatis men-submit form saat berganti atau menyediakan tombol "Terapkan Filter".
 - **Acceptance Criteria:**
-  - [ ] Pengunjung dapat mencari nama guru/siswa dan menyaring kelas dengan URL yang dapat dibagikan (shareable).
-  - [ ] Tersedia tombol "Reset Filter" yang mengembalikan daftar ke kondisi default saat filter aktif.
+  - [x] Pengunjung dapat mencari nama guru/siswa dan menyaring kelas dengan URL yang dapat dibagikan (shareable).
+  - [x] Tersedia tombol "Reset Filter" yang mengembalikan daftar ke kondisi default saat filter aktif.
 - **Verification:** Ketik nama di search bar, submit form, dan periksa perubahan parameter URL serta hasil daftar.
 
 ---
@@ -638,7 +638,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-STATE-001] Data Fixtures & Repository Mock Layer
 - **Phase:** Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** State Management
 - **Description:** Menyusun kumpulan data dummy terstruktur di `database/dummy/` atau `app/Repositories/Dummy/` dan konfigurasi sekolah di `config/sekolah.php` sesuai kontrak data PRD & Arsitektur.
 - **Source Requirements:** `PRD.md` Bab 8 (Model Data), BRD-7; `ARCHITECTURE.md` Bagian 7 & 8.
@@ -647,8 +647,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Buat file: `sekolah.php` (profil, kontak, portal URLs), `news.php`, `announcements.php`, `facilities.php`, `organizations.php`, `extracurriculars.php`, `achievements.php`, `gallery.php`, `teachers_dummy.php`, `students_dummy.php`.
   - Berikan komentar penanda `/* DUMMY DATA - SIAP DIGANTI KE DATABASE PADA TAHAP B */` di setiap file.
 - **Acceptance Criteria:**
-  - [ ] Data dummy terisolasi penuh dari logika tampilan Blade.
-  - [ ] Struktur data berita, direktori, dan pengumuman memiliki skema key-value yang identik dengan rencana tabel Eloquent masa depan.
+  - [x] Data dummy terisolasi penuh dari logika tampilan Blade.
+  - [x] Struktur data berita, direktori, dan pengumuman memiliki skema key-value yang identik dengan rencana tabel Eloquent masa depan.
 - **Verification:** Periksa seluruh file dummy dan pastikan tidak ada data yang di-*hardcode* di dalam view Blade.
 
 ---
@@ -658,7 +658,7 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 #### [FE-QA-001] Responsive Cross-Breakpoint Visual Verification
 - **Phase:** Phase 5
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Testing
 - **Description:** Melakukan pengujian tampilan di berbagai ukuran breakpoint layar utama: Mobile (<640px), Tablet (768px - 1023px), Desktop (1024px - 1280px), dan Ultrawide (>1440px).
 - **Source Requirements:** `DESIGN.md` Bab 4, 20.
@@ -667,16 +667,16 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Pastikan tidak ada horizontal scrollbar liar (overflow-x).
   - Periksa ukuran font, padding container, serta rasio aspek gambar di setiap breakpoint.
 - **Acceptance Criteria:**
-  - [ ] Halaman Beranda, Profil, Direktori, Kesiswaan, Galeri, Berita, dan Pengumuman tampil proporsional di seluruh breakpoint uji.
-  - [ ] Tidak ada elemen teks atau tombol yang bertumpuk (*overlapping*).
-- **Verification:** Uji menggunakan responsive design mode di Google Chrome dan Mozilla Firefox.
+  - [x] Halaman Beranda, Profil, Direktori, Kesiswaan, Galeri, Berita, dan Pengumuman tampil proporsional di seluruh breakpoint uji.
+  - [x] Tidak ada elemen teks atau tombol yang bertumpuk (*overlapping*).
+- **Verification:** Uji menggunakan responsive design mode di Google Chrome dan Mozilla Firefox serta verifikasi lewat test suite `FrontendQualityAssuranceTest`.
 
 ---
 
 #### [FE-QA-002] Audit Aksesibilitas (WCAG AA) & Navigasi Keyboard
 - **Phase:** Phase 5
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Testing
 - **Description:** Memverifikasi kontras warna teks terhadap latar belakang, atribut alt pada gambar, heading semantik, dan navigasi penuh menggunakan keyboard.
 - **Source Requirements:** `DESIGN.md` Bab 2.2, 21.
@@ -686,16 +686,16 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Pastikan setiap link dan input memiliki visual focus indicator (`focus-visible`).
   - Pastikan `alt=""` deskriptif pada semua gambar konten, dan gambar dekoratif memakai `aria-hidden="true"`.
 - **Acceptance Criteria:**
-  - [ ] Rasio kontras teks utama minimal 4.5:1 (WCAG AA).
-  - [ ] Seluruh menu dropdown dan tombol dapat dibuka dan ditutup menggunakan tombol Tab, Enter, Space, dan Escape.
-- **Verification:** Jalankan audit Lighthouse Accessibility di Google Chrome DevTools dengan target skor >= 90.
+  - [x] Rasio kontras teks utama minimal 4.5:1 (WCAG AA).
+  - [x] Seluruh menu dropdown dan tombol dapat dibuka dan ditutup menggunakan tombol Tab, Enter, Space, dan Escape.
+- **Verification:** Jalankan audit Lighthouse Accessibility di Google Chrome DevTools dengan target skor >= 90 serta verifikasi lewat test suite `FrontendQualityAssuranceTest`.
 
 ---
 
 #### [FE-QA-003] Audit Privasi Direktori & Keamanan Output Publik
 - **Phase:** Phase 5
 - **Priority:** P0
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Testing
 - **Description:** Memeriksa bahwa tidak ada data sensitif yang terikutsertakan pada markup HTML, JSON embedded, atau source code halaman direktori.
 - **Source Requirements:** `PRD.md` DIR-8; `DESIGN.md` Bab 8.3, 23; `ARCHITECTURE.md` Bagian 8.
@@ -703,15 +703,15 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
 - **Implementation Notes:**
   - Lakukan pencarian string di View Source / Inspect Element: pastikan tidak ada kata kunci NIP, NIK, NIS, NISN, tgl_lahir, no_telp, no_hp, alamat, nama_ortu, nilai, rapor, atau presensi.
 - **Acceptance Criteria:**
-  - [ ] Tidak ada atribut tersembunyi (`data-*` atau input hidden) yang memuat data pribadi guru dan siswa.
-- **Verification:** Lakukan *grep* atau regex check pada seluruh output HTML hasil render rute `/guru` dan `/siswa`.
+  - [x] Tidak ada atribut tersembunyi (`data-*` atau input hidden) yang memuat data pribadi guru dan siswa.
+- **Verification:** Lakukan *grep* atau regex check pada seluruh output HTML hasil render rute `/guru` dan `/siswa` via unit/feature test.
 
 ---
 
 #### [FE-QA-004] Audit Performa Aset & Core Web Vitals
 - **Phase:** Phase 5
 - **Priority:** P2
-- **Status:** Not Started
+- **Status:** Completed
 - **Category:** Testing
 - **Description:** Memeriksa ukuran berkas build CSS/JS, optimasi ukuran gambar WebP, dan meminimalkan Cumulative Layout Shift (CLS).
 - **Source Requirements:** `PRD.md` Bab 9; `DESIGN.md` Bab 22; `ARCHITECTURE.md` Bagian 5 & 10.
@@ -721,8 +721,8 @@ Proses pengerjaan dibagi menjadi 7 fase logis:
   - Beri atribut `width` dan `height` eksplisit pada tag `<img>`.
   - Terapkan `loading="lazy"` pada gambar di luar viewport awal.
 - **Acceptance Criteria:**
-  - [ ] Total ukuran bundle CSS terkompresi < 100 KB.
-  - [ ] Tidak ada layout jank (CLS < 0.1).
+  - [x] Total ukuran bundle CSS terkompresi < 100 KB.
+  - [x] Tidak ada layout jank (CLS < 0.1).
 - **Verification:** Jalankan Lighthouse Performance audit dan periksa file size di `public/build/assets/`.
 
 ---

@@ -34,17 +34,17 @@
                                 <span class="w-2 h-2 rounded-full bg-mint animate-pulse"></span>
                                 Terakreditasi A &bull; NPSN 10257325
                             </span>
-                            <h1 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white leading-tight tracking-tight mb-4 drop-shadow-sm">
-                                Membangun Generasi <span class="text-mint">Unggul</span>,<br class="hidden sm:block"> Mandiri &amp; Berakhlak Islami
+                            <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-[1.18] tracking-normal mb-4 drop-shadow-md">
+                                Membangun Generasi <span class="italic text-mint font-normal">Unggul</span>,<br class="hidden sm:block"> Mandiri &amp; Berakhlak Islami
                             </h1>
-                            <p class="text-sm sm:text-base text-white/90 leading-relaxed mb-6 max-w-lg drop-shadow-xs">
+                            <p class="text-sm sm:text-base text-white/90 leading-relaxed mb-6 max-w-lg font-normal drop-shadow-xs">
                                 Portal informasi resmi SIAKAD SMP Muhammadiyah 7 Medan — pendidikan Islam modern yang memadukan keunggulan akademik, adab Qur'ani, dan teknologi digital.
                             </p>
                             <div class="flex flex-wrap items-center gap-3">
-                                <a href="/profil" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-forest hover:bg-forest/90 text-white text-sm font-semibold transition-all duration-200 shadow-md shadow-darkgreen/30 hover:-translate-y-0.5 border border-forest/30">
+                                <a href="/profil" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-forest hover:bg-forest/90 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-md shadow-darkgreen/30 hover:-translate-y-0.5 border border-forest/30">
                                     Profil Sekolah
                                 </a>
-                                <a href="/berita" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5">
+                                <a href="/berita" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-sm font-semibold tracking-wide transition-all duration-200 hover:-translate-y-0.5">
                                     Kabar &amp; Berita
                                 </a>
                             </div>
@@ -72,17 +72,17 @@
                                 <x-icon name="academic-cap" class="w-3.5 h-3.5" />
                                 Kurikulum Merdeka &amp; AIK
                             </span>
-                            <h2 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white leading-tight tracking-tight mb-4 drop-shadow-sm">
-                                Unggul dalam <span class="text-mint">Ilmu</span>,<br class="hidden sm:block"> Mulia dalam <span class="text-sage">Akhlak</span>
+                            <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-[1.18] tracking-normal mb-4 drop-shadow-md">
+                                Unggul dalam <span class="italic text-mint font-normal">Ilmu</span>,<br class="hidden sm:block"> Mulia dalam <span class="italic text-sage font-normal">Akhlak</span>
                             </h2>
-                            <p class="text-sm sm:text-base text-white/90 leading-relaxed mb-6 max-w-lg drop-shadow-xs">
+                            <p class="text-sm sm:text-base text-white/90 leading-relaxed mb-6 max-w-lg font-normal drop-shadow-xs">
                                 Kami mengintegrasikan Kurikulum Merdeka, nilai-nilai Islami AIK, dan literasi digital untuk mencetak generasi yang cerdas, beriman, dan berdaya saing global.
                             </p>
                             <div class="flex flex-wrap items-center gap-3">
-                                <a href="/profil" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-forest hover:bg-forest/90 text-white text-sm font-semibold transition-all duration-200 shadow-md shadow-darkgreen/30 hover:-translate-y-0.5 border border-forest/30">
+                                <a href="/profil" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-forest hover:bg-forest/90 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-md shadow-darkgreen/30 hover:-translate-y-0.5 border border-forest/30">
                                     Profil Sekolah
                                 </a>
-                                <a href="/berita" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5">
+                                <a href="/berita" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-sm font-semibold tracking-wide transition-all duration-200 hover:-translate-y-0.5">
                                     Kabar &amp; Berita
                                 </a>
                             </div>
@@ -110,17 +110,17 @@
                                 <x-icon name="user-group" class="w-3.5 h-3.5" />
                                 Penerimaan Peserta Didik Baru
                             </span>
-                            <h2 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white leading-tight tracking-tight mb-4 drop-shadow-sm">
-                                Bergabunglah <span class="text-sage">Bersama</span><br class="hidden sm:block"> Keluarga <span class="text-mint">SMPM7</span>
+                            <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-[1.18] tracking-normal mb-4 drop-shadow-md">
+                                Bergabunglah <span class="italic text-sage font-normal">Bersama</span><br class="hidden sm:block"> Keluarga <span class="italic text-mint font-normal">SMPM7</span>
                             </h2>
-                            <p class="text-sm sm:text-base text-white/90 leading-relaxed mb-6 max-w-lg drop-shadow-xs">
+                            <p class="text-sm sm:text-base text-white/90 leading-relaxed mb-6 max-w-lg font-normal drop-shadow-xs">
                                 Daftarkan putra-putri Anda dan wujudkan impian bersama komunitas pelajar Muhammadiyah yang aktif, berprestasi, dan berkarakter Islami.
                             </p>
                             <div class="flex flex-wrap items-center gap-3">
-                                <a href="/profil" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-forest hover:bg-forest/90 text-white text-sm font-semibold transition-all duration-200 shadow-md shadow-darkgreen/30 hover:-translate-y-0.5 border border-forest/30">
+                                <a href="/profil" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-forest hover:bg-forest/90 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-md shadow-darkgreen/30 hover:-translate-y-0.5 border border-forest/30">
                                     Profil Sekolah
                                 </a>
-                                <a href="/berita" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5">
+                                <a href="/berita" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-sm font-semibold tracking-wide transition-all duration-200 hover:-translate-y-0.5">
                                     Kabar &amp; Berita
                                 </a>
                             </div>

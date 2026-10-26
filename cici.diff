@@ -1,0 +1,432 @@
+diff --git a/resources/views/components/portal-card.blade.php b/resources/views/components/portal-card.blade.php
+index 02d6d4e..f65e978 100644
+--- a/resources/views/components/portal-card.blade.php
++++ b/resources/views/components/portal-card.blade.php
+@@ -9,12 +9,15 @@
+ <a 
+     href="{{ $href }}" 
+     target="_self"
+-    {{ $attributes->merge(['class' => 'group flex flex-col justify-between p-6 sm:p-7 rounded-2xl border border-border-soft bg-white transition-all duration-200 hover:shadow-md hover:border-forest/40 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest']) }}
++    {{ $attributes->merge(['class' => 'group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl border border-border-soft bg-white transition-all duration-300 hover:shadow-xl hover:border-forest/50 hover:-translate-y-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest overflow-hidden']) }}
+ >
++    {{-- Subtle top accent highlight on hover --}}
++    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-forest via-sage to-mint opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true"></div>
++
+     <div>
+         {{-- Card Header: Icon & Badge --}}
+         <div class="flex items-center justify-between gap-3 mb-5">
+-            <div class="w-13 h-13 rounded-xl bg-mint/30 flex items-center justify-center text-forest group-hover:bg-forest group-hover:text-white transition-colors duration-200 border border-mint/50">
++            <div class="w-12 h-12 rounded-xl bg-forest/10 flex items-center justify-center text-forest group-hover:bg-forest group-hover:text-white transition-all duration-300 border border-forest/15 shadow-2xs">
+                 <x-icon :name="$icon" class="w-6 h-6" />
+             </div>
+ 
+@@ -36,10 +39,10 @@
+     </div>
+ 
+     {{-- Link CTA with Arrow --}}
+-    <div class="mt-6 pt-4 border-t border-border-soft/60 flex items-center justify-between text-sm font-semibold text-forest group-hover:text-teal transition-colors">
+-        <span>Buka Portal</span>
+-        <div class="w-8 h-8 rounded-full bg-soft flex items-center justify-center group-hover:bg-forest group-hover:text-white transition-all duration-200">
+-            <x-icon name="arrow-right" class="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
++    <div class="mt-6 pt-4 border-t border-border-soft/70 flex items-center justify-between text-sm font-semibold text-forest group-hover:text-darkgreen transition-colors">
++        <span>Buka Portal Akses</span>
++        <div class="w-8 h-8 rounded-full bg-forest/10 flex items-center justify-center text-forest group-hover:bg-forest group-hover:text-white transition-all duration-300">
++            <x-icon name="arrow-right" class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+         </div>
+     </div>
+ </a>
+diff --git a/resources/views/components/school-logo.blade.php b/resources/views/components/school-logo.blade.php
+index 234143d..4263b67 100644
+--- a/resources/views/components/school-logo.blade.php
++++ b/resources/views/components/school-logo.blade.php
+@@ -7,16 +7,16 @@
+ 
+ @php
+     $badgeSizes = [
+-        'sm' => 'w-9 h-9',
+-        'md' => 'w-11 h-11',
+-        'lg' => 'w-14 h-14',
+-    ][$size] ?? 'w-11 h-11';
++        'sm' => 'w-10 h-10',
++        'md' => 'w-12 h-12',
++        'lg' => 'w-16 h-16',
++    ][$size] ?? 'w-12 h-12';
+ 
+     $textSizes = [
+         'sm' => 'text-sm font-bold leading-tight',
+-        'md' => 'text-base font-bold leading-snug',
++        'md' => 'text-base font-extrabold leading-snug',
+         'lg' => 'text-xl font-extrabold leading-tight',
+-    ][$size] ?? 'text-base font-bold leading-snug';
++    ][$size] ?? 'text-base font-extrabold leading-snug';
+ 
+     $subtextSizes = [
+         'sm' => 'text-[11px] leading-tight',
+@@ -26,19 +26,18 @@
+ 
+     $titleColor = $variant === 'white' ? 'text-white' : 'text-darkgreen group-hover:text-forest transition-colors';
+     $subtitleColor = $variant === 'white' ? 'text-mint/80' : 'text-muted-text';
+-    $crestBg = $variant === 'white' ? 'bg-white/10 ring-1 ring-white/20' : 'bg-forest/10 ring-1 ring-forest/20 group-hover:bg-forest/15 transition-colors';
+-    $crestIconColor = $variant === 'white' ? 'text-mint' : 'text-forest';
++    $crestBg = $variant === 'white' ? 'bg-white/10 ring-1 ring-white/20' : 'bg-white ring-1 ring-border-soft shadow-xs group-hover:ring-sage/60 transition-all';
+ @endphp
+ 
+-<a href="{{ $href }}" {{ $attributes->merge(['class' => 'inline-flex items-center gap-3 group focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-forest rounded-xl select-none']) }}>
++<a href="{{ $href }}" {{ $attributes->merge(['class' => 'inline-flex items-center gap-3.5 group focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-forest rounded-xl select-none']) }}>
+     {{-- Emblem / Logo Image --}}
+-    <div class="{{ $badgeSizes }} {{ $crestBg }} rounded-xl flex items-center justify-center shrink-0 p-1 shadow-2xs overflow-hidden">
++    <div class="{{ $badgeSizes }} {{ $crestBg }} rounded-xl flex items-center justify-center shrink-0 p-1.5 overflow-hidden">
+         <img 
+             src="{{ asset('images/school/logo.png') }}" 
+             alt="Logo {{ config('sekolah.nama', 'SMP Muhammadiyah 7 Medan') }}" 
+             class="w-full h-full object-contain"
+-            width="48"
+-            height="48"
++            width="64"
++            height="64"
+         />
+     </div>
+ 
+diff --git a/resources/views/components/stat-card.blade.php b/resources/views/components/stat-card.blade.php
+index f8d1ed6..32e8d8b 100644
+--- a/resources/views/components/stat-card.blade.php
++++ b/resources/views/components/stat-card.blade.php
+@@ -5,22 +5,22 @@
+     'description' => null,
+ ])
+ 
+-<div {{ $attributes->merge(['class' => 'flex items-center gap-4 p-5 sm:p-6 rounded-2xl border border-border-soft bg-white transition-all duration-200 hover:shadow-xs hover:border-sage/40']) }}>
++<div {{ $attributes->merge(['class' => 'flex items-center gap-4 p-5 sm:p-6 rounded-2xl border border-white/15 bg-white/95 backdrop-blur-xs transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-mint/50']) }}>
+     @if($icon)
+-        <div class="w-13 h-13 rounded-xl bg-mint/30 border border-mint/50 flex items-center justify-center text-forest shrink-0">
+-            <x-icon :name="$icon" class="w-6 h-6" />
++        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-forest/10 border border-forest/15 flex items-center justify-center text-forest shrink-0">
++            <x-icon :name="$icon" class="w-6 h-6 sm:w-7 sm:h-7" />
+         </div>
+     @endif
+ 
+-    <div>
++    <div class="min-w-0">
+         <div class="text-2xl sm:text-3xl font-extrabold text-darkgreen tracking-tight">
+             {{ $value }}
+         </div>
+-        <div class="text-sm font-semibold text-forest mt-0.5">
++        <div class="text-sm font-bold text-forest mt-0.5 truncate">
+             {{ $label }}
+         </div>
+         @if($description)
+-            <div class="text-xs text-muted-text mt-0.5">
++            <div class="text-[11px] sm:text-xs text-muted-text mt-0.5 truncate">
+                 {{ $description }}
+             </div>
+         @endif
+diff --git a/resources/views/pages/home/index.blade.php b/resources/views/pages/home/index.blade.php
+index b85e03e..ac46caf 100644
+--- a/resources/views/pages/home/index.blade.php
++++ b/resources/views/pages/home/index.blade.php
+@@ -3,47 +3,110 @@
+     {{-- ================================================================== --}}
+     {{-- SEKSI 1 — HERO                                                      --}}
+     {{-- ================================================================== --}}
+-    <section class="bg-gradient-to-b from-white to-soft py-16 sm:py-20 lg:py-24">
+-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+-
+-                {{-- Kolom Kiri --}}
+-                <div class="flex flex-col gap-6">
+-                    <div>
+-                        <x-badge variant="sage" size="md">SMP Muhammadiyah 7 Medan</x-badge>
++    <section class="relative bg-gradient-to-b from-white via-soft/60 to-soft py-14 sm:py-18 lg:py-20 overflow-hidden border-b border-border-soft/60">
++        {{-- Subtle Islamic geometric / accent circles in background --}}
++        <div class="absolute top-0 right-1/4 -translate-y-1/2 w-96 h-96 bg-mint/15 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
++        <div class="absolute bottom-0 left-10 translate-y-1/3 w-80 h-80 bg-sage/10 rounded-full blur-2xl pointer-events-none" aria-hidden="true"></div>
++
++        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
++            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
++
++                {{-- Kolom Kiri: 7 cols --}}
++                <div class="lg:col-span-7 flex flex-col gap-6">
++                    <div class="flex flex-wrap items-center gap-2">
++                        <x-badge variant="forest" size="md">
++                            SMP Muhammadiyah 7 Medan
++                        </x-badge>
++                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-border-soft text-olive shadow-2xs">
++                            <span class="w-1.5 h-1.5 rounded-full bg-forest animate-pulse"></span>
++                            Terakreditasi A &bull; NPSN 10257325
++                        </span>
+                     </div>
+ 
+-                    <h1 class="text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight text-darkgreen">
+-                        Membangun Generasi Unggul Berkarakter Islami
++                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.18] text-darkgreen">
++                        Membangun Generasi <span class="text-forest underline decoration-mint decoration-wavy underline-offset-8">Unggul</span>, Mandiri &amp; Berakhlak Islami
+                     </h1>
+ 
+-                    <p class="text-base text-muted-text leading-relaxed max-w-lg">
+-                        SMP Muhammadiyah 7 Medan hadir sebagai lembaga pendidikan Islam yang berkomitmen
+-                        mencetak generasi berilmu, berakhlak mulia, dan berdaya saing tinggi di era modern.
+-                        Bergabunglah bersama kami dalam perjalanan membangun masa depan yang gemilang.
++                    <p class="text-base sm:text-lg text-muted-text leading-relaxed max-w-xl">
++                        Selamat datang di portal informasi resmi SIAKAD SMP Muhammadiyah 7 Medan. Wadah pendidikan Islam modern yang memadukan keunggulan akademik, pembiasaan adab Qur'ani, serta penguasaan teknologi digital.
+                     </p>
+ 
+-                    <div class="flex flex-wrap gap-3">
+-                        <x-button href="/profil" variant="primary" size="md">
+-                            Tentang Sekolah
++                    <div class="flex flex-wrap items-center gap-3 pt-2">
++                        <x-button href="/profil" variant="primary" size="lg" icon="arrow-right" iconPosition="right">
++                            Profil Sekolah
+                         </x-button>
+-                        <x-button href="/berita" variant="secondary" size="md">
+-                            Lihat Berita
++                        <x-button href="/berita" variant="secondary" size="lg" icon="newspaper" iconPosition="left">
++                            Kabar &amp; Berita
++                        </x-button>
++                        <x-button href="/login" variant="outline" size="lg" icon="academic-cap" iconPosition="left">
++                            Login SIAKAD
+                         </x-button>
+                     </div>
++
++                    {{-- Quick Trust Signals / Highlights --}}
++                    <div class="grid grid-cols-3 gap-4 pt-6 border-t border-border-soft/80 mt-2">
++                        <div class="flex items-center gap-3">
++                            <div class="w-10 h-10 rounded-xl bg-forest/10 flex items-center justify-center text-forest shrink-0">
++                                <x-icon name="building-office" class="w-5 h-5" />
++                            </div>
++                            <div>
++                                <p class="text-xs font-bold text-darkgreen">Gedung Sendiri</p>
++                                <p class="text-[11px] text-muted-text">3 Lantai &amp; Fasilitas Lengkap</p>
++                            </div>
++                        </div>
++
++                        <div class="flex items-center gap-3">
++                            <div class="w-10 h-10 rounded-xl bg-mint/40 flex items-center justify-center text-forest shrink-0">
++                                <x-icon name="academic-cap" class="w-5 h-5" />
++                            </div>
++                            <div>
++                                <p class="text-xs font-bold text-darkgreen">Kurikulum Merdeka</p>
++                                <p class="text-[11px] text-muted-text">Integrasi AIK &amp; TIK</p>
++                            </div>
++                        </div>
++
++                        <div class="flex items-center gap-3">
++                            <div class="w-10 h-10 rounded-xl bg-sage/20 flex items-center justify-center text-forest shrink-0">
++                                <x-icon name="trophy" class="w-5 h-5" />
++                            </div>
++                            <div>
++                                <p class="text-xs font-bold text-darkgreen">Prestasi Gemilang</p>
++                                <p class="text-[11px] text-muted-text">Kota, Provinsi &amp; Nasional</p>
++                            </div>
++                        </div>
++                    </div>
+                 </div>
+ 
+-                {{-- Kolom Kanan — Foto Gedung Sekolah --}}
+-                <div class="relative group">
+-                    <div class="overflow-hidden rounded-2xl border border-border-soft shadow-md bg-white aspect-[4/3] sm:aspect-[4/3] lg:aspect-[4/3]">
++                {{-- Kolom Kanan: 5 cols — Foto Gedung Sekolah dengan Frame Eksklusif --}}
++                <div class="lg:col-span-5 relative group">
++                    {{-- Decorative backdrops --}}
++                    <div class="absolute -inset-2 bg-gradient-to-tr from-forest/15 to-mint/30 rounded-3xl blur-lg opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
++
++                    <div class="relative overflow-hidden rounded-2xl border-2 border-white shadow-xl bg-white aspect-[4/3]">
+                         <img
+                             src="{{ asset('images/school/gedung.jpg') }}"
+                             alt="Gedung SMP Muhammadiyah 7 Medan"
+-                            class="w-full h-full object-cover object-[center_68%] transition-transform duration-500 group-hover:scale-105"
++                            class="w-full h-full object-cover object-[center_68%] transition-transform duration-700 group-hover:scale-105"
+                             width="800"
+                             height="600"
+                             loading="eager"
+                         />
++                        <div class="absolute inset-0 bg-gradient-to-t from-darkgreen/75 via-transparent to-transparent opacity-80 pointer-events-none"></div>
++
++                        {{-- Floating Badge on Picture --}}
++                        <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white">
++                            <div class="flex items-center gap-2">
++                                <div class="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
++                                    <x-icon name="map-pin" class="w-4 h-4" />
++                                </div>
++                                <span class="text-xs font-semibold leading-tight drop-shadow-xs">
++                                    Jl. Pelita II No. 3-5, Medan
++                                </span>
++                            </div>
++                            <span class="text-[11px] px-2.5 py-1 rounded-md bg-forest/90 backdrop-blur-xs font-semibold text-mint border border-mint/30">
++                                Kampus Utama
++                            </span>
++                        </div>
+                     </div>
+                 </div>
+ 
+@@ -84,50 +147,66 @@ class="w-full h-full object-cover object-[center_68%] transition-transform durat
+     {{-- ================================================================== --}}
+     {{-- SEKSI 3 — SAMBUTAN KEPALA SEKOLAH                                   --}}
+     {{-- ================================================================== --}}
+-    <section class="bg-soft py-16 sm:py-20">
++    <section class="bg-soft py-16 sm:py-20 relative overflow-hidden">
+         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+-
+-                {{-- Foto Kepala Sekolah --}}
+-                <div class="flex justify-center lg:justify-start">
+-                    <div class="w-full max-w-sm">
+-                        <div class="overflow-hidden rounded-2xl border border-border-soft shadow-md bg-white aspect-[4/3] flex items-end justify-center">
+-                            <img
+-                                src="{{ asset('images/principal/kepala-sekolah.png') }}"
+-                                alt="Foto {{ config('sekolah.kepala_sekolah.nama', 'Kepala Sekolah SMP Muhammadiyah 7 Medan') }}"
+-                                class="w-full h-full object-contain object-bottom"
+-                                width="400"
+-                                height="300"
+-                                loading="lazy"
+-                            />
++            <div class="bg-white rounded-3xl border border-border-soft shadow-sm p-8 sm:p-12 lg:p-14">
++                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
++
++                    {{-- Foto Kepala Sekolah --}}
++                    <div class="lg:col-span-5 flex justify-center">
++                        <div class="relative w-full max-w-sm">
++                            {{-- Decorative backdrop ring --}}
++                            <div class="absolute -inset-2 rounded-3xl bg-mint/30 transform -rotate-1 pointer-events-none"></div>
++
++                            <div class="relative overflow-hidden rounded-2xl border border-border-soft shadow-md bg-white aspect-[4/3] flex items-end justify-center">
++                                <img
++                                    src="{{ asset('images/principal/kepala-sekolah.png') }}"
++                                    alt="Foto {{ config('sekolah.kepala_sekolah.nama', 'Kepala Sekolah SMP Muhammadiyah 7 Medan') }}"
++                                    class="w-full h-full object-contain object-bottom"
++                                    width="400"
++                                    height="300"
++                                    loading="lazy"
++                                />
++                            </div>
++
++                            {{-- Floating badge nama & jabatan --}}
++                            <div class="mt-4 text-center">
++                                <p class="text-xs uppercase tracking-widest text-olive font-semibold">Kepala Sekolah</p>
++                                <p class="text-base font-bold text-darkgreen">{{ config('sekolah.kepala_sekolah.nama') }}</p>
++                            </div>
+                         </div>
+                     </div>
+-                </div>
+ 
+-                {{-- Sambutan --}}
+-                <div class="flex flex-col gap-6">
+-                    <div>
+-                        <x-badge variant="forest" size="md">Sambutan Kepala Sekolah</x-badge>
+-                    </div>
++                    {{-- Sambutan Content --}}
++                    <div class="lg:col-span-7 flex flex-col gap-5">
++                        <div class="flex items-center gap-2">
++                            <x-badge variant="forest" size="md">Sambutan Pimpinan</x-badge>
++                            <span class="text-xs text-muted-text font-medium">&bull; Periode 2024 – Sekarang</span>
++                        </div>
+ 
+-                    <div>
+-                        <h2 class="text-2xl sm:text-3xl font-extrabold text-darkgreen">
+-                            {{ config('sekolah.kepala_sekolah.nama') }}
+-                        </h2>
+-                        <p class="text-muted-text text-sm mt-1">Kepala Sekolah SMP Muhammadiyah 7 Medan</p>
+-                    </div>
++                        <div>
++                            <h2 class="text-2xl sm:text-3xl font-extrabold text-darkgreen tracking-tight leading-snug">
++                                "Mendidik dengan Hati, Menuntun dengan Keteladanan"
++                            </h2>
++                        </div>
+ 
+-                    <blockquote class="border-l-4 border-forest pl-4 italic text-darkgreen leading-relaxed text-base">
+-                        "{{ config('sekolah.kepala_sekolah.sambutan_singkat') }}"
+-                    </blockquote>
++                        <blockquote class="relative pl-5 border-l-4 border-forest italic text-darkgreen leading-relaxed text-base sm:text-lg bg-soft/50 py-3 pr-4 rounded-r-xl">
++                            <x-icon name="sparkles" class="w-5 h-5 text-forest/40 absolute -top-2 -left-2" />
++                            "{{ config('sekolah.kepala_sekolah.sambutan_singkat') }}"
++                        </blockquote>
+ 
+-                    <div>
+-                        <x-button href="/profil/kepala-sekolah" variant="outline" size="md">
+-                            Baca Sambutan Lengkap
+-                        </x-button>
++                        <p class="text-sm text-muted-text leading-relaxed">
++                            Kami percaya setiap peserta didik memiliki fitrah kebaikan dan potensi yang luar biasa. Melalui kolaborasi antara pendidik, orang tua, dan lingkungan yang kondusif, kami berkomitmen melahirkan insan yang bertakwa, cerdas intelektual, dan matang secara emosional.
++                        </p>
++
++                        <div class="pt-2">
++                            <x-button href="/profil/kepala-sekolah" variant="primary" size="md" icon="arrow-right" iconPosition="right">
++                                Baca Sambutan Lengkap
++                            </x-button>
++                        </div>
+                     </div>
+-                </div>
+ 
++                </div>
+             </div>
+         </div>
+     </section>
+@@ -205,18 +284,23 @@ class="w-full h-full object-contain object-bottom"
+     {{-- ================================================================== --}}
+     {{-- SEKSI 6 — STATISTIK SEKOLAH                                         --}}
+     {{-- ================================================================== --}}
+-    <section class="bg-forest py-16 sm:py-20">
+-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
++    <section class="relative bg-forest py-16 sm:py-20 text-white overflow-hidden">
++        {{-- Background Pattern Subtle Glows --}}
++        <div class="absolute -top-24 -left-24 w-96 h-96 bg-mint/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
++        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-sage/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
++
++        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+ 
+             <x-section-heading
+                 kicker="Fakta & Angka"
+                 title="Statistik Sekolah"
+-                subtitle="Gambaran umum kondisi dan kapasitas SMP Muhammadiyah 7 Medan saat ini."
++                subtitle="Gambaran kapasitas, sumber daya manusia, dan ekosistem pendidikan di SMP Muhammadiyah 7 Medan."
+                 align="center"
+-                class="text-white [&_*]:text-white"
++                kickerVariant="mint"
++                class="text-white [&_h2]:text-white [&_p]:text-white/80"
+             />
+ 
+-            <div class="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-6">
++            <div class="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+                 <x-stat-card
+                     value="{{ config('sekolah.statistik.siswa') }}"
+                     label="Siswa Aktif"
+@@ -245,7 +329,7 @@ class="text-white [&_*]:text-white"
+ 
+             @if (config('sekolah.statistik.is_dummy'))
+                 <p class="mt-8 text-center text-xs italic text-mint/80">
+-                    * Angka merupakan estimasi dummy dan akan diperbarui dari database.
++                    * Angka merupakan estimasi dummy dan akan diperbarui otomatis dari database akademik.
+                 </p>
+             @endif
+ 
+diff --git a/resources/views/pages/profile/facilities.blade.php b/resources/views/pages/profile/facilities.blade.php
+index 3fa3b5d..99a8262 100644
+--- a/resources/views/pages/profile/facilities.blade.php
++++ b/resources/views/pages/profile/facilities.blade.php
+@@ -1,4 +1,4 @@
+-<x-layouts.public title="Sarana &amp; Prasarana" description="Fasilitas dan sarana prasarana yang tersedia di SMP Muhammadiyah 7 Medan.">
++<x-layouts.public title="Sarana & Prasarana" description="Fasilitas dan sarana prasarana yang tersedia di SMP Muhammadiyah 7 Medan.">
+ 
+     {{-- Breadcrumb --}}
+     <div class="bg-white border-b border-border-soft">
+@@ -16,7 +16,7 @@
+         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+             <x-section-heading
+                 kicker="Fasilitas Sekolah"
+-                title="Sarana &amp; Prasarana"
++                title="Sarana & Prasarana"
+                 subtitle="Berbagai fasilitas penunjang kegiatan belajar-mengajar, keagamaan, dan pengembangan bakat peserta didik SMP Muhammadiyah 7 Medan."
+                 align="left"
+             />
+diff --git a/resources/views/pages/profile/structure.blade.php b/resources/views/pages/profile/structure.blade.php
+index 893b527..be84159 100644
+--- a/resources/views/pages/profile/structure.blade.php
++++ b/resources/views/pages/profile/structure.blade.php
+@@ -79,7 +79,7 @@
+                 $level3 = [
+                     ['jabatan' => 'Koordinator Kurikulum',          'nama' => '[Nama — Data Dummy]'],
+                     ['jabatan' => 'Koordinator Kesiswaan',          'nama' => '[Nama — Data Dummy]'],
+-                    ['jabatan' => 'Koordinator Sarana &amp; Prasarana', 'nama' => '[Nama — Data Dummy]'],
++                    ['jabatan' => 'Koordinator Sarana & Prasarana', 'nama' => '[Nama — Data Dummy]'],
+                     ['jabatan' => 'Kepala Tata Usaha',              'nama' => '[Nama — Data Dummy]'],
+                 ];
+             @endphp

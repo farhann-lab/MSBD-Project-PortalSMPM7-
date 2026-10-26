@@ -24,7 +24,7 @@
                     </div>
 
                     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.18] text-darkgreen">
-                        Membangun Generasi <span class="text-forest underline decoration-mint decoration-wavy underline-offset-8">Unggul</span>, Mandiri &amp; Berakhlak Islami
+                        Membangun Generasi <span class="text-forest">Unggul</span>, Mandiri &amp; Berakhlak Islami
                     </h1>
 
                     <p class="text-base sm:text-lg text-muted-text leading-relaxed max-w-xl">
@@ -104,7 +104,7 @@
                                 </span>
                             </div>
                             <span class="text-[11px] px-2.5 py-1 rounded-md bg-forest/90 backdrop-blur-xs font-semibold text-mint border border-mint/30">
-                                Kampus Utama
+                                Gedung Utama
                             </span>
                         </div>
                     </div>

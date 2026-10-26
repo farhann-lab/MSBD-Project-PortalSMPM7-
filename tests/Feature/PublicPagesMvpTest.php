@@ -88,7 +88,7 @@ class PublicPagesMvpTest extends TestCase
     {
         $response = $this->get('/profil/fasilitas');
         $response->assertStatus(200);
-        $response->assertSee('Sarana &amp;amp; Prasarana', false);
+        $response->assertSee('Sarana &amp; Prasarana', false);
         $response->assertSee('Ruang Kelas');
         $response->assertSee('Laboratorium Komputer');
     }

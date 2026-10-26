@@ -57,11 +57,11 @@
                      aria-label="Submenu Profil Sekolah">
                     @foreach($profileItems as $item)
                         <a href="{{ $item['url'] }}" 
-                           class="flex flex-col px-3.5 py-2.5 rounded-xl transition-colors duration-150 {{ $item['active'] ? 'bg-forest/10 text-forest font-semibold' : 'hover:bg-soft text-darkgreen' }}"
+                           class="flex flex-col px-3.5 py-2.5 rounded-xl transition-all duration-150 {{ $item['active'] ? 'bg-forest/10 text-forest font-semibold' : 'hover:bg-soft text-darkgreen hover:text-forest' }}"
                            role="menuitem"
                            {{ $item['active'] ? 'aria-current="page"' : '' }}>
-                            <span class="text-sm {{ $item['active'] ? 'font-semibold text-forest' : 'font-medium' }}">{{ $item['label'] }}</span>
-                            <span class="text-xs text-muted-text font-normal mt-0.5">{{ $item['desc'] }}</span>
+                            <span class="text-sm {{ $item['active'] ? 'font-bold text-forest' : 'font-medium' }}">{{ $item['label'] }}</span>
+                            <span class="text-xs text-muted-text font-normal mt-0.5 leading-snug">{{ $item['desc'] }}</span>
                         </a>
                     @endforeach
                 </div>

@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initMobileNav();
     initMobileAccordions();
     initBackToTop();
+    initHeroSlideshow();
 });
 
 /**
@@ -237,4 +238,90 @@ function initBackToTop() {
             behavior: 'smooth'
         });
     });
+}
+
+/**
+ * 5. Hero Slideshow
+ * Automatic slide carousel with manual navigation, keyboard support, and pause on hover
+ */
+function initHeroSlideshow() {
+    const track = document.getElementById('hero-slides-track');
+    if (!track) return;
+
+    const slides = track.querySelectorAll('.hero-slide');
+    if (slides.length <= 1) return;
+
+    const prevBtn = document.getElementById('hero-prev');
+    const nextBtn = document.getElementById('hero-next');
+    const dotsContainer = document.getElementById('hero-dots');
+    const dots = dotsContainer ? dotsContainer.querySelectorAll('.hero-dot') : [];
+
+    let currentIndex = 0;
+    let timer = null;
+    const intervalTime = 7000; // 7 detik per slide agar pengunjung leluasa menikmati foto dan membaca konten teks
+
+    function goToSlide(index) {
+        currentIndex = (index + slides.length) % slides.length;
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+        // Update dots
+        dots.forEach((dot, idx) => {
+            if (idx === currentIndex) {
+                dot.setAttribute('aria-selected', 'true');
+                dot.classList.remove('w-2', 'bg-white/50');
+                dot.classList.add('w-6', 'bg-white');
+            } else {
+                dot.setAttribute('aria-selected', 'false');
+                dot.classList.remove('w-6', 'bg-white');
+                dot.classList.add('w-2', 'bg-white/50');
+            }
+        });
+    }
+
+    function startAutoSlide() {
+        stopAutoSlide();
+        timer = setInterval(() => {
+            goToSlide(currentIndex + 1);
+        }, intervalTime);
+    }
+
+    function stopAutoSlide() {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            goToSlide(currentIndex - 1);
+            startAutoSlide();
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            goToSlide(currentIndex + 1);
+            startAutoSlide();
+        });
+    }
+
+    dots.forEach((dot, idx) => {
+        dot.addEventListener('click', () => {
+            goToSlide(idx);
+            startAutoSlide();
+        });
+    });
+
+    // Pause on hover / focus
+    const container = document.getElementById('hero-slideshow');
+    if (container) {
+        container.addEventListener('mouseenter', stopAutoSlide);
+        container.addEventListener('mouseleave', startAutoSlide);
+        container.addEventListener('focusin', stopAutoSlide);
+        container.addEventListener('focusout', startAutoSlide);
+    }
+
+    // Start auto slideshow
+    startAutoSlide();
 }

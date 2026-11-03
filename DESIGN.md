@@ -2,15 +2,23 @@
 
   -------------- -----------------------------------------------------
   Produk         SIAKAD SMP Muhammadiyah 7 Medan
-  Acuan          `PRD_V2.md` v0.3, 31 Oktober 2026 (Draft Sementara)
-  Versi desain   v0.1 --- Draft
-  Teknologi      Laravel Blade + Tailwind CSS + Vite
+  Acuan          `PRD.md` v0.4, 3 November 2026 (Draft Sementara)
+  Versi desain   v0.2 --- Draft
+  Teknologi      Laravel Blade + Tailwind CSS v4.0.0 + Vite
   -------------- -----------------------------------------------------
 
 > Dokumen ini adalah panduan visual dan pola UI. Fitur, alur, prioritas,
-> serta hak akses tetap mengikuti PRD v0.3. Karena PRD terbaru mencakup
+> serta hak akses tetap mengikuti PRD v0.4. Karena PRD terbaru mencakup
 > website publik dan seluruh SIAKAD, panduan ini mencakup website
 > publik, login, dashboard Admin, Guru/Wali Kelas, dan Siswa.
+
+> **Perubahan v0.2 (3 November 2026).** Menyesuaikan dengan PRD v0.4:
+> periode ditampilkan sebagai nama (bukan kode `tasm`); halaman Ubah
+> Password dan mode wajib ganti password; pembuatan akun massal dan
+> reset password; form data siswa lengkap; salin penugasan, wali kelas,
+> dan jadwal; pratinjau kenaikan kelas; profil pengguna; catatan panel
+> admin bila memakai Filament **[USULAN]**; dan penambahan keputusan
+> terbuka. Bagian lain tidak berubah.
 
 ## 1. Arah Visual
 
@@ -147,7 +155,8 @@ Galeri, Berita, Pengumuman, Login SIAKAD.
     kontras yang jelas.
 -   Area konten utama memakai Soft Background.
 -   Topbar ringkas memuat judul halaman, konteks tahun ajaran bila
-    relevan, dan menu profil.
+    relevan (ditampilkan sebagai nama periode, mis. 2026/2027 Semester 1,
+    bukan kode 20261), dan menu profil.
 -   Pada tablet/mobile, sidebar berubah menjadi drawer.
 -   Menu ditampilkan sesuai role dan penetapan wali kelas, bukan seluruh
     menu untuk semua pengguna.
@@ -289,8 +298,12 @@ diperlukan.
 -   Username dan password memakai komponen input standar.
 -   Tombol Login Forest Green dan lebar penuh.
 -   Pesan gagal tidak mengungkap apakah username tertentu terdaftar.
--   Jangan menambahkan login sosial atau fitur lupa password jika belum
-    ditetapkan PRD.
+-   Jangan menambahkan login sosial atau fitur lupa password mandiri.
+    Reset password dilakukan admin (PRD AKN-11).
+-   Satu halaman login dipakai semua role; setelah login pengguna
+    diarahkan ke dashboard sesuai role.
+-   Akun bertanda wajib ganti password diarahkan ke halaman Ubah Password
+    (lihat bagian 11, Akun dan password).
 -   Pastikan nyaman digunakan di ponsel dan keyboard.
 
 ## 10. Dashboard per Role
@@ -365,6 +378,11 @@ minta konfirmasi sesuai PRD.
 -   Filter tahun ajaran mudah ditemukan.
 -   Penempatan menampilkan kelas tujuan dan daftar siswa.
 -   Riwayat tahun ajaran sebelumnya tetap dapat dilihat.
+-   Filter periode menampilkan nama semester (mis. 2024/2025 Semester 2),
+    bukan kode lima karakter.
+-   Beri keterangan singkat pada layar: penempatan siswa berlaku per
+    tahun ajaran, sedangkan penugasan guru, wali kelas, dan jadwal
+    berlaku per semester.
 
 ### Jadwal pelajaran
 
@@ -393,6 +411,63 @@ minta konfirmasi sesuai PRD.
 -   Siswa hanya melihat materi kelasnya.
 -   Status Draft/Published/Archived materi tidak dibuat sebagai fitur
     wajib karena PRD menempatkannya di fase lanjutan opsional.
+
+### Form data siswa
+
+-   Form memuat sekitar 30 kolom; kelompokkan dalam bagian (tab atau
+    accordion): **Identitas** (NIS, NISN, nama, jenis kelamin, tempat dan
+    tanggal lahir, agama, status dalam keluarga, anak ke, alamat,
+    telepon), **Sekolah asal dan penerimaan**, serta **Orang tua dan
+    wali**.
+-   Hanya NIS dan nama yang wajib; tandai jelas dan biarkan kolom lain
+    opsional.
+-   Tanggal yang kosong ditampilkan kosong, bukan `0000-00-00`.
+-   Foto tidak dikelola dari SIAKAD.
+-   Template impor Excel memakai pengelompokan dan urutan kolom yang
+    sama dengan form.
+
+### Akun dan password
+
+-   **Ubah Password** (semua role): password lama, password baru, dan
+    konfirmasi. Tampilkan aturan di dekat input (minimal 8 karakter,
+    tidak sama dengan username atau NIS) dan pesan kesalahan yang jelas.
+-   **Mode wajib ganti password:** layout fokus tanpa sidebar berisi
+    alasan singkat dan form Ubah Password; menu lain tidak tersedia
+    sampai password diganti.
+-   **Pembuatan akun siswa massal:** tampilkan ringkasan sebelum proses
+    (jumlah siswa yang diproses dan yang dilewati), lalu ringkasan hasil
+    beserta alasan siswa yang dilewati (mis. NIS kosong atau ganda).
+    Password awal hanya tampil sekali; sediakan tombol unduh daftar akun
+    awal (Excel) dengan peringatan jelas.
+-   **Reset password paksa:** tombol pada baris akun, modal konfirmasi,
+    lalu password sementara tampil satu kali dengan tombol salin. Setelah
+    ditutup, password tidak dapat dilihat lagi.
+-   Jangan pernah menampilkan password tersimpan pada tabel atau detail
+    akun.
+
+### Salin penugasan, wali kelas, dan jadwal
+
+-   Modal konfirmasi menampilkan periode asal dan periode tujuan serta
+    jumlah baris yang akan disalin.
+-   Hasil menampilkan jumlah berhasil dan jumlah dilewati beserta alasan
+    (mis. penugasan pada periode baru belum ada untuk sebuah jadwal).
+-   Data periode tujuan yang sudah ada tidak ditimpa; tampilkan peringatan
+    bila periode tujuan sudah berisi data.
+
+### Kenaikan kelas (Urutan 5)
+
+-   Tabel pratinjau: siswa, kelas asal, kelas tujuan, dan status
+    kenaikan dari RKM (hanya tampil, tidak dapat diubah di sini).
+-   Admin dapat mengubah kelas tujuan sebelum konfirmasi; tampilkan
+    ringkasan jumlah rombel per tingkat.
+-   Siswa tanpa status kenaikan ditandai peringatan; siswa kelas 9 yang
+    lulus ditandai "Lulus, tidak ditempatkan".
+-   Jangan menyimpan otomatis; proses hanya berjalan setelah konfirmasi.
+
+### Profil pengguna
+
+-   Tampilkan data yang diizinkan (PRD TBD-34) secara hanya-baca dan
+    tombol Ubah Password.
 
 ## 12. Responsivitas
 
@@ -456,6 +531,9 @@ font, dan kebutuhan dasar yang tidak praktis ditangani utility.
 Contoh class: `bg-forest`, `text-dark-green`, `border-mint`,
 `bg-soft-background`.
 
+Versi proyek dikonfirmasi Tailwind CSS v4.0.0 (3 November 2026), sehingga
+contoh v4 di atas dapat dipakai langsung dan catatan v3 berikut diabaikan.
+
 Jika proyek menggunakan Tailwind CSS v3, daftarkan warna melalui
 `tailwind.config.js` sesuai sintaks v3. Pastikan versi Tailwind sebelum
 menyalin konfigurasi.
@@ -496,6 +574,26 @@ menyalin konfigurasi.
 -   Minifikasi aset produksi dan uji build agar tidak ada class Tailwind
     yang hilang.
 
+### Catatan panel admin dan peramban **[USULAN]**
+
+Bagian ini berlaku bila tim menyetujui Filament untuk panel admin
+(ARCHITECTURE A-8). Jika admin dibuat dengan Blade kustom, abaikan.
+
+-   Larangan pustaka UI atau JavaScript berat pada bagian ini berlaku
+    untuk website publik serta panel Guru, Wali Kelas, dan Siswa.
+    Rute `/admin` dikecualikan.
+-   Tema Filament dibuat kustom memakai token bagian 2 (Forest Green
+    sebagai warna primer, Soft Background, Inter atau system sans, dan
+    radius sesuai bagian 3).
+-   Aset Filament hanya dimuat pada `/admin`; website publik memakai entry
+    Vite sendiri.
+-   Pola bagian 11 (data master, impor Excel, manajemen kelas, jadwal)
+    diwujudkan dengan komponen Filament sedekat mungkin; selisih yang
+    tidak dapat disamakan dicatat.
+-   Tailwind v4 menargetkan peramban modern. Uji tampilan pada ponsel
+    lama (ARCHITECTURE A-17) dan tambahkan `@source` bila ada folder
+    komponen di luar deteksi otomatis.
+
 ## 16. Aset dan Konten
 
 -   Gunakan logo resmi sekolah.
@@ -520,6 +618,14 @@ proses build Tailwind/Vite (TBD-17). - URL CBT, Rapor, PPDB, dan RKM
 publikasi nama, kelas, dan foto siswa (TBD-9). - Target performa dan
 spesifikasi hosting (TBD-11). - Batas ukuran/format unggahan gambar dan
 materi (TBD-24, TBD-32).
+
+Tambahan v0.2:
+
+-   Panel admin memakai Filament atau Blade kustom (ARCHITECTURE A-8).
+-   Cakupan fitur yang harus selesai pada demo tugas besar (PRD TBD-37).
+-   Alamat login SIAKAD: domain utama atau subdomain `siakad` (PRD
+    TBD-44).
+-   Kolom wajib pada form data siswa (PRD TBD-45).
 
 Mode gelap tidak termasuk rancangan ini sampai ada keputusan pada
 TBD-15.
@@ -559,8 +665,19 @@ TBD-15.
 -   [ ] Tailwind dibuild melalui Vite dan aset produksi diminifikasi.
 -   [ ] Tidak ada data dummy yang tampil sebagai data resmi.
 
+### Halaman baru v0.2
+
+-   [ ] Ubah Password dan mode wajib ganti password tersedia untuk semua
+    role.
+-   [ ] Password awal dan password sementara hanya tampil sekali dan
+    tidak pernah muncul pada tabel akun.
+-   [ ] Periode tampil sebagai nama semester, bukan kode `tasm`.
+-   [ ] Form data siswa terkelompok dan hanya NIS dan nama yang wajib.
+-   [ ] Pratinjau salin dan kenaikan kelas menampilkan hasil sebelum
+    konfirmasi.
+
 ------------------------------------------------------------------------
 
 **Catatan:** DESIGN.md adalah panduan visual dan implementasi UI, bukan
 pengganti PRD. Jika terjadi perbedaan, kebutuhan fungsional, alur,
-prioritas, dan hak akses pada PRD v0.3 menjadi acuan utama.
+prioritas, dan hak akses pada PRD v0.4 menjadi acuan utama.

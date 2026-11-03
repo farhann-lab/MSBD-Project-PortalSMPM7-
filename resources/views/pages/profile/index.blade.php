@@ -12,21 +12,16 @@
     </div>
 
     {{-- ===================== HERO HEADER ===================== --}}
-    <section class="bg-gradient-to-b from-white to-soft py-10 sm:py-14 border-b border-border-soft">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-wrap items-center gap-2 mb-4">
-                <x-badge variant="forest" size="md">Berdiri Sejak 1979</x-badge>
-                <x-badge variant="sage" size="md">NPSN 10257325</x-badge>
-                <x-badge variant="mint" size="md">Terakreditasi A</x-badge>
-            </div>
-            <x-section-heading
-                kicker="Profil Sekolah"
-                title="Tentang SMP Muhammadiyah 7 Medan"
-                subtitle="Mengenal lebih dekat sejarah, arah perjuangan, visi &amp; misi, identitas resmi lembaga, serta saluran informasi kontak kami."
-                align="left"
-            />
-        </div>
-    </section>
+    <x-page-hero
+        title="Tentang SMP Muhammadiyah 7 Medan"
+        subtitle="Mengenal lebih dekat sejarah, arah perjuangan, visi &amp; misi, identitas resmi lembaga, serta saluran informasi kontak kami."
+        badge="Profil Sekolah"
+        badgeIcon="building-office"
+        :extraBadges="['Berdiri Sejak 1979', 'NPSN 10257325', 'Terakreditasi A']"
+        :image="asset('images/school/gedung.jpg')"
+        imageAlt="Gedung SMP Muhammadiyah 7 Medan"
+        imagePosition="center_90%"
+    />
 
     {{-- ===================== VISI & MISI (SEJAJAR 2 KOLOM PADAT & RAPI) ===================== --}}
     <section class="py-10 sm:py-14 bg-white border-b border-border-soft">
@@ -171,7 +166,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <x-section-heading
                 kicker="Hubungi Kami"
-                title="Informasi Kontak &amp; Pelayanan"
+                title="Informasi Kontak &  Pelayanan"
                 subtitle="Saluran komunikasi resmi untuk keperluan administrasi, pendaftaran, dan informasi umum sekolah."
                 align="left"
             />

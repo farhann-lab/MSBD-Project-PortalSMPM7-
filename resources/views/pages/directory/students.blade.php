@@ -12,17 +12,20 @@
     </div>
 
     {{-- Page Header / Hero --}}
-    <section class="bg-gradient-to-b from-white to-soft py-10 sm:py-14 border-b border-border-soft">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <x-section-heading
-                kicker="Direktori Siswa"
-                title="Data Siswa Aktif"
-                subtitle="Daftar peserta didik aktif tahun ajaran berjalan di SMP Muhammadiyah 7 Medan."
-                align="left"
-            />
+    <x-page-hero
+        title="Data Siswa Aktif"
+        subtitle="Daftar peserta didik aktif tahun ajaran berjalan di SMP Muhammadiyah 7 Medan."
+        badge="Direktori Siswa"
+        badgeIcon="users"
+        :image="asset('images/school/gerbang.png')"
+        imageAlt="Gerbang SMP Muhammadiyah 7 Medan"
+        imagePosition="center_10%"
+    />
 
-            {{-- Privacy Disclaimer Banner (DIR-8) --}}
-            <div class="mt-6 flex items-start gap-3 rounded-xl border border-mint/60 bg-mint/20 p-4 max-w-3xl">
+    {{-- Privacy Disclaimer Section --}}
+    <div class="bg-soft border-b border-border-soft py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-start gap-3 rounded-xl border border-mint/60 bg-white p-4 max-w-3xl shadow-2xs">
                 <x-icon name="check-circle" class="mt-0.5 h-5 w-5 shrink-0 text-forest" />
                 <p class="text-sm leading-relaxed text-darkgreen">
                     <span class="font-semibold">Informasi Privasi:</span>
@@ -30,7 +33,7 @@
                 </p>
             </div>
         </div>
-    </section>
+    </div>
 
     {{-- Main Content Section --}}
     <section class="py-10 sm:py-14">

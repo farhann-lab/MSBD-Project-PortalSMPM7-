@@ -227,9 +227,9 @@ class PublicPagesMvpTest extends TestCase
     {
         $response = $this->get('/login');
         $response->assertStatus(200);
-        $response->assertSee('Login SIAKAD');
+        $response->assertSee('SIAKAD SMP Muhammadiyah 7');
         $response->assertSee('Sistem Informasi Akademik');
-        $response->assertSee('Hubungi via Email');
-        $response->assertDontSee('<input type="password"', false); // No fake password form
+        $response->assertSee('Masuk ke SIAKAD');
+        $response->assertSee('Username / NIP / NISN');
     }
 }

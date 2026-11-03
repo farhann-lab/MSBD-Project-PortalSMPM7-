@@ -12,17 +12,20 @@
     </div>
 
     {{-- Page Header / Hero --}}
-    <section class="bg-gradient-to-b from-white to-soft py-10 sm:py-14 border-b border-border-soft">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <x-section-heading
-                kicker="Kesiswaan"
-                title="Prestasi Siswa"
-                subtitle="Catatan capaian prestasi, kejuaraan, dan kebanggaan siswa SMP Muhammadiyah 7 Medan di berbagai bidang."
-                align="left"
-            />
+    <x-page-hero
+        title="Prestasi Siswa"
+        subtitle="Catatan capaian prestasi, kejuaraan, dan kebanggaan siswa SMP Muhammadiyah 7 Medan di berbagai bidang."
+        badge="Kesiswaan"
+        badgeIcon="trophy"
+        :image="asset('images/school/lapangan.jpg')"
+        imageAlt="Lapangan dan Gedung SMP Muhammadiyah 7 Medan"
+        imagePosition="center_35%"
+    />
 
-            {{-- Mandatory Data Sample Warning Banner (PRD KSW-3) --}}
-            <div class="mt-6 flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 max-w-3xl">
+    {{-- Mandatory Data Sample Warning Banner (PRD KSW-3) --}}
+    <div class="bg-soft border-b border-border-soft py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-start gap-3 rounded-xl border border-amber-300 bg-white p-4 max-w-3xl shadow-2xs">
                 <svg class="mt-0.5 h-5 w-5 shrink-0 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                 </svg>
@@ -34,7 +37,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     {{-- Main Content Section --}}
     <section class="py-10 sm:py-14">

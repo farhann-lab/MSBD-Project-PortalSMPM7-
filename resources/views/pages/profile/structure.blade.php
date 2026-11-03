@@ -12,17 +12,20 @@
     </div>
 
     {{-- Hero / Page Header --}}
-    <section class="bg-gradient-to-b from-white to-soft py-10 sm:py-14 border-b border-border-soft">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <x-section-heading
-                kicker="Tata Kelola Lembaga"
-                title="Struktur Organisasi"
-                subtitle="Bagan susunan kepemimpinan, komite, dewan guru, dan tata usaha di lingkungan SMP Muhammadiyah 7 Medan."
-                align="left"
-            />
+    <x-page-hero
+        title="Struktur Organisasi"
+        subtitle="Bagan susunan kepemimpinan, komite, dewan guru, dan tata usaha di lingkungan SMP Muhammadiyah 7 Medan."
+        badge="Tata Kelola Lembaga"
+        badgeIcon="rectangle-group"
+        :image="asset('images/school/gedung.jpg')"
+        imageAlt="Gedung SMP Muhammadiyah 7 Medan"
+        imagePosition="center_90%"
+    />
 
-            {{-- Banner Data Dummy --}}
-            <div class="mt-6 flex items-start gap-3 bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl px-5 py-4 max-w-3xl">
+    {{-- Notice Section --}}
+    <div class="bg-soft border-b border-border-soft py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-start gap-3 bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl px-5 py-3.5 max-w-3xl">
                 <x-icon name="sparkles" class="w-5 h-5 flex-shrink-0 mt-0.5 text-amber-600" />
                 <div class="flex items-center gap-3 flex-wrap">
                     <x-badge variant="warning" size="sm">Data Contoh</x-badge>
@@ -32,7 +35,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     {{-- Main Content Section --}}
     <section class="py-10 sm:py-14">

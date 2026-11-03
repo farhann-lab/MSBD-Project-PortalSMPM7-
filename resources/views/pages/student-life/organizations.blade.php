@@ -12,21 +12,22 @@
     </div>
 
     {{-- Page Header / Hero --}}
-    <section class="bg-gradient-to-b from-white to-soft py-10 sm:py-14 border-b border-border-soft">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <x-section-heading
-                kicker="Kesiswaan"
-                title="Organisasi Siswa"
-                subtitle="Wadah pembentukan kepemimpinan, kemandirian, dan karakter Islami siswa SMP Muhammadiyah 7 Medan."
-                align="left"
-            />
+    <x-page-hero
+        title="Organisasi Siswa"
+        subtitle="Wadah pembentukan kepemimpinan, kemandirian, dan karakter Islami siswa SMP Muhammadiyah 7 Medan."
+        badge="Kesiswaan"
+        badgeIcon="user-group"
+        :image="asset('images/school/lapangan.jpg')"
+        imageAlt="Lapangan dan Gedung SMP Muhammadiyah 7 Medan"
+        imagePosition="center_35%"
+    />
 
-            {{-- Data Sample Notice --}}
-            <div class="mt-4">
-                <x-badge variant="dummy" size="sm">Data Contoh</x-badge>
-            </div>
+    {{-- Notice Section --}}
+    <div class="bg-soft border-b border-border-soft py-3">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <x-badge variant="dummy" size="sm">Data Contoh</x-badge>
         </div>
-    </section>
+    </div>
 
     {{-- Main Content Section --}}
     <section class="py-10 sm:py-14">

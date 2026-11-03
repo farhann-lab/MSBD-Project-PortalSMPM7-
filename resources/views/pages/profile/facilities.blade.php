@@ -12,16 +12,15 @@
     </div>
 
     {{-- Hero / Page Header --}}
-    <section class="bg-gradient-to-b from-white to-soft py-10 sm:py-14 border-b border-border-soft">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <x-section-heading
-                kicker="Fasilitas Sekolah"
-                title="Sarana & Prasarana"
-                subtitle="Berbagai fasilitas penunjang kegiatan belajar-mengajar, keagamaan, dan pengembangan bakat peserta didik SMP Muhammadiyah 7 Medan."
-                align="left"
-            />
-        </div>
-    </section>
+    <x-page-hero
+        title="Sarana &amp; Prasarana"
+        subtitle="Berbagai fasilitas penunjang kegiatan belajar-mengajar, keagamaan, dan pengembangan bakat peserta didik SMP Muhammadiyah 7 Medan."
+        badge="Fasilitas Sekolah"
+        badgeIcon="building-office"
+        :image="asset('images/school/lapangan.jpg')"
+        imageAlt="Fasilitas Gedung & Lapangan SMP Muhammadiyah 7 Medan"
+        imagePosition="center_35%"
+    />
 
     {{-- Main Content Section --}}
     <section class="py-10 sm:py-14">

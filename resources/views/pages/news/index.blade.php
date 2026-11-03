@@ -11,16 +11,15 @@
     </div>
 
     {{-- Header --}}
-    <section class="bg-gradient-to-b from-white to-soft py-10 sm:py-14 border-b border-border-soft">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <x-section-heading
-                kicker="Kabar Sekolah"
-                title="Berita & Informasi Terkini"
-                subtitle="Liputan kegiatan akademik, prestasi, dan momen berkesan dari keluarga besar SMP Muhammadiyah 7 Medan."
-                align="left"
-            />
-        </div>
-    </section>
+    <x-page-hero
+        title="Berita &amp; Informasi Terkini"
+        subtitle="Liputan kegiatan akademik, prestasi, dan momen berkesan dari keluarga besar SMP Muhammadiyah 7 Medan."
+        badge="Kabar Sekolah"
+        badgeIcon="newspaper"
+        :image="asset('images/school/gedung.jpg')"
+        imageAlt="Gedung SMP Muhammadiyah 7 Medan"
+        imagePosition="center_90%"
+    />
 
     {{-- News Grid --}}
     <section class="py-10 sm:py-14">

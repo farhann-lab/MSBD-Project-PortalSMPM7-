@@ -12,16 +12,15 @@
     </div>
 
     {{-- Hero / Page Header --}}
-    <section class="bg-gradient-to-b from-white to-soft py-10 sm:py-14 border-b border-border-soft">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <x-section-heading
-                kicker="Pimpinan Sekolah"
-                title="Kepala Sekolah"
-                subtitle="Mengenal lebih dekat pimpinan dan sambutan resmi Kepala Sekolah SMP Muhammadiyah 7 Medan."
-                align="left"
-            />
-        </div>
-    </section>
+    <x-page-hero
+        title="Kepala Sekolah"
+        subtitle="Mengenal lebih dekat pimpinan dan sambutan resmi Kepala Sekolah SMP Muhammadiyah 7 Medan."
+        badge="Pimpinan Sekolah"
+        badgeIcon="academic-cap"
+        :image="asset('images/school/gedung.jpg')"
+        imageAlt="Gedung SMP Muhammadiyah 7 Medan"
+        imagePosition="center_90%"
+    />
 
     {{-- Main Content Section --}}
     <section class="py-10 sm:py-14">

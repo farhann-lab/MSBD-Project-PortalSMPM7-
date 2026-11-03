@@ -11,16 +11,15 @@
     </div>
 
     {{-- Hero Header --}}
-    <section class="bg-gradient-to-b from-white to-soft py-10 sm:py-14 border-b border-border-soft">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-            <x-section-heading
-                kicker="Dokumentasi Visual"
-                title="Galeri Foto Kegiatan Sekolah"
-                subtitle="Kumpulan dokumentasi foto kegiatan akademik, keagamaan, olahraga, seni, dan fasilitas SMP Muhammadiyah 7 Medan."
-                align="center"
-            />
-        </div>
-    </section>
+    <x-page-hero
+        title="Galeri Foto Kegiatan Sekolah"
+        subtitle="Kumpulan dokumentasi foto kegiatan akademik, keagamaan, olahraga, seni, dan fasilitas SMP Muhammadiyah 7 Medan."
+        badge="Dokumentasi Visual"
+        badgeIcon="photo"
+        :image="asset('images/school/lapangan.jpg')"
+        imageAlt="Dokumentasi Fasilitas dan Kegiatan SMP Muhammadiyah 7 Medan"
+        imagePosition="center_35%"
+    />
 
     {{-- Gallery Grid --}}
     <section class="py-10 sm:py-14">

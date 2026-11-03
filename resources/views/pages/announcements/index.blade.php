@@ -11,16 +11,15 @@
     </div>
 
     {{-- Header --}}
-    <section class="bg-gradient-to-b from-white to-soft py-10 sm:py-14 border-b border-border-soft">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <x-section-heading
-                kicker="Informasi Resmi"
-                title="Pengumuman Sekolah"
-                subtitle="Edaran dan pengumuman resmi dari pihak SMP Muhammadiyah 7 Medan untuk siswa, orang tua, dan wali murid."
-                align="left"
-            />
-        </div>
-    </section>
+    <x-page-hero
+        title="Pengumuman Sekolah"
+        subtitle="Edaran dan pengumuman resmi dari pihak SMP Muhammadiyah 7 Medan untuk siswa, orang tua, dan wali murid."
+        badge="Informasi Resmi"
+        badgeIcon="megaphone"
+        :image="asset('images/school/gerbang.png')"
+        imageAlt="Gerbang SMP Muhammadiyah 7 Medan"
+        imagePosition="center_10%"
+    />
 
     {{-- Announcements --}}
     <section class="py-10 sm:py-14">

@@ -12,16 +12,15 @@
     </div>
 
     {{-- Page Header / Hero --}}
-    <section class="bg-gradient-to-b from-white to-soft py-10 sm:py-14 border-b border-border-soft">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <x-section-heading
-                kicker="Kesiswaan"
-                title="Ekstrakurikuler"
-                subtitle="Beragam pilihan kegiatan pengembangan minat, bakat, olahraga, seni, dan kepanduan bagi seluruh siswa."
-                align="left"
-            />
-        </div>
-    </section>
+    <x-page-hero
+        title="Ekstrakurikuler"
+        subtitle="Beragam pilihan kegiatan pengembangan minat, bakat, olahraga, seni, dan kepanduan bagi seluruh siswa."
+        badge="Kesiswaan"
+        badgeIcon="star"
+        :image="asset('images/school/lapangan.jpg')"
+        imageAlt="Lapangan dan Gedung SMP Muhammadiyah 7 Medan"
+        imagePosition="center_35%"
+    />
 
     {{-- Main Content Section --}}
     <section class="py-10 sm:py-14">

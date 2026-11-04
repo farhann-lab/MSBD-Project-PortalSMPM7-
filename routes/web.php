@@ -194,6 +194,40 @@ Route::middleware(['auth'])->group(function () {
             return view('pages.admin.dashboard');
         })->name('dashboard.admin');
 
+        // Modul Data Master Admin (DESIGN.md 10.1 & 11)
+        Route::prefix('admin/master')->name('admin.master.')->group(function () {
+            Route::get('/guru', function () {
+                $teachers = require database_path('dummy/teachers_dummy.php');
+                return view('pages.admin.master.guru', compact('teachers'));
+            })->name('guru');
+
+            Route::get('/siswa', function () {
+                $students = require database_path('dummy/students_dummy.php');
+                return view('pages.admin.master.siswa', compact('students'));
+            })->name('siswa');
+
+            Route::get('/kelas', function () {
+                return view('pages.admin.master.kelas');
+            })->name('kelas');
+
+            Route::get('/mapel', function () {
+                return view('pages.admin.master.mapel');
+            })->name('mapel');
+
+            Route::get('/penugasan', function () {
+                return view('pages.admin.master.penugasan');
+            })->name('penugasan');
+
+            Route::get('/tahun-ajaran', function () {
+                return view('pages.admin.master.tahun-ajaran');
+            })->name('tahun-ajaran');
+
+            Route::get('/ekskul', function () {
+                $extracurriculars = require database_path('dummy/extracurriculars.php');
+                return view('pages.admin.master.ekskul', compact('extracurriculars'));
+            })->name('ekskul');
+        });
+
         Route::get('/guru-panel', function () {
             return response('<h1>Panel Guru & Wali Kelas SIAKAD</h1><p>Selamat datang, ' . auth()->user()->username . '</p><form action="' . route('logout') . '" method="POST"><input type="hidden" name="_token" value="' . csrf_token() . '"><button type="submit">Logout</button></form>');
         })->name('dashboard.guru');

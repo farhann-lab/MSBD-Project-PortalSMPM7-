@@ -29,7 +29,7 @@
             <!-- Background Decorative Overlay -->
             <div class="absolute -right-10 -bottom-10 w-80 h-80 rounded-full bg-mint/10 blur-3xl pointer-events-none"></div>
             <div class="absolute right-12 top-1/2 -translate-y-1/2 hidden lg:block opacity-15 pointer-events-none">
-                <img src="{{ asset('images/logo.png') }}" alt="" class="w-48 h-48 object-contain">
+                <img src="{{ asset('images/school/logo.png') }}" alt="" class="w-48 h-48 object-contain">
             </div>
         </div>
 

@@ -57,49 +57,49 @@
                     'id' => 'master-guru',
                     'label' => 'Guru & Tendik',
                     'icon' => 'users',
-                    'route' => url('/admin#guru'),
+                    'route' => route('admin.master.guru'),
                     'badge' => '17 Guru',
                 ],
                 [
                     'id' => 'master-siswa',
                     'label' => 'Data Siswa & Impor',
                     'icon' => 'user-group',
-                    'route' => url('/admin#siswa'),
+                    'route' => route('admin.master.siswa'),
                     'badge' => '356 Siswa',
                 ],
                 [
                     'id' => 'master-kelas',
                     'label' => 'Manajemen Kelas',
                     'icon' => 'building-office',
-                    'route' => url('/admin#kelas'),
+                    'route' => route('admin.master.kelas'),
                     'badge' => '10 Rombel',
                 ],
                 [
                     'id' => 'master-mapel',
                     'label' => 'Mata Pelajaran',
                     'icon' => 'book-open',
-                    'route' => url('/admin#mapel'),
-                    'badge' => null,
+                    'route' => route('admin.master.mapel'),
+                    'badge' => '14 Mapel',
                 ],
                 [
                     'id' => 'master-penugasan',
                     'label' => 'Penugasan Guru',
                     'icon' => 'clipboard-check',
-                    'route' => url('/admin#penugasan'),
+                    'route' => route('admin.master.penugasan'),
                     'badge' => null,
                 ],
                 [
                     'id' => 'master-tahun-ajaran',
                     'label' => 'Tahun Ajaran',
                     'icon' => 'calendar',
-                    'route' => url('/admin#tahun-ajaran'),
+                    'route' => route('admin.master.tahun-ajaran'),
                     'badge' => 'Aktif',
                 ],
                 [
                     'id' => 'master-ekskul',
                     'label' => 'Ekstrakurikuler',
                     'icon' => 'trophy',
-                    'route' => url('/admin#ekskul'),
+                    'route' => route('admin.master.ekskul'),
                     'badge' => null,
                 ],
             ],
@@ -177,7 +177,7 @@
     <div class="h-20 flex items-center justify-between px-6 border-b border-[#1C3322]/80 bg-[#0A140A]/50">
         <a href="{{ route('dashboard.admin') }}" class="flex items-center gap-3.5 group focus:outline-hidden focus:ring-2 focus:ring-mint rounded-xl p-1 -m-1">
             <div class="w-10 h-10 rounded-xl bg-white/10 p-1 flex items-center justify-center border border-white/15 shadow-inner group-hover:bg-white/20 transition-colors">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo SMPM7" class="w-8 h-8 object-contain">
+                <img src="{{ asset('images/school/logo.png') }}" alt="Logo SMPM7" class="w-8 h-8 object-contain">
             </div>
             <div class="flex flex-col">
                 <span class="text-xs uppercase tracking-widest font-bold text-mint">SIAKAD Panel</span>

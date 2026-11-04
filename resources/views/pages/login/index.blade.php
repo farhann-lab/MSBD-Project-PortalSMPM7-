@@ -71,188 +71,151 @@
                     </div>
                 </div>
 
-                {{-- Segmented Role Switcher (Admin | Guru & Wali | Siswa / Wali) --}}
+                {{-- Notifikasi Status / Pesan Sukses --}}
+                @if (session('status'))
+                    <div class="mb-5 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-2">
+                        <x-icon name="check" class="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>{{ session('status') }}</span>
+                    </div>
+                @endif
+
+                {{-- Notifikasi Error Global --}}
+                @if ($errors->any())
+                    <div class="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <div class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
+                                <span>{{ $error }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                {{-- Segmented Role Switcher (Admin | Guru & Wali | Siswa) --}}
                 <div class="grid grid-cols-3 p-1 rounded-xl bg-soft border border-border-soft/80 mb-5 text-center text-xs font-semibold"
                      role="tablist"
-                     aria-label="Pilih Peran Login">
+                     aria-label="Pilih Jenis Pengguna">
                     <button type="button"
+                            class="role-switcher-btn py-2 rounded-lg transition-all text-muted-text hover:text-darkgreen font-medium"
+                            data-role="admin"
                             role="tab"
-                            aria-selected="true"
-                            id="role-tab-admin"
-                            class="py-2 rounded-lg bg-white text-darkgreen shadow-2xs transition-all cursor-pointer font-bold role-switcher-btn"
-                            data-role="admin">
+                            aria-selected="false">
                         Admin
                     </button>
                     <button type="button"
+                            class="role-switcher-btn py-2 rounded-lg transition-all text-muted-text hover:text-darkgreen font-medium"
+                            data-role="guru"
                             role="tab"
-                            aria-selected="false"
-                            id="role-tab-guru"
-                            class="py-2 rounded-lg text-muted-text hover:text-darkgreen transition-all cursor-pointer role-switcher-btn"
-                            data-role="guru">
-                        Guru &amp; Wali
+                            aria-selected="false">
+                        Guru / Wali
                     </button>
                     <button type="button"
+                            class="role-switcher-btn py-2 rounded-lg transition-all bg-white text-darkgreen shadow-2xs font-bold"
+                            data-role="siswa"
                             role="tab"
-                            aria-selected="false"
-                            id="role-tab-siswa"
-                            class="py-2 rounded-lg text-muted-text hover:text-darkgreen transition-all cursor-pointer role-switcher-btn"
-                            data-role="siswa">
-                        Siswa / Wali
+                            aria-selected="true">
+                        Siswa
                     </button>
                 </div>
 
-                {{-- Form Login Interaktif --}}
-                <form id="siakad-login-form" method="POST" action="{{ url('/login') }}" class="space-y-4" onsubmit="handleLoginSubmit(event)">
+                {{-- Form Login Utama --}}
+                <form action="{{ route('login.post') }}" method="POST" class="space-y-4">
                     @csrf
 
-                    {{-- Hidden role input --}}
-                    <input type="hidden" name="role" id="login-role" value="admin">
-
-                    {{-- Username / NIP / NISN Input --}}
+                    {{-- Username / ID Input --}}
                     <div>
-                        <label for="username" class="block text-xs font-bold text-darkgreen mb-1.5">
-                            Username / NIP / NISN
+                        <label for="username" class="block text-xs font-semibold text-darkgreen mb-1.5">
+                            Username / Nomor Induk (NIS/NIP)
                         </label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-text/70">
-                                <x-icon name="user" class="w-4 h-4" />
-                            </div>
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-text">
+                                <x-icon name="user" class="w-4 h-4 text-sage" />
+                            </span>
                             <input
                                 type="text"
                                 id="username"
                                 name="username"
                                 required
+                                autofocus
                                 autocomplete="username"
-                                placeholder="Masukkan NIP, NISN, atau ID Pengguna"
-                                class="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-border-soft bg-white text-darkgreen placeholder:text-muted-text/60 focus:outline-none focus:ring-2 focus:ring-forest/30 focus:border-forest transition-colors shadow-2xs"
+                                value="{{ old('username') }}"
+                                placeholder="Masukkan NIS atau Username"
+                                class="w-full pl-10 pr-3.5 py-2.5 rounded-xl border {{ $errors->has('username') ? 'border-rose-400 bg-rose-50/20' : 'border-border-soft bg-white' }} text-sm text-darkgreen placeholder:text-muted-text/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-forest/20 focus:border-forest transition-all"
                             />
                         </div>
-                        <p id="username-helper" class="text-[11px] text-muted-text mt-1.5 leading-tight">
-                            Gunakan NIP untuk staf pengajar atau NISN untuk peserta didik
+                        <p id="username-helper" class="mt-1 text-[11px] text-muted-text">
+                            Gunakan NIS peserta didik untuk login
                         </p>
                     </div>
 
-                    {{-- Kata Sandi Input --}}
+                    {{-- Password Input with Visibility Toggle --}}
                     <div>
-                        <label for="password" class="block text-xs font-bold text-darkgreen mb-1.5">
-                            Kata Sandi
-                        </label>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="password" class="block text-xs font-semibold text-darkgreen">
+                                Password
+                            </label>
+                        </div>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-text/70">
-                                <x-icon name="lock" class="w-4 h-4" />
-                            </div>
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-text">
+                                <x-icon name="lock" class="w-4 h-4 text-sage" />
+                            </span>
                             <input
                                 type="password"
                                 id="password"
                                 name="password"
                                 required
                                 autocomplete="current-password"
-                                placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
-                                class="w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-border-soft bg-white text-darkgreen placeholder:text-muted-text/60 focus:outline-none focus:ring-2 focus:ring-forest/30 focus:border-forest transition-colors shadow-2xs"
+                                placeholder="Masukkan password Anda"
+                                class="w-full pl-10 pr-11 py-2.5 rounded-xl border {{ $errors->has('password') ? 'border-rose-400 bg-rose-50/20' : 'border-border-soft bg-white' }} text-sm text-darkgreen placeholder:text-muted-text/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-forest/20 focus:border-forest transition-all"
                             />
-                            {{-- Toggle Password Visibility Button --}}
+                            {{-- Toggle View Password --}}
                             <button
                                 type="button"
                                 id="toggle-password-btn"
-                                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-muted-text hover:text-darkgreen transition-colors cursor-pointer focus:outline-none"
-                                aria-label="Tampilkan atau sembunyikan kata sandi"
-                            >
-                                <span id="icon-eye-open"><x-icon name="eye" class="w-4 h-4" /></span>
-                                <span id="icon-eye-closed" class="hidden"><x-icon name="eye-slash" class="w-4 h-4" /></span>
+                                aria-label="Lihat password"
+                                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-muted-text hover:text-forest transition-colors">
+                                <x-icon id="icon-eye-open" name="eye" class="w-4 h-4" />
+                                <x-icon id="icon-eye-closed" name="eye-off" class="w-4 h-4 hidden" />
                             </button>
                         </div>
                     </div>
 
-                    {{-- Remember Me & Forgot Password --}}
-                    <div class="flex items-center justify-between text-xs pt-0.5">
-                        <label class="inline-flex items-center gap-2 text-muted-text cursor-pointer select-none">
+                    {{-- Remember Me --}}
+                    <div class="flex items-center justify-between pt-1">
+                        <label class="inline-flex items-center gap-2 cursor-pointer select-none">
                             <input
                                 type="checkbox"
                                 name="remember"
-                                id="remember"
-                                class="w-4 h-4 rounded-md border-border-soft text-forest focus:ring-forest/30 cursor-pointer"
+                                value="1"
+                                class="w-4 h-4 rounded border-border-soft text-forest focus:ring-forest/30"
                             />
-                            <span>Ingat Saya di Perangkat Ini</span>
+                            <span class="text-xs text-muted-text">Ingat sesi saya</span>
                         </label>
 
-                        <a href="mailto:{{ config('sekolah.kontak.email') }}?subject=Bantuan%20Akses%20SIAKAD"
-                           class="font-semibold text-forest hover:text-darkgreen transition-colors">
-                            Lupa Akses?
-                        </a>
+                        <span class="text-xs text-muted-text">
+                            Lupa password? <a href="mailto:{{ config('sekolah.kontak.email') }}" class="text-forest hover:underline font-medium">Hubungi Admin</a>
+                        </span>
                     </div>
 
-                    {{-- Tombol Submit Utama: Masuk ke SIAKAD --}}
+                    {{-- Tombol Masuk / Login CTA --}}
                     <div class="pt-2">
                         <button
                             type="submit"
                             id="submit-login-btn"
-                            class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-forest hover:bg-forest/90 text-white font-bold text-xs sm:text-sm shadow-md shadow-forest/20 transition-all duration-150 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest cursor-pointer"
-                        >
+                            class="w-full py-3 px-4 rounded-xl bg-forest hover:bg-forest/90 text-white font-semibold text-sm tracking-wide shadow-md shadow-darkgreen/15 transition-all duration-200 flex items-center justify-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest">
                             <span>Masuk ke SIAKAD</span>
-                            <x-icon name="login" class="w-4 h-4" />
+                            <x-icon name="arrow-right" class="w-4 h-4" />
                         </button>
                     </div>
                 </form>
 
-                {{-- Contact Administrator Note --}}
-                <div class="text-center text-xs text-muted-text pt-5 mt-5 border-t border-border-soft/70">
-                    Kendala akses akun? Hubungi <span class="font-semibold text-darkgreen">Administrator Sekolah</span>
-                </div>
-            </div>
-
-            {{-- ── 3. Akses Cepat Ekosistem Digital Kampus (CBT, E-Rapor, PPDB) ── --}}
-            <div class="mt-6 bg-white/80 backdrop-blur-sm rounded-3xl border border-border-soft/90 p-4 sm:p-5 shadow-2xs">
-                <p class="text-[11px] font-bold tracking-wider uppercase text-center text-muted-text/80 mb-3.5">
-                    Akses Cepat Ekosistem Digital Kampus
-                </p>
-
-                <div class="grid grid-cols-3 gap-2.5 sm:gap-3">
-                    {{-- CBT Online --}}
-                    <a href="https://cbt.smpm7medan.sch.id"
-                       target="_blank"
-                       rel="noopener"
-                       class="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl border border-border-soft/80 bg-soft/50 hover:bg-white hover:border-forest/40 hover:shadow-xs transition-all group">
-                        <div class="w-8 h-8 rounded-xl bg-white border border-border-soft flex items-center justify-center text-forest group-hover:bg-forest group-hover:text-white transition-colors shadow-2xs">
-                            <x-icon name="computer-desktop" class="w-4 h-4" />
-                        </div>
-                        <span class="text-[11px] sm:text-xs font-bold text-darkgreen group-hover:text-forest transition-colors">
-                            CBT Online
-                        </span>
-                    </a>
-
-                    {{-- E-Rapor --}}
-                    <a href="https://rapor.smpm7medan.sch.id"
-                       target="_blank"
-                       rel="noopener"
-                       class="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl border border-border-soft/80 bg-soft/50 hover:bg-white hover:border-forest/40 hover:shadow-xs transition-all group">
-                        <div class="w-8 h-8 rounded-xl bg-white border border-border-soft flex items-center justify-center text-forest group-hover:bg-forest group-hover:text-white transition-colors shadow-2xs">
-                            <x-icon name="clipboard-check" class="w-4 h-4" />
-                        </div>
-                        <span class="text-[11px] sm:text-xs font-bold text-darkgreen group-hover:text-forest transition-colors">
-                            E-Rapor
-                        </span>
-                    </a>
-
-                    {{-- PPDB Online --}}
-                    <a href="https://ppdb.smpm7medan.sch.id"
-                       target="_blank"
-                       rel="noopener"
-                       class="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl border border-border-soft/80 bg-soft/50 hover:bg-white hover:border-forest/40 hover:shadow-xs transition-all group">
-                        <div class="w-8 h-8 rounded-xl bg-white border border-border-soft flex items-center justify-center text-forest group-hover:bg-forest group-hover:text-white transition-colors shadow-2xs">
-                            <x-icon name="user-plus" class="w-4 h-4" />
-                        </div>
-                        <span class="text-[11px] sm:text-xs font-bold text-darkgreen group-hover:text-forest transition-colors">
-                            PPDB Online
-                        </span>
-                    </a>
-                </div>
             </div>
         </div>
 
-        {{-- ── 4. Footer Login Bar ── --}}
-        <div class="relative w-full max-w-6xl mx-auto pt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-text border-t border-border-soft/60 mt-8">
-            <div class="flex items-center gap-2">
-                <x-icon name="shield-check" class="w-4 h-4 text-sage shrink-0" />
+        {{-- ── 3. Footer Bar Bawah ── --}}
+        <div class="relative w-full max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between pt-8 border-t border-border-soft/60 text-muted-text gap-3">
+            <div class="flex items-center gap-2 text-xs">
+                <x-icon name="shield" class="w-4 h-4 text-sage shrink-0" />
                 <span>&copy; {{ date('Y') }} SMP Muhammadiyah 7 Medan. Hak Cipta Dilindungi.</span>
             </div>
 
@@ -272,7 +235,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const roleButtons = document.querySelectorAll('.role-switcher-btn');
-            const roleInput = document.getElementById('login-role');
             const usernameInput = document.getElementById('username');
             const usernameHelper = document.getElementById('username-helper');
 
@@ -280,7 +242,6 @@
             roleButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const selectedRole = btn.getAttribute('data-role');
-                    roleInput.value = selectedRole;
 
                     roleButtons.forEach(b => {
                         b.setAttribute('aria-selected', 'false');
@@ -297,10 +258,10 @@
                         usernameHelper.textContent = 'Gunakan kredensial akun administrator sekolah';
                     } else if (selectedRole === 'guru') {
                         usernameInput.placeholder = 'Masukkan NIP atau ID Guru';
-                        usernameHelper.textContent = 'Gunakan NIP untuk staf pengajar / wali kelas';
+                        usernameHelper.textContent = 'Gunakan username untuk staf pengajar / wali kelas';
                     } else {
-                        usernameInput.placeholder = 'Masukkan NISN atau ID Siswa';
-                        usernameHelper.textContent = 'Gunakan NISN peserta didik untuk login';
+                        usernameInput.placeholder = 'Masukkan NIS peserta didik';
+                        usernameHelper.textContent = 'Gunakan NIS peserta didik untuk login';
                     }
                 });
             });
@@ -325,24 +286,6 @@
                 });
             }
         });
-
-        function handleLoginSubmit(event) {
-            // Mencegah error reload jika backend belum tersambung, menampilkan status interaktif yang aman
-            event.preventDefault();
-            const btn = document.getElementById('submit-login-btn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = `
-                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span>Menghubungkan...</span>
-            `;
-            setTimeout(() => {
-                alert('Modul autentikasi SIAKAD sedang dalam proses integrasi database akademik. Silakan hubungi administrator sekolah.');
-                btn.innerHTML = originalText;
-            }, 600);
-        }
     </script>
     @endpush
 

@@ -180,36 +180,36 @@ flowchart TD
 #### [AUTH-001] Sistem Login Terpadu Multi-Role & Guard Sesi
 - **Phase:** Phase 2
 - **Priority:** P0
-- **Status:** Not Started
+- **Status:** Done
 - **Category:** Authentication
 - **Description:** Mengganti placeholder `/login` dengan form login terpadu menggunakan model `siakad_users` (bcrypt password hash), pembatasan rate limiting, dan proteksi brute force.
 - **Source Requirements:** `PRD.md` AUT-1 s.d. AUT-5; `DESIGN.md` Bab 9; `ARCHITECTURE.md` Bagian 10.
-- **Dependencies:** `DB-MIGRATE-001`
+- **Dependencies:** `siakad_users` table
 - **Implementation Notes:**
-  - Satu pintu login untuk Admin, Guru, dan Siswa. Sistem otomatis mengarahkan ke dashboard yang relevan sesuai role (`admin` -> `/admin`, `guru` -> `/guru-panel`, `siswa` -> `/siswa-panel`).
+  - Satu pintu login untuk Admin, Guru, dan Siswa via `AuthController`. Sistem otomatis mengarahkan ke dashboard yang relevan sesuai role (`admin` -> `/admin`, `guru` -> `/guru-panel`, `siswa` -> `/siswa-panel`).
   - Pesan kegagalan login generik tanpa membocorkan apakah username terdaftar atau tidak.
-  - Tidak ada fitur sosial login atau forgot password publik mandiri.
+  - Rate limiting throttling (5x salah coba per IP/username -> kunci 60 detik).
 - **Acceptance Criteria:**
-  - [ ] Login sukses mengarahkan ke dashboard yang tepat sesuai peran.
-  - [ ] Login gagal 5x mengaktifkan rate limiter throttling.
-- **Verification:** Uji login untuk user admin, guru, dan siswa melalui feature test HTTP POST `/login`.
+  - [x] Login sukses mengarahkan ke dashboard yang tepat sesuai peran.
+  - [x] Login gagal 5x mengaktifkan rate limiter throttling.
+- **Verification:** Terverifikasi via test suite 11 kasus uji (`tests/Feature/AuthenticationTest.php`).
 
 ---
 
 #### [AUTH-002] Halaman Ubah Password & Mode Wajib Ganti Password
 - **Phase:** Phase 2
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Category:** Authentication
 - **Description:** Membangun form ubah password (password lama, password baru minimal 8 karakter, konfirmasi) dan middleware isolasi "Mode Wajib Ganti Password".
 - **Source Requirements:** `PRD.md` AUT-6, AUT-7, AUT-9; `DESIGN.md` Bab 11.
 - **Dependencies:** `AUTH-001`
 - **Implementation Notes:**
-  - Jika flag `wajib_ganti_password = 1` aktif pada akun (misal akun baru dibuat oleh admin), user di-redirect ke `/ubah-password` dengan layout fokus (tanpa sidebar navigasi). Seluruh menu lain terkunci hingga password berhasil diubah.
+  - Jika flag `wajib_ganti_password = 1` aktif pada akun (misal akun baru dibuat oleh admin), user di-redirect ke `/ubah-password` dengan layout fokus (tanpa sidebar navigasi). Seluruh menu lain terkunci hingga password berhasil diubah via middleware `EnsurePasswordChanged`.
 - **Acceptance Criteria:**
-  - [ ] User dengan flag wajib ganti password tidak bisa mengakses menu dashboard sebelum memperbarui password.
-  - [ ] Validasi menolak password yang sama dengan username atau NIS.
-- **Verification:** Login dengan akun dummy bertanda `wajib_ganti_password = 1` dan uji pembatasan rutenya.
+  - [x] User dengan flag wajib ganti password tidak bisa mengakses menu dashboard sebelum memperbarui password.
+  - [x] Validasi menolak password yang sama dengan username atau NIS.
+- **Verification:** Terverifikasi via test suite 11 kasus uji (`tests/Feature/AuthenticationTest.php`).
 
 ---
 

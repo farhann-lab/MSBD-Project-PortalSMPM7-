@@ -1,17 +1,16 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes — SIAKAD SMP Muhammadiyah 7 Medan (Portal Publik)
+| Web Routes — SIAKAD SMP Muhammadiyah 7 Medan
 |--------------------------------------------------------------------------
-| Phase 3: Semua rute halaman MVP terhubung ke data fixture dummy.
-| Sesuai PRD.md dan DESIGN.md.
 */
 
-// ─── Dev / Debug Showcases ───────────────────────────────────────────────────
+// ─── Dev / Debug Showcases ──────────────────────────────────────────────
 Route::get('/layout-preview', function () {
     return view('pages.layout-preview');
 })->name('layout.preview');
@@ -20,12 +19,11 @@ Route::get('/components-preview', function () {
     return view('pages.components-preview');
 })->name('components.preview');
 
-// ─── Beranda ─────────────────────────────────────────────────────────────────
+// ─── Beranda ─────────────────────────────────────────────────────────────
 Route::get('/', function () {
     $allNews          = require database_path('dummy/news.php');
     $allAnnouncements = require database_path('dummy/announcements.php');
 
-    // Portal pintasan dari config (filter hanya CBT, Rapor, PPDB — bukan login)
     $portals = array_filter(config('sekolah.portal', []), fn($p, $key) =>
         in_array($key, ['cbt', 'rapor', 'ppdb']),
         ARRAY_FILTER_USE_BOTH
@@ -38,9 +36,8 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-// ─── Profil Sekolah ──────────────────────────────────────────────────────────
+// ─── Profil Sekolah ──────────────────────────────────────────────────────
 Route::prefix('profil')->group(function () {
-
     Route::get('/', function () {
         return view('pages.profile.index');
     })->name('profile.index');
@@ -59,11 +56,10 @@ Route::prefix('profil')->group(function () {
     })->name('profile.facilities');
 });
 
-// ─── Direktori Guru & Siswa ───────────────────────────────────────────────────
+// ─── Direktori Guru & Siswa ──────────────────────────────────────────────
 Route::get('/guru', function () {
     $allTeachers = require database_path('dummy/teachers_dummy.php');
 
-    // Filter: pencarian nama
     $q = request('q', '');
     if ($q) {
         $allTeachers = array_values(array_filter($allTeachers, fn($t) =>
@@ -71,7 +67,6 @@ Route::get('/guru', function () {
         ));
     }
 
-    // Filter: mata pelajaran
     $mapel = request('mapel', '');
     if ($mapel) {
         $allTeachers = array_values(array_filter($allTeachers, fn($t) =>
@@ -79,12 +74,10 @@ Route::get('/guru', function () {
         ));
     }
 
-    // Urut alfabetis
     usort($allTeachers, fn($a, $b) => strcoll($a['nama_lengkap'], $b['nama_lengkap']));
 
-    // Opsi filter mapel (dari semua data asli, tanpa filter aktif)
-    $allRaw     = require database_path('dummy/teachers_dummy.php');
-    $mapelList  = collect($allRaw)->pluck('mapel')->filter()->unique()->sort()->values()->toArray();
+    $allRaw       = require database_path('dummy/teachers_dummy.php');
+    $mapelList    = collect($allRaw)->pluck('mapel')->filter()->unique()->sort()->values()->toArray();
     $mapelOptions = array_combine($mapelList, $mapelList);
 
     return view('pages.directory.teachers', [
@@ -97,7 +90,6 @@ Route::get('/guru', function () {
 Route::get('/siswa', function () {
     $allStudents = require database_path('dummy/students_dummy.php');
 
-    // Filter: pencarian nama
     $q = request('q', '');
     if ($q) {
         $allStudents = array_values(array_filter($allStudents, fn($s) =>
@@ -105,7 +97,6 @@ Route::get('/siswa', function () {
         ));
     }
 
-    // Filter: kelas
     $kelas = request('kelas', '');
     if ($kelas) {
         $allStudents = array_values(array_filter($allStudents, fn($s) =>
@@ -113,10 +104,8 @@ Route::get('/siswa', function () {
         ));
     }
 
-    // Urut nama
     usort($allStudents, fn($a, $b) => strcoll($a['nama_lengkap'], $b['nama_lengkap']));
 
-    // Opsi kelas
     $allRaw       = require database_path('dummy/students_dummy.php');
     $kelasList    = collect($allRaw)->pluck('kelas')->unique()->sort()->values()->toArray();
     $kelasOptions = array_combine($kelasList, $kelasList);
@@ -128,9 +117,8 @@ Route::get('/siswa', function () {
     ]);
 })->name('directory.students');
 
-// ─── Kesiswaan ────────────────────────────────────────────────────────────────
+// ─── Kesiswaan ───────────────────────────────────────────────────────────
 Route::prefix('kesiswaan')->group(function () {
-
     Route::get('/', function () {
         return redirect()->route('student-life.extracurriculars');
     });
@@ -151,13 +139,13 @@ Route::prefix('kesiswaan')->group(function () {
     })->name('student-life.achievements');
 });
 
-// ─── Galeri ───────────────────────────────────────────────────────────────────
+// ─── Galeri ──────────────────────────────────────────────────────────────
 Route::get('/galeri', function () {
     $gallery = require database_path('dummy/gallery.php');
     return view('pages.gallery.index', compact('gallery'));
 })->name('gallery.index');
 
-// ─── Berita ───────────────────────────────────────────────────────────────────
+// ─── Berita ──────────────────────────────────────────────────────────────
 Route::get('/berita', function () {
     $news = require database_path('dummy/news.php');
     return view('pages.news.index', compact('news'));
@@ -174,7 +162,7 @@ Route::get('/berita/{slug}', function (string $slug) {
     return view('pages.news.show', compact('article'));
 })->name('news.show');
 
-// ─── Pengumuman ───────────────────────────────────────────────────────────────
+// ─── Pengumuman ──────────────────────────────────────────────────────────
 Route::get('/pengumuman', function () {
     $announcements = require database_path('dummy/announcements.php');
     return view('pages.announcements.index', compact('announcements'));
@@ -191,7 +179,27 @@ Route::get('/pengumuman/{slug}', function (string $slug) {
     return view('pages.announcements.show', compact('announcement'));
 })->name('announcements.show');
 
-// ─── Login SIAKAD ─────────────────────────────────────────────────────────────
-Route::get('/login', function () {
-    return view('pages.login.index');
-})->name('login');
+// ─── Autentikasi SIAKAD (AUTH-001 & AUTH-002) ────────────────────────────
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/ubah-password', [AuthController::class, 'showChangePassword'])->name('password.change');
+    Route::post('/ubah-password', [AuthController::class, 'updatePassword'])->name('password.change.update');
+
+    // Protected Dashboard Placeholders (Dengan middleware force.password)
+    Route::middleware(['force.password'])->group(function () {
+        Route::get('/admin', function () {
+            return response('<h1>Dashboard Admin SIAKAD</h1><p>Selamat datang, ' . auth()->user()->username . '</p><form action="' . route('logout') . '" method="POST"><input type="hidden" name="_token" value="' . csrf_token() . '"><button type="submit">Logout</button></form>');
+        })->name('dashboard.admin');
+
+        Route::get('/guru-panel', function () {
+            return response('<h1>Panel Guru & Wali Kelas SIAKAD</h1><p>Selamat datang, ' . auth()->user()->username . '</p><form action="' . route('logout') . '" method="POST"><input type="hidden" name="_token" value="' . csrf_token() . '"><button type="submit">Logout</button></form>');
+        })->name('dashboard.guru');
+
+        Route::get('/siswa-panel', function () {
+            return response('<h1>Panel Siswa SIAKAD</h1><p>Selamat datang, ' . auth()->user()->username . '</p><form action="' . route('logout') . '" method="POST"><input type="hidden" name="_token" value="' . csrf_token() . '"><button type="submit">Logout</button></form>');
+        })->name('dashboard.siswa');
+    });
+});

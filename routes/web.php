@@ -191,7 +191,7 @@ Route::middleware(['auth'])->group(function () {
     // Protected Dashboard Placeholders (Dengan middleware force.password)
     Route::middleware(['force.password'])->group(function () {
         Route::get('/admin', function () {
-            return response('<h1>Dashboard Admin SIAKAD</h1><p>Selamat datang, ' . auth()->user()->username . '</p><form action="' . route('logout') . '" method="POST"><input type="hidden" name="_token" value="' . csrf_token() . '"><button type="submit">Logout</button></form>');
+            return view('pages.admin.dashboard');
         })->name('dashboard.admin');
 
         Route::get('/guru-panel', function () {

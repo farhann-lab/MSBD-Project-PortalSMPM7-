@@ -230,6 +230,6 @@ class PublicPagesMvpTest extends TestCase
         $response->assertSee('SIAKAD SMP Muhammadiyah 7');
         $response->assertSee('Sistem Informasi Akademik');
         $response->assertSee('Masuk ke SIAKAD');
-        $response->assertSee('Username / NIP / NISN');
+        $response->assertSee('Username / Nomor Induk');
     }
 }

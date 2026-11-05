@@ -228,6 +228,39 @@ Route::middleware(['auth'])->group(function () {
             })->name('ekskul');
         });
 
+        // Modul Akademik Admin
+        Route::prefix('admin/akademik')->name('admin.akademik.')->group(function () {
+            Route::get('/jadwal', function () {
+                return view('pages.admin.akademik.jadwal');
+            })->name('jadwal');
+
+            Route::get('/kenaikan', function () {
+                $students = require database_path('dummy/students_dummy.php');
+                return view('pages.admin.akademik.kenaikan', compact('students'));
+            })->name('kenaikan');
+
+            Route::get('/absensi', function () {
+                return view('pages.admin.akademik.absensi');
+            })->name('absensi');
+        });
+
+        // Modul Akun & Sistem Admin
+        Route::prefix('admin/sistem')->name('admin.sistem.')->group(function () {
+            Route::get('/pengguna', function () {
+                $teachers = require database_path('dummy/teachers_dummy.php');
+                $students = require database_path('dummy/students_dummy.php');
+                return view('pages.admin.sistem.pengguna', compact('teachers', 'students'));
+            })->name('pengguna');
+
+            Route::get('/reset-password', function () {
+                return view('pages.admin.sistem.reset-password');
+            })->name('reset-password');
+
+            Route::get('/pengaturan', function () {
+                return view('pages.admin.sistem.pengaturan');
+            })->name('pengaturan');
+        });
+
         Route::get('/guru-panel', function () {
             return response('<h1>Panel Guru & Wali Kelas SIAKAD</h1><p>Selamat datang, ' . auth()->user()->username . '</p><form action="' . route('logout') . '" method="POST"><input type="hidden" name="_token" value="' . csrf_token() . '"><button type="submit">Logout</button></form>');
         })->name('dashboard.guru');

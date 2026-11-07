@@ -47,10 +47,10 @@
             
             <!-- Academic Period Badge (DESIGN.md: ditampilkan sebagai nama periode, mis. 2026/2027 Semester 1) -->
             <div class="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-soft border border-border-soft text-xs text-darkgreen">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span class="font-medium">2026/2027 Semester 1</span>
+                <span class="w-2 h-2 rounded-full {{ ($globalPeriodeAktif['is_aktif'] ?? true) ? 'bg-emerald-500' : 'bg-amber-500' }}"></span>
+                <span class="font-medium">{{ $globalPeriodeAktif['label_topbar'] ?? '2026/2027 Semester 1' }}</span>
                 <span class="text-muted-text">|</span>
-                <span class="text-forest font-semibold">Aktif</span>
+                <span class="text-forest font-semibold">{{ ($globalPeriodeAktif['is_aktif'] ?? true) ? 'Aktif' : 'Arsip' }}</span>
             </div>
 
             <!-- Server / Security Status (Micro Badge) -->

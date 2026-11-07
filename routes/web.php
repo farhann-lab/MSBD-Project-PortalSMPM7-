@@ -1,6 +1,18 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminBeritaController;
+use App\Http\Controllers\Admin\AdminFasilitasController;
+use App\Http\Controllers\Admin\AdminGaleriController;
+use App\Http\Controllers\Admin\AdminPengumumanController;
+use App\Http\Controllers\Admin\AdminPrestasiPublikController;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminManagementController;
 use App\Http\Controllers\AuthController;
+use App\Models\Berita;
+use App\Models\Fasilitas;
+use App\Models\Galeri;
+use App\Models\Pengumuman;
+use App\Models\PrestasiPublik;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
@@ -21,8 +33,40 @@ Route::get('/components-preview', function () {
 
 // ─── Beranda ─────────────────────────────────────────────────────────────
 Route::get('/', function () {
-    $allNews          = require database_path('dummy/news.php');
-    $allAnnouncements = require database_path('dummy/announcements.php');
+    // Ambil berita & pengumuman published dari database, fallback ke dummy jika DB kosong
+    $dbNews = Berita::published()->latest('published_at')->take(3)->get();
+    if ($dbNews->isNotEmpty()) {
+        $news = $dbNews->map(fn($item) => [
+            'id'       => $item->id,
+            'title'    => $item->judul,
+            'slug'     => $item->slug,
+            'summary'  => $item->summary,
+            'content'  => $item->isi,
+            'image'    => $item->image_url,
+            'date'     => $item->formatted_date,
+            'category' => 'Berita Sekolah',
+        ])->all();
+    } else {
+        $allNews = require database_path('dummy/news.php');
+        $news    = array_slice($allNews, 0, 3);
+    }
+
+    $dbAnnouncements = Pengumuman::published()->latest('tanggal')->take(3)->get();
+    if ($dbAnnouncements->isNotEmpty()) {
+        $announcements = $dbAnnouncements->map(fn($item) => [
+            'id'        => $item->id,
+            'title'     => $item->judul,
+            'slug'      => $item->slug,
+            'summary'   => $item->summary,
+            'content'   => $item->isi,
+            'date'      => $item->formatted_date,
+            'tag'       => 'Pengumuman',
+            'important' => false,
+        ])->all();
+    } else {
+        $allAnnouncements = require database_path('dummy/announcements.php');
+        $announcements    = array_slice($allAnnouncements, 0, 3);
+    }
 
     $portals = array_filter(config('sekolah.portal', []), fn($p, $key) =>
         in_array($key, ['cbt', 'rapor', 'ppdb']),
@@ -30,8 +74,8 @@ Route::get('/', function () {
     );
 
     return view('pages.home.index', [
-        'news'          => array_slice($allNews, 0, 3),
-        'announcements' => array_slice($allAnnouncements, 0, 3),
+        'news'          => $news,
+        'announcements' => $announcements,
         'portals'       => $portals,
     ]);
 })->name('home');
@@ -51,7 +95,19 @@ Route::prefix('profil')->group(function () {
     })->name('profile.structure');
 
     Route::get('/fasilitas', function () {
-        $facilities = require database_path('dummy/facilities.php');
+        $dbFacilities = Fasilitas::published()->latest()->get();
+        if ($dbFacilities->isNotEmpty()) {
+            $facilities = $dbFacilities->map(fn($item) => [
+                'id'          => $item->id,
+                'name'        => $item->nama,
+                'description' => $item->deskripsi,
+                'image'       => $item->image_url,
+                'icon'        => 'building-office',
+            ])->all();
+        } else {
+            $facilities = require database_path('dummy/facilities.php');
+        }
+
         return view('pages.profile.facilities', compact('facilities'));
     })->name('profile.facilities');
 });
@@ -134,26 +190,96 @@ Route::prefix('kesiswaan')->group(function () {
     })->name('student-life.extracurriculars');
 
     Route::get('/prestasi', function () {
-        $achievements = require database_path('dummy/achievements.php');
+        $dbAchievements = PrestasiPublik::published()->latest('tanggal')->get();
+        if ($dbAchievements->isNotEmpty()) {
+            $achievements = $dbAchievements->map(fn($item) => [
+                'id'          => $item->id,
+                'name'        => $item->judul,
+                'jenis'       => 'Prestasi Siswa',
+                'tingkat'     => $item->tingkat ?? 'Kota',
+                'tahun'       => $item->tahun,
+                'description' => $item->deskripsi,
+                'image'       => $item->image_url,
+            ])->all();
+        } else {
+            $achievements = require database_path('dummy/achievements.php');
+        }
+
         return view('pages.student-life.achievements', compact('achievements'));
     })->name('student-life.achievements');
 });
 
 // ─── Galeri ──────────────────────────────────────────────────────────────
 Route::get('/galeri', function () {
-    $gallery = require database_path('dummy/gallery.php');
+    $dbGaleri = Galeri::published()->with('foto')->latest()->get();
+    if ($dbGaleri->isNotEmpty()) {
+        $gallery = [];
+        foreach ($dbGaleri as $g) {
+            if ($g->foto->isNotEmpty()) {
+                foreach ($g->foto as $f) {
+                    $gallery[] = [
+                        'id'       => $f->id,
+                        'title'    => $g->judul,
+                        'image'    => $f->image_url,
+                        'category' => 'Dokumentasi',
+                        'date'     => $g->created_at ? $g->created_at->translatedFormat('d F Y') : null,
+                    ];
+                }
+            } else {
+                $gallery[] = [
+                    'id'       => $g->id,
+                    'title'    => $g->judul,
+                    'image'    => null,
+                    'category' => 'Dokumentasi',
+                    'date'     => $g->created_at ? $g->created_at->translatedFormat('d F Y') : null,
+                ];
+            }
+        }
+    } else {
+        $gallery = require database_path('dummy/gallery.php');
+    }
+
     return view('pages.gallery.index', compact('gallery'));
 })->name('gallery.index');
 
 // ─── Berita ──────────────────────────────────────────────────────────────
 Route::get('/berita', function () {
-    $news = require database_path('dummy/news.php');
+    $dbNews = Berita::published()->latest('published_at')->get();
+    if ($dbNews->isNotEmpty()) {
+        $news = $dbNews->map(fn($item) => [
+            'id'       => $item->id,
+            'title'    => $item->judul,
+            'slug'     => $item->slug,
+            'summary'  => $item->summary,
+            'content'  => $item->isi,
+            'image'    => $item->image_url,
+            'date'     => $item->formatted_date,
+            'category' => 'Berita Sekolah',
+        ])->all();
+    } else {
+        $news = require database_path('dummy/news.php');
+    }
+
     return view('pages.news.index', compact('news'));
 })->name('news.index');
 
 Route::get('/berita/{slug}', function (string $slug) {
-    $news    = require database_path('dummy/news.php');
-    $article = collect($news)->firstWhere('slug', $slug);
+    $dbArticle = Berita::published()->where('slug', $slug)->first();
+    if ($dbArticle) {
+        $article = [
+            'id'       => $dbArticle->id,
+            'title'    => $dbArticle->judul,
+            'slug'     => $dbArticle->slug,
+            'summary'  => $dbArticle->summary,
+            'content'  => $dbArticle->isi,
+            'image'    => $dbArticle->image_url,
+            'date'     => $dbArticle->formatted_date,
+            'category' => 'Berita Sekolah',
+        ];
+    } else {
+        $news    = require database_path('dummy/news.php');
+        $article = collect($news)->firstWhere('slug', $slug);
+    }
 
     if (!$article) {
         abort(404);
@@ -164,13 +290,43 @@ Route::get('/berita/{slug}', function (string $slug) {
 
 // ─── Pengumuman ──────────────────────────────────────────────────────────
 Route::get('/pengumuman', function () {
-    $announcements = require database_path('dummy/announcements.php');
+    $dbAnnouncements = Pengumuman::published()->latest('tanggal')->get();
+    if ($dbAnnouncements->isNotEmpty()) {
+        $announcements = $dbAnnouncements->map(fn($item) => [
+            'id'        => $item->id,
+            'title'     => $item->judul,
+            'slug'      => $item->slug,
+            'summary'   => $item->summary,
+            'content'   => $item->isi,
+            'date'      => $item->formatted_date,
+            'tag'       => 'Pengumuman',
+            'important' => false,
+        ])->all();
+    } else {
+        $announcements = require database_path('dummy/announcements.php');
+    }
+
     return view('pages.announcements.index', compact('announcements'));
 })->name('announcements.index');
 
 Route::get('/pengumuman/{slug}', function (string $slug) {
-    $all          = require database_path('dummy/announcements.php');
-    $announcement = collect($all)->firstWhere('slug', $slug);
+    // Cari dari database berdasarkan slug / format slug-id
+    $dbItem = Pengumuman::published()->get()->first(fn($p) => $p->slug === $slug);
+    if ($dbItem) {
+        $announcement = [
+            'id'        => $dbItem->id,
+            'title'     => $dbItem->judul,
+            'slug'      => $dbItem->slug,
+            'summary'   => $dbItem->summary,
+            'content'   => $dbItem->isi,
+            'date'      => $dbItem->formatted_date,
+            'tag'       => 'Pengumuman',
+            'important' => false,
+        ];
+    } else {
+        $all          = require database_path('dummy/announcements.php');
+        $announcement = collect($all)->firstWhere('slug', $slug);
+    }
 
     if (!$announcement) {
         abort(404);
@@ -190,9 +346,25 @@ Route::middleware(['auth'])->group(function () {
 
     // Protected Dashboard Placeholders (Dengan middleware force.password)
     Route::middleware(['force.password'])->group(function () {
-        Route::get('/admin', function () {
-            return view('pages.admin.dashboard');
-        })->name('dashboard.admin');
+        Route::get('/admin', [AdminDashboardController::class, 'index'])->name('dashboard.admin');
+
+        // Manajemen Akun Admin — Khusus Hak Istimewa Admin Utama [ADMIN-AKN-001]
+        Route::middleware(['admin.utama'])->prefix('admin/manajemen-admin')->name('admin.manajemen-admin.')->group(function () {
+            Route::get('/', [AdminManagementController::class, 'index'])->name('index');
+            Route::post('/', [AdminManagementController::class, 'store'])->name('store');
+            Route::patch('/{admin}/toggle-status', [AdminManagementController::class, 'toggleStatus'])->name('toggle-status');
+            Route::post('/{admin}/reset-password', [AdminManagementController::class, 'resetPassword'])->name('reset-password');
+        });
+
+        // Manajemen Konten Publik CMS Admin [CMS-PUB-001 & CMS-PUB-002]
+        Route::prefix('admin/cms')->name('admin.cms.')->group(function () {
+            Route::resource('berita', AdminBeritaController::class)->parameters(['berita' => 'berita'])->except(['show']);
+            Route::resource('pengumuman', AdminPengumumanController::class)->except(['show']);
+            Route::resource('fasilitas', AdminFasilitasController::class)->parameters(['fasilitas' => 'fasilitas'])->except(['show']);
+            Route::resource('galeri', AdminGaleriController::class)->except(['show']);
+            Route::delete('galeri/foto/{foto}', [AdminGaleriController::class, 'destroyFoto'])->name('galeri.destroy-foto');
+            Route::resource('prestasi', AdminPrestasiPublikController::class)->parameters(['prestasi' => 'prestasi'])->except(['show']);
+        });
 
         // Modul Data Master Admin (DESIGN.md 10.1 & 11)
         Route::prefix('admin/master')->name('admin.master.')->group(function () {

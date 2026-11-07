@@ -6,7 +6,7 @@
             <div class="relative z-10 max-w-3xl space-y-3">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-mint text-xs font-semibold backdrop-blur-xs border border-white/15">
                     <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    <span>Tahun Ajaran 2026/2027 Semester 1 (Ganjil)</span>
+                    <span>{{ $periodeAktif['label_lengkap'] ?? ($globalPeriodeAktif['label_lengkap'] ?? 'Tahun Ajaran 2026/2027 Semester 1 (Ganjil)') }}</span>
                 </div>
                 <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight font-sans">
                     Selamat Datang di SIAKAD Admin, {{ auth()->user()->username ?? 'Administrator' }}!
@@ -15,11 +15,11 @@
                     Pusat kendali operasional sekolah, direktori guru & siswa, konten informasi publik, dan administrasi akademik SMP Muhammadiyah 7 Medan.
                 </p>
                 <div class="pt-2 flex flex-wrap items-center gap-3">
-                    <a href="#siswa" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-darkgreen text-xs sm:text-sm font-bold shadow-xs hover:bg-mint transition-colors">
+                    <a href="{{ route('admin.master.siswa') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-darkgreen text-xs sm:text-sm font-bold shadow-xs hover:bg-mint transition-colors">
                         <x-icon name="user-group" class="w-4 h-4 text-forest" />
                         <span>Data Siswa & Impor</span>
                     </a>
-                    <a href="#berita" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/15 text-white text-xs sm:text-sm font-medium hover:bg-white/25 transition-colors border border-white/20">
+                    <a href="{{ url('/admin#berita') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/15 text-white text-xs sm:text-sm font-medium hover:bg-white/25 transition-colors border border-white/20">
                         <x-icon name="newspaper" class="w-4 h-4 text-mint" />
                         <span>Kelola Berita & Informasi</span>
                     </a>
@@ -37,7 +37,7 @@
         <div>
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-base font-bold text-darkgreen">Statistik Utama Sekolah</h2>
-                <span class="text-xs text-muted-text">Diperbarui secara otomatis</span>
+                <span class="text-xs text-muted-text">Data riil basis data terhubung</span>
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -51,12 +51,12 @@
                         </div>
                     </div>
                     <div class="mt-3">
-                        <span class="text-2xl sm:text-3xl font-extrabold text-darkgreen">17</span>
+                        <span class="text-2xl sm:text-3xl font-extrabold text-darkgreen">{{ $stats['total_guru'] ?? 0 }}</span>
                         <span class="text-xs text-muted-text ml-1">Pendidik</span>
                     </div>
                     <div class="mt-2 text-xs text-emerald-600 font-medium flex items-center gap-1">
                         <x-icon name="check-circle" class="w-3.5 h-3.5" />
-                        <span>100% Aktif Mengajar</span>
+                        <span>{{ $stats['guru_aktif'] ?? 0 }} Aktif Mengajar</span>
                     </div>
                 </div>
 
@@ -69,11 +69,11 @@
                         </div>
                     </div>
                     <div class="mt-3">
-                        <span class="text-2xl sm:text-3xl font-extrabold text-darkgreen">356</span>
+                        <span class="text-2xl sm:text-3xl font-extrabold text-darkgreen">{{ number_format($stats['total_siswa'] ?? 0, 0, ',', '.') }}</span>
                         <span class="text-xs text-muted-text ml-1">Siswa Terdaftar</span>
                     </div>
                     <div class="mt-2 text-xs text-muted-text flex items-center gap-1">
-                        <span>VII, VIII, IX Lengkap</span>
+                        <span>VII, VIII, IX Terdata</span>
                     </div>
                 </div>
 
@@ -86,11 +86,11 @@
                         </div>
                     </div>
                     <div class="mt-3">
-                        <span class="text-2xl sm:text-3xl font-extrabold text-darkgreen">10</span>
+                        <span class="text-2xl sm:text-3xl font-extrabold text-darkgreen">{{ $stats['total_kelas'] ?? 0 }}</span>
                         <span class="text-xs text-muted-text ml-1">Rombel</span>
                     </div>
                     <div class="mt-2 text-xs text-purple-700 font-medium">
-                        <span>Wali Kelas Ditetapkan</span>
+                        <span>Tingkat VII, VIII & IX</span>
                     </div>
                 </div>
 
@@ -103,11 +103,11 @@
                         </div>
                     </div>
                     <div class="mt-3">
-                        <span class="text-2xl sm:text-3xl font-extrabold text-darkgreen">14</span>
+                        <span class="text-2xl sm:text-3xl font-extrabold text-darkgreen">{{ $stats['total_mapel'] ?? 0 }}</span>
                         <span class="text-xs text-muted-text ml-1">Mata Pelajaran</span>
                     </div>
                     <div class="mt-2 text-xs text-amber-700 font-medium">
-                        <span>Kurikulum Merdeka</span>
+                        <span>Kurikulum Terpadu</span>
                     </div>
                 </div>
 
@@ -120,10 +120,10 @@
                         </div>
                     </div>
                     <div class="mt-3">
-                        <span class="text-xl sm:text-2xl font-extrabold text-darkgreen">2026/2027</span>
+                        <span class="text-xl sm:text-2xl font-extrabold text-darkgreen">{{ $periodeAktif['tahun_ajaran'] ?? ($globalPeriodeAktif['tahun_ajaran'] ?? '2026/2027') }}</span>
                     </div>
                     <div class="mt-2 text-xs text-teal-700 font-medium">
-                        <span>Semester 1 (Ganjil)</span>
+                        <span>Semester {{ $periodeAktif['semester'] ?? ($globalPeriodeAktif['semester'] ?? '1 (Ganjil)') }}</span>
                     </div>
                 </div>
 

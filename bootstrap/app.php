@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'force.password' => \App\Http\Middleware\EnsurePasswordChanged::class,
+            'admin.utama'    => \App\Http\Middleware\AdminUtamaOnly::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

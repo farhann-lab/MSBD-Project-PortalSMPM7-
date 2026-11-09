@@ -262,6 +262,41 @@ Route::middleware(['auth'])->group(function () {
             })->name('pengaturan');
         });
 
+        // ─── Dashboard Guru & Wali Kelas ──────────────────────────────────
+        Route::prefix('guru')->name('guru.')->group(function () {
+            // Akademik & Pembelajaran
+            Route::get('/jadwal', function () {
+                return view('pages.guru.jadwal');
+            })->name('jadwal');
+
+            Route::get('/kelas-mapel', function () {
+                return view('pages.guru.kelas-mapel');
+            })->name('kelas-mapel');
+
+            Route::get('/absensi', function () {
+                return view('pages.guru.absensi');
+            })->name('absensi');
+
+            Route::get('/materi', function () {
+                return view('pages.guru.materi');
+            })->name('materi');
+
+            // Perwalian (Wali Kelas Aktif)
+            Route::prefix('perwalian')->name('perwalian.')->group(function () {
+                Route::get('/siswa', function () {
+                    return view('pages.guru.perwalian.siswa');
+                })->name('siswa');
+
+                Route::get('/absensi', function () {
+                    return view('pages.guru.perwalian.absensi');
+                })->name('absensi');
+
+                Route::get('/catatan', function () {
+                    return view('pages.guru.perwalian.catatan');
+                })->name('catatan');
+            });
+        });
+
         Route::get('/guru-panel', function () {
             return view('pages.guru.dashboard');
         })->name('dashboard.guru');

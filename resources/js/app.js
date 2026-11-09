@@ -306,6 +306,26 @@ function initHeroSlideshow() {
         });
     }
 
+    // In-slide Arrow buttons (Harapan 1 style prev/next circles)
+    const inSlidePrevBtns = container ? container.querySelectorAll('.hero-prev-btn') : [];
+    const inSlideNextBtns = container ? container.querySelectorAll('.hero-next-btn') : [];
+
+    inSlidePrevBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            goToSlide(currentIndex - 1);
+            startAutoSlide();
+        });
+    });
+
+    inSlideNextBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            goToSlide(currentIndex + 1);
+            startAutoSlide();
+        });
+    });
+
     dots.forEach((dot, idx) => {
         dot.addEventListener('click', () => {
             goToSlide(idx);

@@ -30,6 +30,7 @@ Route::get('/', function () {
     );
 
     return view('pages.home.index', [
+        'heroNews'      => array_slice($allNews, 0, 3),
         'news'          => array_slice($allNews, 0, 3),
         'announcements' => array_slice($allAnnouncements, 0, 3),
         'portals'       => $portals,
@@ -262,7 +263,7 @@ Route::middleware(['auth'])->group(function () {
         });
 
         Route::get('/guru-panel', function () {
-            return response('<h1>Panel Guru & Wali Kelas SIAKAD</h1><p>Selamat datang, ' . auth()->user()->username . '</p><form action="' . route('logout') . '" method="POST"><input type="hidden" name="_token" value="' . csrf_token() . '"><button type="submit">Logout</button></form>');
+            return view('pages.guru.dashboard');
         })->name('dashboard.guru');
 
         Route::get('/siswa-panel', function () {

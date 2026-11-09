@@ -40,12 +40,6 @@
             <div class="max-w-2xl lg:max-w-3xl hero-text-content">
                 {{-- Badges row --}}
                 <div class="flex flex-wrap items-center gap-2 sm:gap-2.5 mb-3 sm:mb-4">
-                    @if($schoolTag)
-                        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-white text-xs font-semibold tracking-wide shadow-xs">
-                            <span class="w-2 h-2 rounded-full bg-mint animate-pulse"></span>
-                            {{ $schoolTag }}
-                        </span>
-                    @endif
 
                     @if($badge)
                         <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-mint/20 backdrop-blur-md border border-mint/35 text-mint text-xs font-semibold tracking-wide shadow-xs">

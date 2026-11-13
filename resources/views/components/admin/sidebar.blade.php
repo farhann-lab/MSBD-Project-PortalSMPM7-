@@ -64,8 +64,8 @@
                     'id' => 'master-guru',
                     'label' => 'Guru & Tendik',
                     'icon' => 'users',
-                    'route' => route('admin.master.guru'),
-                    'badge' => '17 Guru',
+                    'route' => route('admin.master.guru.index'),
+                    'badge' => null,
                 ],
                 [
                     'id' => 'master-siswa',

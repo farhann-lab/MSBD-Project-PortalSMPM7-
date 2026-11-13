@@ -3,16 +3,20 @@
 use App\Http\Controllers\Admin\AdminBeritaController;
 use App\Http\Controllers\Admin\AdminFasilitasController;
 use App\Http\Controllers\Admin\AdminGaleriController;
+use App\Http\Controllers\Admin\AdminGuruController;
 use App\Http\Controllers\Admin\AdminPengumumanController;
 use App\Http\Controllers\Admin\AdminPrestasiPublikController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminManagementController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HomeController;
 use App\Models\Berita;
 use App\Models\Fasilitas;
 use App\Models\Galeri;
 use App\Models\Pengumuman;
 use App\Models\PrestasiPublik;
+use App\Models\PublikGuru;
+use App\Models\PublikSiswa;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
@@ -32,53 +36,7 @@ Route::get('/components-preview', function () {
 })->name('components.preview');
 
 // ─── Beranda ─────────────────────────────────────────────────────────────
-Route::get('/', function () {
-    // Ambil berita & pengumuman published dari database, fallback ke dummy jika DB kosong
-    $dbNews = Berita::published()->latest('published_at')->take(3)->get();
-    if ($dbNews->isNotEmpty()) {
-        $news = $dbNews->map(fn($item) => [
-            'id'       => $item->id,
-            'title'    => $item->judul,
-            'slug'     => $item->slug,
-            'summary'  => $item->summary,
-            'content'  => $item->isi,
-            'image'    => $item->image_url,
-            'date'     => $item->formatted_date,
-            'category' => 'Berita Sekolah',
-        ])->all();
-    } else {
-        $allNews = require database_path('dummy/news.php');
-        $news    = array_slice($allNews, 0, 3);
-    }
-
-    $dbAnnouncements = Pengumuman::published()->latest('tanggal')->take(3)->get();
-    if ($dbAnnouncements->isNotEmpty()) {
-        $announcements = $dbAnnouncements->map(fn($item) => [
-            'id'        => $item->id,
-            'title'     => $item->judul,
-            'slug'      => $item->slug,
-            'summary'   => $item->summary,
-            'content'   => $item->isi,
-            'date'      => $item->formatted_date,
-            'tag'       => 'Pengumuman',
-            'important' => false,
-        ])->all();
-    } else {
-        $allAnnouncements = require database_path('dummy/announcements.php');
-        $announcements    = array_slice($allAnnouncements, 0, 3);
-    }
-
-    $portals = array_filter(config('sekolah.portal', []), fn($p, $key) =>
-        in_array($key, ['cbt', 'rapor', 'ppdb']),
-        ARRAY_FILTER_USE_BOTH
-    );
-
-    return view('pages.home.index', [
-        'news'          => $news,
-        'announcements' => $announcements,
-        'portals'       => $portals,
-    ]);
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // ─── Profil Sekolah ──────────────────────────────────────────────────────
 Route::prefix('profil')->group(function () {
@@ -114,62 +72,123 @@ Route::prefix('profil')->group(function () {
 
 // ─── Direktori Guru & Siswa ──────────────────────────────────────────────
 Route::get('/guru', function () {
-    $allTeachers = require database_path('dummy/teachers_dummy.php');
+    $q     = trim(request('q', ''));
+    $mapel = trim(request('mapel', ''));
 
-    $q = request('q', '');
-    if ($q) {
-        $allTeachers = array_values(array_filter($allTeachers, fn($t) =>
-            stripos($t['nama_lengkap'], $q) !== false
-        ));
+    // Coba ambil dari Database View v_publik_guru
+    $guruQuery = PublikGuru::query();
+    if (!empty($q)) {
+        $guruQuery->search($q);
     }
-
-    $mapel = request('mapel', '');
-    if ($mapel) {
-        $allTeachers = array_values(array_filter($allTeachers, fn($t) =>
-            $t['mapel'] === $mapel
-        ));
+    if (!empty($mapel)) {
+        $guruQuery->mapel($mapel);
     }
+    $dbTeachers = $guruQuery->orderBy('nama')->paginate(16)->withQueryString();
 
-    usort($allTeachers, fn($a, $b) => strcoll($a['nama_lengkap'], $b['nama_lengkap']));
+    if ($dbTeachers->total() > 0) {
+        $teachers = $dbTeachers->through(fn($item) => [
+            'id'           => $item->id,
+            'nama_lengkap' => $item->nama,
+            'mapel'        => $item->mata_pelajaran ?: 'Tenaga Kependidikan',
+            'jabatan'      => null,
+        ]);
 
-    $allRaw       = require database_path('dummy/teachers_dummy.php');
-    $mapelList    = collect($allRaw)->pluck('mapel')->filter()->unique()->sort()->values()->toArray();
-    $mapelOptions = array_combine($mapelList, $mapelList);
+        // Daftar opsi mata pelajaran dari database view
+        $allMapels = PublikGuru::whereNotNull('mata_pelajaran')
+            ->where('mata_pelajaran', '!=', '')
+            ->pluck('mata_pelajaran')
+            ->flatMap(fn($str) => array_map('trim', explode(',', $str)))
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values()
+            ->toArray();
+        $mapelOptions = array_combine($allMapels, $allMapels);
+        $totalCount   = $dbTeachers->total();
+    } else {
+        // Fallback jika database view kosong / kondisi pencarian khusus
+        $allTeachers = require database_path('dummy/teachers_dummy.php');
+        if ($q) {
+            $allTeachers = array_values(array_filter($allTeachers, fn($t) =>
+                stripos($t['nama_lengkap'], $q) !== false
+            ));
+        }
+        if ($mapel) {
+            $allTeachers = array_values(array_filter($allTeachers, fn($t) =>
+                stripos($t['mapel'], $mapel) !== false
+            ));
+        }
+        usort($allTeachers, fn($a, $b) => strcoll($a['nama_lengkap'], $b['nama_lengkap']));
+
+        $allRaw       = require database_path('dummy/teachers_dummy.php');
+        $mapelList    = collect($allRaw)->pluck('mapel')->filter()->unique()->sort()->values()->toArray();
+        $mapelOptions = array_combine($mapelList, $mapelList);
+        $teachers     = $allTeachers;
+        $totalCount   = count($allTeachers);
+    }
 
     return view('pages.directory.teachers', [
-        'teachers'     => $allTeachers,
+        'teachers'     => $teachers,
         'mapelOptions' => $mapelOptions,
-        'totalCount'   => count($allTeachers),
+        'totalCount'   => $totalCount,
     ]);
 })->name('directory.teachers');
 
 Route::get('/siswa', function () {
-    $allStudents = require database_path('dummy/students_dummy.php');
+    $q     = trim(request('q', ''));
+    $kelas = trim(request('kelas', ''));
 
-    $q = request('q', '');
-    if ($q) {
-        $allStudents = array_values(array_filter($allStudents, fn($s) =>
-            stripos($s['nama_lengkap'], $q) !== false
-        ));
+    // Coba ambil dari Database View v_publik_siswa
+    $siswaQuery = PublikSiswa::query();
+    if (!empty($q)) {
+        $siswaQuery->search($q);
     }
-
-    $kelas = request('kelas', '');
-    if ($kelas) {
-        $allStudents = array_values(array_filter($allStudents, fn($s) =>
-            $s['kelas'] === $kelas
-        ));
+    if (!empty($kelas)) {
+        $siswaQuery->kelas($kelas);
     }
+    $dbStudents = $siswaQuery->orderBy('nama')->paginate(20)->withQueryString();
 
-    usort($allStudents, fn($a, $b) => strcoll($a['nama_lengkap'], $b['nama_lengkap']));
+    if ($dbStudents->total() > 0) {
+        $students = $dbStudents->through(fn($item) => [
+            'id'           => $item->id,
+            'nama_lengkap' => $item->nama,
+            'kelas'        => $item->nama_kelas,
+        ]);
 
-    $allRaw       = require database_path('dummy/students_dummy.php');
-    $kelasList    = collect($allRaw)->pluck('kelas')->unique()->sort()->values()->toArray();
-    $kelasOptions = array_combine($kelasList, $kelasList);
+        $kelasList = PublikSiswa::whereNotNull('nama_kelas')
+            ->distinct()
+            ->pluck('nama_kelas')
+            ->sort()
+            ->values()
+            ->toArray();
+        $kelasOptions = array_combine($kelasList, $kelasList);
+        $totalCount   = $dbStudents->total();
+    } else {
+        // Fallback jika database view kosong / tidak ada hasil
+        $allStudents = require database_path('dummy/students_dummy.php');
+        if ($q) {
+            $allStudents = array_values(array_filter($allStudents, fn($s) =>
+                stripos($s['nama_lengkap'], $q) !== false
+            ));
+        }
+        if ($kelas) {
+            $allStudents = array_values(array_filter($allStudents, fn($s) =>
+                $s['kelas'] === $kelas || stripos($s['kelas'], $kelas) === 0
+            ));
+        }
+        usort($allStudents, fn($a, $b) => strcoll($a['nama_lengkap'], $b['nama_lengkap']));
+
+        $allRaw       = require database_path('dummy/students_dummy.php');
+        $kelasList    = collect($allRaw)->pluck('kelas')->unique()->sort()->values()->toArray();
+        $kelasOptions = array_combine($kelasList, $kelasList);
+        $students     = $allStudents;
+        $totalCount   = count($allStudents);
+    }
 
     return view('pages.directory.students', [
-        'students'     => $allStudents,
+        'students'     => $students,
         'kelasOptions' => $kelasOptions,
-        'totalCount'   => count($allStudents),
+        'totalCount'   => $totalCount,
     ]);
 })->name('directory.students');
 
@@ -368,10 +387,10 @@ Route::middleware(['auth'])->group(function () {
 
         // Modul Data Master Admin (DESIGN.md 10.1 & 11)
         Route::prefix('admin/master')->name('admin.master.')->group(function () {
-            Route::get('/guru', function () {
-                $teachers = require database_path('dummy/teachers_dummy.php');
-                return view('pages.admin.master.guru', compact('teachers'));
-            })->name('guru');
+            // [MASTER-GRU-001] Manajemen Data Guru & Status Keaktifan
+            Route::patch('guru/{guru}/toggle-status', [AdminGuruController::class, 'toggleStatus'])->name('guru.toggle-status');
+            Route::post('guru/{guru}/reset-password', [AdminGuruController::class, 'resetPassword'])->name('guru.reset-password');
+            Route::resource('guru', AdminGuruController::class)->except(['show']);
 
             Route::get('/siswa', function () {
                 $students = require database_path('dummy/students_dummy.php');

@@ -163,7 +163,7 @@
         </button>
     </div>
 
-    <!-- Active Academic Year Badge in Sidebar -->
+    {{-- <!-- Active Academic Year Badge in Sidebar -->
     <div class="px-6 py-3.5 bg-[#142617]/70 border-b border-[#1C3322]/60 flex items-center justify-between text-xs">
         <div class="flex items-center gap-2 text-white/80">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -172,10 +172,10 @@
         <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
             Ganjil
         </span>
-    </div>
+    </div> --}}
 
     <!-- Navigation Menu Items (Scrollable) -->
-    <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-6 custom-scrollbar" aria-label="Menu Admin">
+    <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-6 sidebar-scrollbar overscroll-contain" aria-label="Menu Admin">
         @foreach($menuGroups as $group)
             <div class="space-y-1">
                 <div class="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-white/45">

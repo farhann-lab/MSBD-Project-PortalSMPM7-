@@ -301,8 +301,27 @@ Route::middleware(['auth'])->group(function () {
             return view('pages.guru.dashboard');
         })->name('dashboard.guru');
 
+        // ─── Dashboard Siswa ────────────────────────────────────────────────
+        Route::prefix('siswa')->name('siswa.')->group(function () {
+            Route::get('/jadwal', function () {
+                return view('pages.siswa.jadwal');
+            })->name('jadwal');
+
+            Route::get('/materi', function () {
+                return view('pages.siswa.materi');
+            })->name('materi');
+
+            Route::get('/absensi', function () {
+                return view('pages.siswa.absensi');
+            })->name('absensi');
+
+            Route::get('/profil', function () {
+                return view('pages.siswa.profil');
+            })->name('profil');
+        });
+
         Route::get('/siswa-panel', function () {
-            return response('<h1>Panel Siswa SIAKAD</h1><p>Selamat datang, ' . auth()->user()->username . '</p><form action="' . route('logout') . '" method="POST"><input type="hidden" name="_token" value="' . csrf_token() . '"><button type="submit">Logout</button></form>');
+            return view('pages.siswa.dashboard');
         })->name('dashboard.siswa');
     });
 });

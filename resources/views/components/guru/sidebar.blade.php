@@ -154,7 +154,7 @@
     </div>
 
     <!-- Navigation Scrollable Menu Area -->
-    <div class="flex-1 overflow-y-auto px-4 py-4 space-y-6 overscroll-contain">
+    <div class="flex-1 overflow-y-auto px-4 py-4 space-y-6 sidebar-scrollbar overscroll-contain">
         @foreach($menuGroups as $group)
             <div>
                 <!-- Group Section Heading -->

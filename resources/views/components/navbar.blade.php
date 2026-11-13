@@ -191,7 +191,7 @@
     </div>
 
     {{-- Mobile Drawer Navigation Links (Scrollable) --}}
-    <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1.5 overscroll-contain" aria-label="Menu Navigasi Seluler">
+    <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1.5 overscroll-contain sidebar-scrollbar" aria-label="Menu Navigasi Seluler">
         {{-- Beranda --}}
         <a href="{{ url('/') }}" 
            class="flex items-center justify-between min-h-11 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors {{ $isHome ? 'bg-forest/10 text-forest font-semibold' : 'text-darkgreen hover:bg-soft' }}"

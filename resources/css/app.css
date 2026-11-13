@@ -28,3 +28,44 @@
         background-color: var(--color-soft);
     }
 }
+
+/* Custom Institutional & Sleek Scrollbar (DESIGN.md Section 2 & 3) */
+.sidebar-scrollbar,
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(184, 204, 195, 0.25) transparent;
+}
+
+.sidebar-scrollbar:hover,
+.custom-scrollbar:hover {
+    scrollbar-color: rgba(184, 204, 195, 0.45) transparent;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar,
+.custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-track,
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 6px 0;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb,
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(184, 204, 195, 0.22);
+    border-radius: 9999px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb:hover,
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(184, 204, 195, 0.48);
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb:active,
+.custom-scrollbar::-webkit-scrollbar-thumb:active {
+    background-color: rgba(129, 154, 115, 0.7);
+}

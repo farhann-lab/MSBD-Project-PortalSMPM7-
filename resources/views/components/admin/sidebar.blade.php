@@ -18,6 +18,46 @@
             ],
         ],
         [
+            'heading' => 'Website Sekolah',
+            'items' => [
+                [
+                    'id' => 'web-berita',
+                    'label' => 'Kelola Berita',
+                    'icon' => 'newspaper',
+                    'route' => route('admin.cms.berita.index'),
+                    'badge' => null,
+                ],
+                [
+                    'id' => 'web-pengumuman',
+                    'label' => 'Pengumuman',
+                    'icon' => 'announcement',
+                    'route' => route('admin.cms.pengumuman.index'),
+                    'badge' => null,
+                ],
+                [
+                    'id' => 'web-fasilitas',
+                    'label' => 'Sarana & Prasarana',
+                    'icon' => 'building-office',
+                    'route' => route('admin.cms.fasilitas.index'),
+                    'badge' => null,
+                ],
+                [
+                    'id' => 'web-prestasi',
+                    'label' => 'Prestasi Siswa',
+                    'icon' => 'trophy',
+                    'route' => route('admin.cms.prestasi.index'),
+                    'badge' => null,
+                ],
+                [
+                    'id' => 'web-galeri',
+                    'label' => 'Galeri Foto',
+                    'icon' => 'photo',
+                    'route' => route('admin.cms.galeri.index'),
+                    'badge' => null,
+                ],
+            ],
+        ],
+        [
             'heading' => 'Data Master',
             'items' => [
                 [
@@ -99,7 +139,14 @@
         ],
         [
             'heading' => 'Akun & Sistem',
-            'items' => [
+            'items' => array_values(array_filter([
+                auth()->check() && auth()->user()->isAdminUtama() ? [
+                    'id' => 'sistem-manajemen-admin',
+                    'label' => 'Manajemen Admin',
+                    'icon' => 'shield-check',
+                    'route' => route('admin.manajemen-admin.index'),
+                    'badge' => 'Utama',
+                ] : null,
                 [
                     'id' => 'sistem-pengguna',
                     'label' => 'Manajemen Pengguna',
@@ -121,7 +168,7 @@
                     'route' => route('admin.sistem.pengaturan'),
                     'badge' => null,
                 ],
-            ],
+            ])),
         ],
     ];
 @endphp
@@ -166,11 +213,11 @@
     {{-- <!-- Active Academic Year Badge in Sidebar -->
     <div class="px-6 py-3.5 bg-[#142617]/70 border-b border-[#1C3322]/60 flex items-center justify-between text-xs">
         <div class="flex items-center gap-2 text-white/80">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span class="font-medium">T.A. 2026/2027 Semester 1</span>
+            <span class="w-2 h-2 rounded-full {{ ($globalPeriodeAktif['is_aktif'] ?? true) ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400' }}"></span>
+            <span class="font-medium">T.A. {{ $globalPeriodeAktif['label_topbar'] ?? '2026/2027 Semester 1' }}</span>
         </div>
-        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-            Ganjil
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold {{ ($globalPeriodeAktif['semester_tipe'] ?? 'Ganjil') === 'Ganjil' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-blue-500/20 text-blue-300 border-blue-500/30' }} border">
+            {{ $globalPeriodeAktif['semester_tipe'] ?? 'Ganjil' }}
         </span>
     </div> --}}
 

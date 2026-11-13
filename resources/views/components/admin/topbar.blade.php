@@ -48,22 +48,18 @@
         <!-- Right Section: Badges, Notifikasi & Profil Admin -->
         <div class="flex items-center gap-3 sm:gap-4 shrink-0">
             
-            <!-- Academic & Server Metadata Block (Formal & Institutional) -->
-            <div class="hidden md:flex items-center gap-3.5 pl-4 border-l border-border-soft">
-                <div class="flex flex-col text-right leading-tight">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-muted-text">Tahun Ajaran</span>
-                    <span class="text-xs font-black text-darkgreen mt-0.5">2026/2027 Semester 1</span>
-                </div>
-                
-                <div class="h-6 w-px bg-border-soft/70"></div>
+            <!-- Academic Period Badge (DESIGN.md: ditampilkan sebagai nama periode, mis. 2026/2027 Semester 1) -->
+            <div class="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-soft border border-border-soft text-xs text-darkgreen">
+                <span class="w-2 h-2 rounded-full {{ ($globalPeriodeAktif['is_aktif'] ?? true) ? 'bg-emerald-500' : 'bg-amber-500' }}"></span>
+                <span class="font-medium">{{ $globalPeriodeAktif['label_topbar'] ?? '2026/2027 Semester 1' }}</span>
+                <span class="text-muted-text">|</span>
+                <span class="text-forest font-semibold">{{ ($globalPeriodeAktif['is_aktif'] ?? true) ? 'Aktif' : 'Arsip' }}</span>
+            </div>
 
-                <div class="flex flex-col text-left leading-tight">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-forest">Status Sistem</span>
-                    <div class="flex items-center gap-1.5 mt-0.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                        <span class="text-xs font-semibold text-emerald-800">SIAKAD Aman</span>
-                    </div>
-                </div>
+            <!-- Server / Security Status (Micro Badge) -->
+            <div class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-medium">
+                <x-icon name="shield-check" class="w-4 h-4 text-emerald-600" />
+                <span>SIAKAD Aman</span>
             </div>
 
             <div class="h-6 w-px bg-border-soft hidden md:block"></div>

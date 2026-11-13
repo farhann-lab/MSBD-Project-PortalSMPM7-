@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -100,22 +101,21 @@ class AuthController extends Controller
             'password' => [
                 'required',
                 'string',
-                'min:8',
                 'confirmed',
+                'different:current_password',
+                Password::min(8)->mixedCase()->numbers()->symbols(),
                 function ($attribute, $value, $fail) use ($user) {
-                    if (strcasecmp($value, $user->username) === 0) {
-                        $fail('Password baru tidak boleh sama dengan username.');
-                    }
-                    if ($user->id_siswa && strcasecmp($value, (string) $user->username) === 0) {
-                        $fail('Password baru tidak boleh sama dengan NIS Anda.');
+                    // Username siswa = NIS, jadi satu pengecekan mencakup keduanya.
+                    if (strcasecmp($value, (string) $user->username) === 0) {
+                        $fail('Password baru tidak boleh sama dengan username atau NIS Anda.');
                     }
                 },
             ],
         ], [
             'current_password.required' => 'Password lama wajib diisi.',
             'password.required' => 'Password baru wajib diisi.',
-            'password.min' => 'Password baru minimal harus 8 karakter.',
             'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
+            'password.different' => 'Password baru tidak boleh sama dengan password lama.',
         ]);
 
         if (!Hash::check($request->input('current_password'), $user->password)) {
@@ -150,4 +150,3 @@ class AuthController extends Controller
             ->with('status', 'Anda telah berhasil keluar dari sistem.');
     }
 }
-

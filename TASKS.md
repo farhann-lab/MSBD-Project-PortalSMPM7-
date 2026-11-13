@@ -234,7 +234,7 @@ flowchart TD
 #### [ADMIN-AKN-001] Manajemen Akun Admin & Hak Istimewa Admin Utama
 - **Phase:** Phase 2
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Category:** Admin Management
 - **Description:** Menyediakan antarmuka bagi Admin Utama untuk mengelola akun admin lain (tambah, edit, nonaktifkan, reset password) dengan proteksi khusus.
 - **Source Requirements:** `PRD.md` AKN-3 s.d. AKN-8.
@@ -243,8 +243,8 @@ flowchart TD
   - Admin biasa tidak dapat mengelola akun admin lain atau menonaktifkan Admin Utama.
   - Admin Utama tidak dapat dinonaktifkan atau dihapus oleh siapa pun.
 - **Acceptance Criteria:**
-  - [ ] Admin biasa mendapat error 403 Forbidden saat membuka menu manajemen akun admin.
-  - [ ] Admin Utama dapat membuat akun admin baru dengan password awal ter-hash bcrypt.
+  - [x] Admin biasa mendapat error 403 Forbidden saat membuka menu manajemen akun admin.
+  - [x] Admin Utama dapat membuat akun admin baru dengan password awal ter-hash bcrypt.
 - **Verification:** Uji akses rute `/admin/manajemen-admin` menggunakan akun admin biasa vs admin utama.
 
 ---
@@ -256,7 +256,7 @@ flowchart TD
 #### [CMS-PUB-001] Modul Pengelolaan Konten Publik oleh Admin (Berita & Pengumuman)
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Category:** CMS
 - **Description:** Membangun antarmuka admin untuk membuat, mengedit, menghapus (soft delete), dan mempublikasikan berita serta pengumuman sekolah ke tabel `siakad_berita` dan `siakad_pengumuman`.
 - **Source Requirements:** `PRD.md` ADM-1, ADM-2, BRT-4, PGM-4; `DESIGN.md` Bab 11 & 12.
@@ -265,8 +265,8 @@ flowchart TD
   - Form memuat judul, slug otomatis/kustom, ringkasan, isi, upload gambar utama (WebP teroptimasi), dan tanggal publikasi.
   - Hanya artikel berstatus `published` yang tampil di website publik.
 - **Acceptance Criteria:**
-  - [ ] Admin dapat menyimpan draf dan menerbitkan artikel.
-  - [ ] Artikel yang diterbitkan otomatis muncul di katalog publik `/berita` dan `/pengumuman`.
+  - [x] Admin dapat menyimpan draf dan menerbitkan artikel.
+  - [x] Artikel yang diterbitkan otomatis muncul di katalog publik `/berita` dan `/pengumuman`.
 - **Verification:** Buat 1 berita baru di panel admin, lalu buka halaman `/berita` publik untuk memverifikasi kemunculannya.
 
 ---
@@ -274,7 +274,7 @@ flowchart TD
 #### [CMS-PUB-002] Modul CMS Sarana Prasarana, Prestasi, & Galeri Sekolah
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Category:** CMS
 - **Description:** Membangun antarmuka admin untuk mengelola katalog fasilitas (`siakad_fasilitas`), galeri foto kegiatan (`siakad_galeri`), dan prestasi siswa publik (`siakad_prestasi_publik`).
 - **Source Requirements:** `PRD.md` ADM-3, ADM-4, ADM-5, PRF-8, KSW-6, GAL-4.
@@ -283,7 +283,7 @@ flowchart TD
   - Prestasi publik terpisah dari tabel rapor RKM (`t_prestasi`).
   - Unggahan foto galeri dan fasilitas otomatis menghasilkan thumbnail web ringan.
 - **Acceptance Criteria:**
-  - [ ] Data fasilitas, galeri, dan prestasi di website publik dialihkan dari file dummy ke database.
+  - [x] Data fasilitas, galeri, dan prestasi di website publik dialihkan dari file dummy ke database.
 - **Verification:** Tambah foto galeri di admin dan cek `/galeri` publik.
 
 ---

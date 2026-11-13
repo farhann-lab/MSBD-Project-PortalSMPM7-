@@ -13,12 +13,38 @@ class AuthenticationTest extends TestCase
     {
         parent::setUp();
 
-        // Bersihkan siakad_users sebelum pengetesan
-        User::query()->delete();
+        // Bersihkan hanya user dummy pengujian
+        User::whereIn('username', [
+            'admin_utama',
+            'guru_test',
+            'siswa_test',
+            'user_nonaktif',
+            'user_force_pwd',
+            'user_change_val',
+            'user_change_ok',
+            'user_logout',
+        ])->delete();
+
         RateLimiter::clear('admin_utama|127.0.0.1');
         RateLimiter::clear('guru_test|127.0.0.1');
         RateLimiter::clear('siswa_test|127.0.0.1');
         RateLimiter::clear('user_nonaktif|127.0.0.1');
+    }
+
+    protected function tearDown(): void
+    {
+        User::whereIn('username', [
+            'admin_utama',
+            'guru_test',
+            'siswa_test',
+            'user_nonaktif',
+            'user_force_pwd',
+            'user_change_val',
+            'user_change_ok',
+            'user_logout',
+        ])->delete();
+
+        parent::tearDown();
     }
 
     /**

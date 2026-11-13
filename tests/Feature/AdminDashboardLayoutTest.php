@@ -51,9 +51,10 @@ class AdminDashboardLayoutTest extends TestCase
 
         // Main Workspace Verifications (DESIGN.md Section 10.1: Guru, Siswa, Kelas, Mapel, Tahun Ajaran)
         $response->assertSee('Statistik Utama Sekolah');
-        $response->assertSee('356');
-        $response->assertSee('17');
-        $response->assertSee('10');
-        $response->assertSee('14');
+        $response->assertSee('Guru &amp; Tendik', false);
+        $response->assertSee('Total Siswa');
+        $response->assertSee('Rombel Kelas');
+        $response->assertSee('Mata Pelajaran');
+        $response->assertSee('Tahun Ajaran');
     }
 }

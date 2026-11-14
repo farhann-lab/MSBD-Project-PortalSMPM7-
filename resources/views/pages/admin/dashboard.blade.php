@@ -15,7 +15,7 @@
                     Pusat kendali operasional sekolah, direktori guru & siswa, konten informasi publik, dan administrasi akademik SMP Muhammadiyah 7 Medan.
                 </p>
                 <div class="pt-2 flex flex-wrap items-center gap-3">
-                    <a href="{{ route('admin.master.siswa') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-darkgreen text-xs sm:text-sm font-bold shadow-xs hover:bg-mint transition-colors">
+                    <a href="{{ route('admin.master.siswa.index') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-darkgreen text-xs sm:text-sm font-bold shadow-xs hover:bg-mint transition-colors">
                         <x-icon name="user-group" class="w-4 h-4 text-forest" />
                         <span>Data Siswa & Impor</span>
                     </a>

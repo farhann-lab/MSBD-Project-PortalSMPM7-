@@ -409,7 +409,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [MASTER-SIS-001] Manajemen Data Siswa Lengkap (~30 Kolom Berkelompok)
 - **Phase:** Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Master Data
 - **Description:** Membangun antarmuka penambahan dan pengeditan data siswa pada tabel `m_siswa` dengan form terstruktur dalam 3 tab (Identitas, Sekolah Asal, Orang Tua/Wali).
@@ -420,8 +420,8 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Kolom tanggal yang kosong di database (`0000-00-00`) ditampilkan kosong di form (bukan teks 0000-00-00).
   - Kolom `inputID` diisi 0 untuk kompatibilitas penuh dengan RKM.
 - **Acceptance Criteria:**
-  - [ ] Form siswa tersusun rapi dalam 3 tab/accordion dan tidak mengalami layout error.
-  - [ ] Penyimpanan berhasil baik saat kolom opsional diisi maupun dikosongkan.
+  - [x] Form siswa tersusun rapi dalam 3 tab/accordion dan tidak mengalami layout error.
+  - [x] Penyimpanan berhasil baik saat kolom opsional diisi maupun dikosongkan.
 - **Verification:** Simpan satu data siswa baru dan cek langsung di tabel `m_siswa`.
 
 ---
@@ -429,20 +429,22 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [MASTER-SIS-002] Impor Data Siswa Massal via Excel (Staging Table & SP Commit)
 - **Phase:** Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Master Data
-- **Description:** Mengimplementasikan fitur unggah file Excel data siswa dengan tabel perantara (`siakad_impor_siswa_baris`), validasi baris, pratinjau error, dan eksekusi commit via Stored Procedure bertransaksi.
-- **Source Requirements:** `PRD.md` SIS-5 s.d. SIS-11; `ARCHITECTURE.md` Bagian 8.6, 8.8, 12.
+- **Description:** Mengimplementasikan fitur unggah file Excel data siswa (.xls BIFF8 / .xlsx) dengan tabel perantara (`siakad_impor_siswa_baris`), validasi baris, pratinjau error, dan eksekusi commit via Stored Procedure bertransaksi.
+- **Source Requirements:** `PRD.md` SIS-4 s.d. SIS-11; `ARCHITECTURE.md` Bagian 8.6, 8.8, 12.
 - **Dependencies:** `MASTER-SIS-001`, `DB-SP-001`
 - **Implementation Notes:**
-  - Unggahan diproses per baris ke staging: mendeteksi NIS duplikat atau kolom wajib kosong.
-  - Admin melihat ringkasan validasi: X valid, Y error.
-  - Tombol "Terapkan Impor" memanggil `sp_impor_siswa_commit`: memindahkan data valid ke `m_siswa` dan membuat penempatan kelas awal dalam 1 transaksi ACID.
+  - Template resmi sekolah berformat BIFF8 (.xls) 30 kolom: `nis`, `nisn`, `nama`, `jk`, `tmp_lahir`, `tgl_lahir`, `agama`, `status`, `anakke`, `alamat`, `notelp`, `sek_asal`, `sek_asal_alamat`, `diterima_kelas`, `diterima_tgl`, `diterima_smt`, `ijazah_no`, `ijazah_thn`, `skhun_no`, `skhun_thn`, `ortu_ayah`, `ortu_ibu`, `ortu_alamat`, `ortu_notelp`, `ortu_ayah_pkj`, `ortu_ibu_pkj`, `wali`, `wali_alamat`, `notelp_rumah`, `wali_pkj`.
+  - Menggunakan library `phpoffice/phpspreadsheet` untuk membaca format `.xls` (BIFF8) warisan RKM dan `.xlsx` modern.
+  - Alur: Unggah file -> Sanitasi formula injection -> Simpan ke staging `siakad_impor_siswa_baris` -> Validasi `sp_impor_siswa_validasi` -> Pratinjau validasi (X valid, Y error, Z duplikat) -> Konfirmasi "Terapkan Impor" memanggil `sp_impor_siswa_commit` dalam satu transaksi ACID.
+  - Tombol "Unduh Template Excel" mendownload template resmi yang tersimpan di `storage/app/private/import_siswa.xls`.
 - **Acceptance Criteria:**
-  - [ ] File Excel tidak valid ditolak dengan daftar baris error yang jelas.
-  - [ ] Jika terjadi kesalahan fatal di tengah penyimpanan, seluruh data di-rollback penuh tanpa meninggalkan data separuh.
-- **Verification:** Uji unggah template Excel berisi 20 baris data valid dan 2 baris data NIS ganda.
+  - [x] File Excel tidak valid ditolak dengan daftar baris error yang jelas.
+  - [x] Pratinjau hasil validasi tampil sebelum data disimpan ke `m_siswa`.
+  - [x] Jika terjadi kesalahan fatal di tengah penyimpanan, seluruh data di-rollback penuh tanpa meninggalkan data separuh.
+- **Verification:** Uji unggah template Excel berisi baris data valid dan baris data NIS ganda/kosong.
 
 ---
 
@@ -757,7 +759,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 | **ADM-1 s.d. ADM-11** | CMS Pengelolaan Konten Publik oleh Admin & Log Aktivitas | `CMS-PUB-001`, `CMS-PUB-002`, `CMS-LOG-001`, `BE-HOME-001` | 🛡️ Admin | **CMS-PUB / BE-HOME: Done ✅**<br>`CMS-LOG-001: Not Started` |
 | **DIR-1 s.d. DIR-11** | Direktori Guru & Siswa terhubung Database Master | `DB-VIEW-001`, `BE-DIR-001` | 🌐 Publik & 🛡️ Admin | **BE-DIR-001: Done ✅** |
 | **GRU-1 s.d. GRU-6** | Manajemen Data Guru & Status Keaktifan | `MASTER-GRU-001` | 🛡️ Admin | **Done** ✅ |
-| **SIS-1 s.d. SIS-12** | Data Siswa Lengkap (~30 kolom) & Impor Excel Staging | `MASTER-SIS-001`, `MASTER-SIS-002` | 🛡️ Admin | Not Started |
+| **SIS-1 s.d. SIS-12** | Data Siswa Lengkap (~30 kolom) & Impor Excel Staging | `MASTER-SIS-001`, `MASTER-SIS-002` | 🛡️ Admin | **Done** ✅ |
 | **KLS, PNS, PWK** | Rombel Kelas, Penempatan Siswa, Penetapan Wali Kelas | `MASTER-AKD-001` | 🛡️ Admin | Not Started |
 | **MPL, PGS** | Mapel & Penugasan Guru Per Semester | `MASTER-AKD-002` | 🛡️ Admin | Not Started |
 | **TAJ-1 s.d. TAJ-5** | Periode Tahun Ajaran & Semester (`tasm`), Aktivasi Periode | `MASTER-TAJ-001` | 🛡️ Admin | Not Started |

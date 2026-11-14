@@ -4,8 +4,10 @@ use App\Http\Controllers\Admin\AdminBeritaController;
 use App\Http\Controllers\Admin\AdminFasilitasController;
 use App\Http\Controllers\Admin\AdminGaleriController;
 use App\Http\Controllers\Admin\AdminGuruController;
+use App\Http\Controllers\Admin\AdminImporSiswaController;
 use App\Http\Controllers\Admin\AdminPengumumanController;
 use App\Http\Controllers\Admin\AdminPrestasiPublikController;
+use App\Http\Controllers\Admin\AdminSiswaController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminManagementController;
 use App\Http\Controllers\AuthController;
@@ -392,10 +394,13 @@ Route::middleware(['auth'])->group(function () {
             Route::post('guru/{guru}/reset-password', [AdminGuruController::class, 'resetPassword'])->name('guru.reset-password');
             Route::resource('guru', AdminGuruController::class)->except(['show']);
 
-            Route::get('/siswa', function () {
-                $students = require database_path('dummy/students_dummy.php');
-                return view('pages.admin.master.siswa', compact('students'));
-            })->name('siswa');
+            // [MASTER-SIS-001] Manajemen Data Siswa Lengkap (~30 Kolom Berkelompok)
+            Route::get('siswa/template-impor', [AdminImporSiswaController::class, 'downloadTemplate'])->name('siswa.template-impor');
+            Route::post('siswa/impor/upload', [AdminImporSiswaController::class, 'upload'])->name('siswa.impor.upload');
+            Route::get('siswa/impor/{impor}/preview', [AdminImporSiswaController::class, 'preview'])->name('siswa.impor.preview');
+            Route::post('siswa/impor/{impor}/commit', [AdminImporSiswaController::class, 'commit'])->name('siswa.impor.commit');
+            Route::delete('siswa/impor/{impor}/cancel', [AdminImporSiswaController::class, 'cancel'])->name('siswa.impor.cancel');
+            Route::resource('siswa', AdminSiswaController::class)->parameters(['siswa' => 'siswa'])->except(['show']);
 
             Route::get('/kelas', function () {
                 return view('pages.admin.master.kelas');

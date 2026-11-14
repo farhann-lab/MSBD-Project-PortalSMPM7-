@@ -71,7 +71,7 @@
                     'id' => 'master-siswa',
                     'label' => 'Data Siswa & Impor',
                     'icon' => 'user-group',
-                    'route' => route('admin.master.siswa'),
+                    'route' => route('admin.master.siswa.index'),
                     'badge' => '356 Siswa',
                 ],
                 [

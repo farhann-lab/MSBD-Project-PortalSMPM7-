@@ -95,7 +95,7 @@
                     </div>
 
                     <div class="pt-2 flex items-center gap-2">
-                        <a href="{{ route('admin.master.siswa') }}?kelas={{ $c['kode'] }}" class="flex-1 py-2 text-center rounded-xl bg-soft hover:bg-forest hover:text-white text-xs font-semibold text-darkgreen transition-colors">
+                        <a href="{{ route('admin.master.siswa.index') }}?kelas={{ $c['kode'] }}" class="flex-1 py-2 text-center rounded-xl bg-soft hover:bg-forest hover:text-white text-xs font-semibold text-darkgreen transition-colors">
                             Lihat Siswa Rombel
                         </a>
                         <button type="button" class="p-2 rounded-xl border border-border-soft hover:bg-soft text-muted-text" title="Pengaturan Kelas">

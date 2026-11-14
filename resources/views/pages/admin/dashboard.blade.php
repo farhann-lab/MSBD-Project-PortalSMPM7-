@@ -46,9 +46,6 @@
                 <div class="p-5 rounded-2xl bg-white border border-border-soft shadow-xs hover:shadow-md transition-shadow">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-semibold text-muted-text uppercase tracking-wider">Guru & Tendik</span>
-                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-                            <x-icon name="users" class="w-5 h-5" />
-                        </div>
                     </div>
                     <div class="mt-3">
                         <span class="text-2xl sm:text-3xl font-extrabold text-darkgreen">{{ $stats['total_guru'] ?? 0 }}</span>
@@ -56,7 +53,7 @@
                     </div>
                     <div class="mt-2 text-xs text-emerald-600 font-medium flex items-center gap-1">
                         <x-icon name="check-circle" class="w-3.5 h-3.5" />
-                        <span>{{ $stats['guru_aktif'] ?? 0 }} Aktif Mengajar</span>
+                        <span>100% Aktif Mengajar</span>
                     </div>
                 </div>
 
@@ -64,16 +61,13 @@
                 <div class="p-5 rounded-2xl bg-white border border-border-soft shadow-xs hover:shadow-md transition-shadow">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-semibold text-muted-text uppercase tracking-wider">Total Siswa</span>
-                        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
-                            <x-icon name="user-group" class="w-5 h-5" />
-                        </div>
                     </div>
                     <div class="mt-3">
                         <span class="text-2xl sm:text-3xl font-extrabold text-darkgreen">{{ number_format($stats['total_siswa'] ?? 0, 0, ',', '.') }}</span>
                         <span class="text-xs text-muted-text ml-1">Siswa Terdaftar</span>
                     </div>
                     <div class="mt-2 text-xs text-muted-text flex items-center gap-1">
-                        <span>VII, VIII, IX Terdata</span>
+                        <span>VII, VIII, IX Lengkap</span>
                     </div>
                 </div>
 
@@ -81,16 +75,13 @@
                 <div class="p-5 rounded-2xl bg-white border border-border-soft shadow-xs hover:shadow-md transition-shadow">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-semibold text-muted-text uppercase tracking-wider">Rombel Kelas</span>
-                        <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
-                            <x-icon name="building-office" class="w-5 h-5" />
-                        </div>
                     </div>
                     <div class="mt-3">
                         <span class="text-2xl sm:text-3xl font-extrabold text-darkgreen">{{ $stats['total_kelas'] ?? 0 }}</span>
                         <span class="text-xs text-muted-text ml-1">Rombel</span>
                     </div>
                     <div class="mt-2 text-xs text-purple-700 font-medium">
-                        <span>Tingkat VII, VIII & IX</span>
+                        <span>Wali Kelas Ditetapkan</span>
                     </div>
                 </div>
 
@@ -98,16 +89,13 @@
                 <div class="p-5 rounded-2xl bg-white border border-border-soft shadow-xs hover:shadow-md transition-shadow">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-semibold text-muted-text uppercase tracking-wider">Mata Pelajaran</span>
-                        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
-                            <x-icon name="book-open" class="w-5 h-5" />
-                        </div>
                     </div>
                     <div class="mt-3">
                         <span class="text-2xl sm:text-3xl font-extrabold text-darkgreen">{{ $stats['total_mapel'] ?? 0 }}</span>
                         <span class="text-xs text-muted-text ml-1">Mata Pelajaran</span>
                     </div>
                     <div class="mt-2 text-xs text-amber-700 font-medium">
-                        <span>Kurikulum Terpadu</span>
+                        <span>Kurikulum Merdeka</span>
                     </div>
                 </div>
 
@@ -115,15 +103,12 @@
                 <div class="p-5 rounded-2xl bg-white border border-border-soft shadow-xs hover:shadow-md transition-shadow">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-semibold text-muted-text uppercase tracking-wider">Tahun Ajaran</span>
-                        <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center">
-                            <x-icon name="calendar" class="w-5 h-5" />
-                        </div>
                     </div>
                     <div class="mt-3">
                         <span class="text-xl sm:text-2xl font-extrabold text-darkgreen">{{ $periodeAktif['tahun_ajaran'] ?? ($globalPeriodeAktif['tahun_ajaran'] ?? '2026/2027') }}</span>
                     </div>
                     <div class="mt-2 text-xs text-teal-700 font-medium">
-                        <span>Semester {{ $periodeAktif['semester'] ?? ($globalPeriodeAktif['semester'] ?? '1 (Ganjil)') }}</span>
+                        <span>Semester 1 (Ganjil)</span>
                     </div>
                 </div>
 

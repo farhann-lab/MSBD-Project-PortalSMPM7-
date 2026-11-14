@@ -26,18 +26,20 @@
     ];
 @endphp
 
+{{-- ── Single-Row Main Navbar ── --}}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-20 lg:h-22">
-        {{-- Left: Brand Logo --}}
+    <div class="flex items-center justify-between h-16 sm:h-20 gap-4">
+        
+        {{-- Brand Logo & Text (One Row with Nav) --}}
         <div class="flex items-center shrink-0">
             <x-school-logo size="md" />
         </div>
 
-        {{-- Center/Right: Desktop Navigation Menu (hidden on mobile/tablet) --}}
+        {{-- Desktop Navigation Menu --}}
         <nav class="hidden lg:flex items-center gap-1 xl:gap-2" aria-label="Navigasi Utama">
             {{-- Beranda --}}
             <a href="{{ url('/') }}" 
-               class="px-3 py-2 rounded-xl text-sm font-medium transition-colors duration-150 {{ $isHome ? 'text-forest font-semibold bg-forest/8' : 'text-darkgreen hover:text-forest hover:bg-soft' }}"
+               class="px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ $isHome ? 'text-forest font-bold' : 'text-darkgreen hover:text-forest' }}"
                {{ $isHome ? 'aria-current="page"' : '' }}>
                 Beranda
             </a>
@@ -45,11 +47,11 @@
             {{-- Profil Sekolah (Desktop Dropdown) --}}
             <div class="relative dropdown-container" data-dropdown="profile">
                 <button type="button" 
-                        class="dropdown-toggle px-3 py-2 rounded-xl text-sm font-medium transition-colors duration-150 inline-flex items-center gap-1.5 cursor-pointer {{ $isProfile ? 'text-forest font-semibold bg-forest/8' : 'text-darkgreen hover:text-forest hover:bg-soft' }}"
+                        class="dropdown-toggle px-3 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-1 cursor-pointer {{ $isProfile ? 'text-forest font-bold' : 'text-darkgreen hover:text-forest' }}"
                         aria-expanded="false" 
                         aria-haspopup="true">
-                    <span>Profil Sekolah</span>
-                    <x-icon name="chevron-down" class="w-4 h-4 text-muted-text dropdown-chevron transition-transform duration-200" />
+                    <span>Profil Kami</span>
+                    <x-icon name="chevron-down" class="w-3.5 h-3.5 text-muted-text dropdown-chevron transition-transform duration-200" />
                 </button>
 
                 <div class="dropdown-menu absolute top-full left-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-border-soft p-2 z-50 opacity-0 pointer-events-none invisible transform -translate-y-2 transition-all duration-200 origin-top-left"
@@ -70,11 +72,11 @@
             {{-- Direktori (Desktop Dropdown) --}}
             <div class="relative dropdown-container" data-dropdown="directory">
                 <button type="button" 
-                        class="dropdown-toggle px-3 py-2 rounded-xl text-sm font-medium transition-colors duration-150 inline-flex items-center gap-1.5 cursor-pointer {{ $isDirectory ? 'text-forest font-semibold bg-forest/8' : 'text-darkgreen hover:text-forest hover:bg-soft' }}"
+                        class="dropdown-toggle px-3 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-1 cursor-pointer {{ $isDirectory ? 'text-forest font-bold' : 'text-darkgreen hover:text-forest' }}"
                         aria-expanded="false" 
                         aria-haspopup="true">
                     <span>Direktori</span>
-                    <x-icon name="chevron-down" class="w-4 h-4 text-muted-text dropdown-chevron transition-transform duration-200" />
+                    <x-icon name="chevron-down" class="w-3.5 h-3.5 text-muted-text dropdown-chevron transition-transform duration-200" />
                 </button>
 
                 <div class="dropdown-menu absolute top-full left-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-border-soft p-2 z-50 opacity-0 pointer-events-none invisible transform -translate-y-2 transition-all duration-200 origin-top-left"
@@ -95,11 +97,11 @@
             {{-- Kesiswaan (Desktop Dropdown) --}}
             <div class="relative dropdown-container" data-dropdown="student-life">
                 <button type="button" 
-                        class="dropdown-toggle px-3 py-2 rounded-xl text-sm font-medium transition-colors duration-150 inline-flex items-center gap-1.5 cursor-pointer {{ $isStudentLife ? 'text-forest font-semibold bg-forest/8' : 'text-darkgreen hover:text-forest hover:bg-soft' }}"
+                        class="dropdown-toggle px-3 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-1 cursor-pointer {{ $isStudentLife ? 'text-forest font-bold' : 'text-darkgreen hover:text-forest' }}"
                         aria-expanded="false" 
                         aria-haspopup="true">
                     <span>Kesiswaan</span>
-                    <x-icon name="chevron-down" class="w-4 h-4 text-muted-text dropdown-chevron transition-transform duration-200" />
+                    <x-icon name="chevron-down" class="w-3.5 h-3.5 text-muted-text dropdown-chevron transition-transform duration-200" />
                 </button>
 
                 <div class="dropdown-menu absolute top-full left-0 mt-2 w-76 bg-white rounded-2xl shadow-xl border border-border-soft p-2 z-50 opacity-0 pointer-events-none invisible transform -translate-y-2 transition-all duration-200 origin-top-left"
@@ -119,42 +121,39 @@
 
             {{-- Galeri --}}
             <a href="{{ url('/galeri') }}" 
-               class="px-3 py-2 rounded-xl text-sm font-medium transition-colors duration-150 {{ $isGallery ? 'text-forest font-semibold bg-forest/8' : 'text-darkgreen hover:text-forest hover:bg-soft' }}"
+               class="px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ $isGallery ? 'text-forest font-bold' : 'text-darkgreen hover:text-forest' }}"
                {{ $isGallery ? 'aria-current="page"' : '' }}>
                 Galeri
             </a>
 
             {{-- Berita --}}
             <a href="{{ url('/berita') }}" 
-               class="px-3 py-2 rounded-xl text-sm font-medium transition-colors duration-150 {{ $isNews ? 'text-forest font-semibold bg-forest/8' : 'text-darkgreen hover:text-forest hover:bg-soft' }}"
+               class="px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ $isNews ? 'text-forest font-bold' : 'text-darkgreen hover:text-forest' }}"
                {{ $isNews ? 'aria-current="page"' : '' }}>
                 Berita
             </a>
 
             {{-- Pengumuman --}}
             <a href="{{ url('/pengumuman') }}" 
-               class="px-3 py-2 rounded-xl text-sm font-medium transition-colors duration-150 {{ $isAnnouncements ? 'text-forest font-semibold bg-forest/8' : 'text-darkgreen hover:text-forest hover:bg-soft' }}"
+               class="px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ $isAnnouncements ? 'text-forest font-bold' : 'text-darkgreen hover:text-forest' }}"
                {{ $isAnnouncements ? 'aria-current="page"' : '' }}>
                 Pengumuman
             </a>
+        </nav>
 
-            {{-- CTA Tombol Login SIAKAD --}}
-            <div class="ml-2 xl:ml-3 pl-2 xl:pl-3 border-l border-border-soft">
-                <x-button href="{{ url('/login') }}" variant="primary" size="md" icon="arrow-right" iconPosition="right">
+        {{-- Right Section: Login SIAKAD CTA & Mobile Trigger --}}
+        <div class="flex items-center gap-3">
+            {{-- Login SIAKAD CTA Button --}}
+            <div class="hidden sm:inline-flex">
+                <x-button href="{{ url('/login') }}" variant="primary" size="md" icon="arrow-right" iconPosition="right" class="font-bold">
                     Login SIAKAD
                 </x-button>
             </div>
-        </nav>
 
-        {{-- Mobile Hamburger Trigger Button (visible < 1024px) --}}
-        <div class="flex items-center gap-2 lg:hidden">
-            <x-button href="{{ url('/login') }}" variant="primary" size="sm" class="sm:inline-flex hidden">
-                Login SIAKAD
-            </x-button>
-
+            {{-- Mobile Hamburger Trigger Button (visible on mobile/tablet) --}}
             <button type="button" 
                     id="mobile-nav-toggle"
-                    class="inline-flex items-center justify-center w-11 h-11 min-h-11 min-w-11 rounded-xl border border-border-soft text-darkgreen hover:text-forest hover:bg-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest transition-colors cursor-pointer select-none"
+                    class="lg:hidden inline-flex items-center justify-center w-11 h-11 min-h-11 min-w-11 rounded-xl border border-border-soft text-darkgreen hover:text-forest hover:bg-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest transition-colors cursor-pointer select-none"
                     aria-label="Buka menu navigasi" 
                     aria-expanded="false" 
                     aria-controls="mobile-nav-drawer">
@@ -163,6 +162,7 @@
                 <x-icon name="x-mark" id="icon-close" class="w-6 h-6 hidden transition-transform" />
             </button>
         </div>
+
     </div>
 </div>
 
@@ -191,7 +191,7 @@
     </div>
 
     {{-- Mobile Drawer Navigation Links (Scrollable) --}}
-    <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1.5 overscroll-contain" aria-label="Menu Navigasi Seluler">
+    <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1.5 overscroll-contain sidebar-scrollbar" aria-label="Menu Navigasi Seluler">
         {{-- Beranda --}}
         <a href="{{ url('/') }}" 
            class="flex items-center justify-between min-h-11 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors {{ $isHome ? 'bg-forest/10 text-forest font-semibold' : 'text-darkgreen hover:bg-soft' }}"

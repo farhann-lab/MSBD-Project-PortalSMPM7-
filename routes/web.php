@@ -419,12 +419,99 @@ Route::middleware(['auth'])->group(function () {
             })->name('ekskul');
         });
 
+        // Modul Akademik Admin
+        Route::prefix('admin/akademik')->name('admin.akademik.')->group(function () {
+            Route::get('/jadwal', function () {
+                return view('pages.admin.akademik.jadwal');
+            })->name('jadwal');
+
+            Route::get('/kenaikan', function () {
+                $students = require database_path('dummy/students_dummy.php');
+                return view('pages.admin.akademik.kenaikan', compact('students'));
+            })->name('kenaikan');
+
+            Route::get('/absensi', function () {
+                return view('pages.admin.akademik.absensi');
+            })->name('absensi');
+        });
+
+        // Modul Akun & Sistem Admin
+        Route::prefix('admin/sistem')->name('admin.sistem.')->group(function () {
+            Route::get('/pengguna', function () {
+                $teachers = require database_path('dummy/teachers_dummy.php');
+                $students = require database_path('dummy/students_dummy.php');
+                return view('pages.admin.sistem.pengguna', compact('teachers', 'students'));
+            })->name('pengguna');
+
+            Route::get('/reset-password', function () {
+                return view('pages.admin.sistem.reset-password');
+            })->name('reset-password');
+
+            Route::get('/pengaturan', function () {
+                return view('pages.admin.sistem.pengaturan');
+            })->name('pengaturan');
+        });
+
+        // ─── Dashboard Guru & Wali Kelas ──────────────────────────────────
+        Route::prefix('guru')->name('guru.')->group(function () {
+            // Akademik & Pembelajaran
+            Route::get('/jadwal', function () {
+                return view('pages.guru.jadwal');
+            })->name('jadwal');
+
+            Route::get('/kelas-mapel', function () {
+                return view('pages.guru.kelas-mapel');
+            })->name('kelas-mapel');
+
+            Route::get('/absensi', function () {
+                return view('pages.guru.absensi');
+            })->name('absensi');
+
+            Route::get('/materi', function () {
+                return view('pages.guru.materi');
+            })->name('materi');
+
+            // Perwalian (Wali Kelas Aktif)
+            Route::prefix('perwalian')->name('perwalian.')->group(function () {
+                Route::get('/siswa', function () {
+                    return view('pages.guru.perwalian.siswa');
+                })->name('siswa');
+
+                Route::get('/absensi', function () {
+                    return view('pages.guru.perwalian.absensi');
+                })->name('absensi');
+
+                Route::get('/catatan', function () {
+                    return view('pages.guru.perwalian.catatan');
+                })->name('catatan');
+            });
+        });
+
         Route::get('/guru-panel', function () {
-            return response('<h1>Panel Guru & Wali Kelas SIAKAD</h1><p>Selamat datang, ' . auth()->user()->username . '</p><form action="' . route('logout') . '" method="POST"><input type="hidden" name="_token" value="' . csrf_token() . '"><button type="submit">Logout</button></form>');
+            return view('pages.guru.dashboard');
         })->name('dashboard.guru');
 
+        // ─── Dashboard Siswa ────────────────────────────────────────────────
+        Route::prefix('siswa')->name('siswa.')->group(function () {
+            Route::get('/jadwal', function () {
+                return view('pages.siswa.jadwal');
+            })->name('jadwal');
+
+            Route::get('/materi', function () {
+                return view('pages.siswa.materi');
+            })->name('materi');
+
+            Route::get('/absensi', function () {
+                return view('pages.siswa.absensi');
+            })->name('absensi');
+
+            Route::get('/profil', function () {
+                return view('pages.siswa.profil');
+            })->name('profil');
+        });
+
         Route::get('/siswa-panel', function () {
-            return response('<h1>Panel Siswa SIAKAD</h1><p>Selamat datang, ' . auth()->user()->username . '</p><form action="' . route('logout') . '" method="POST"><input type="hidden" name="_token" value="' . csrf_token() . '"><button type="submit">Logout</button></form>');
+            return view('pages.siswa.dashboard');
         })->name('dashboard.siswa');
     });
 });

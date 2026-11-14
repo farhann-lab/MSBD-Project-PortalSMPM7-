@@ -16,6 +16,7 @@ return new class extends Migration
                 if (!Schema::hasColumn('siakad_users', 'is_admin_utama')) {
                     $table->boolean('is_admin_utama')->default(false)->after('wajib_ganti_password');
                 }
+                $table->rememberToken()->nullable()->after('is_admin_utama');
             });
         }
     }
@@ -28,6 +29,7 @@ return new class extends Migration
                 if (!empty($cols)) {
                     $table->dropColumn($cols);
                 }
+                $table->dropRememberToken();
             });
         }
     }

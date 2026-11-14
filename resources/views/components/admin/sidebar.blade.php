@@ -118,21 +118,21 @@
                     'id' => 'akademik-jadwal',
                     'label' => 'Jadwal Pelajaran',
                     'icon' => 'clock',
-                    'route' => url('/admin#jadwal'),
+                    'route' => route('admin.akademik.jadwal'),
                     'badge' => null,
                 ],
                 [
                     'id' => 'akademik-kenaikan',
                     'label' => 'Kenaikan Kelas',
                     'icon' => 'academic-cap',
-                    'route' => url('/admin#kenaikan'),
+                    'route' => route('admin.akademik.kenaikan'),
                     'badge' => null,
                 ],
                 [
                     'id' => 'akademik-absensi',
                     'label' => 'Pemantauan Absensi',
                     'icon' => 'clipboard-document-check',
-                    'route' => url('/admin#absensi'),
+                    'route' => route('admin.akademik.absensi'),
                     'badge' => null,
                 ],
             ],
@@ -151,21 +151,21 @@
                     'id' => 'sistem-pengguna',
                     'label' => 'Manajemen Pengguna',
                     'icon' => 'user-plus',
-                    'route' => url('/admin#pengguna'),
+                    'route' => route('admin.sistem.pengguna'),
                     'badge' => null,
                 ],
                 [
                     'id' => 'sistem-reset-password',
                     'label' => 'Reset Password',
                     'icon' => 'key',
-                    'route' => url('/admin#reset-password'),
+                    'route' => route('admin.sistem.reset-password'),
                     'badge' => null,
                 ],
                 [
                     'id' => 'sistem-pengaturan',
                     'label' => 'Pengaturan Sekolah',
                     'icon' => 'settings',
-                    'route' => url('/admin#pengaturan'),
+                    'route' => route('admin.sistem.pengaturan'),
                     'badge' => null,
                 ],
             ])),
@@ -210,7 +210,7 @@
         </button>
     </div>
 
-    <!-- Active Academic Year Badge in Sidebar -->
+    {{-- <!-- Active Academic Year Badge in Sidebar -->
     <div class="px-6 py-3.5 bg-[#142617]/70 border-b border-[#1C3322]/60 flex items-center justify-between text-xs">
         <div class="flex items-center gap-2 text-white/80">
             <span class="w-2 h-2 rounded-full {{ ($globalPeriodeAktif['is_aktif'] ?? true) ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400' }}"></span>
@@ -219,10 +219,10 @@
         <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold {{ ($globalPeriodeAktif['semester_tipe'] ?? 'Ganjil') === 'Ganjil' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-blue-500/20 text-blue-300 border-blue-500/30' }} border">
             {{ $globalPeriodeAktif['semester_tipe'] ?? 'Ganjil' }}
         </span>
-    </div>
+    </div> --}}
 
     <!-- Navigation Menu Items (Scrollable) -->
-    <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-6 custom-scrollbar" aria-label="Menu Admin">
+    <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-6 sidebar-scrollbar overscroll-contain" aria-label="Menu Admin">
         @foreach($menuGroups as $group)
             <div class="space-y-1">
                 <div class="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-white/45">

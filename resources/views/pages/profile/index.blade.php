@@ -15,9 +15,7 @@
     <x-page-hero
         title="Tentang SMP Muhammadiyah 7 Medan"
         subtitle="Mengenal lebih dekat sejarah, arah perjuangan, visi &amp; misi, identitas resmi lembaga, serta saluran informasi kontak kami."
-        badge="Profil Sekolah"
         badgeIcon="building-office"
-        :extraBadges="['Berdiri Sejak 1979', 'NPSN 10257325', 'Terakreditasi A']"
         :image="asset('images/school/gedung.jpg')"
         imageAlt="Gedung SMP Muhammadiyah 7 Medan"
         imagePosition="center_90%"

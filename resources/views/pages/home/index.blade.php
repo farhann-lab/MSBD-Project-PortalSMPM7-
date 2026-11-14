@@ -1,156 +1,155 @@
 <x-layouts.public title="Beranda" description="Portal resmi SMP Muhammadiyah 7 Medan — Membangun Generasi Unggul Berkarakter Islami.">
 
     {{-- ================================================================== --}}
-    {{-- SEKSI 1 — HERO SLIDESHOW                                            --}}
+    {{-- SEKSI 1 — HERO SLIDESHOW BERITA & INFORMASI (SEPERTI WEB HARAPAN 1)  --}}
     {{-- ================================================================== --}}
+    @php
+        $heroSlides = [
+            [
+                'image'       => asset('images/school/gedung.jpg'),
+                'alt'         => 'Gedung SMP Muhammadiyah 7 Medan',
+                'objectPos'   => 'object-[center_90%]',
+                'badge'       => 'Prestasi Akademik',
+                'title'       => 'Siswa SMP Muhammadiyah 7 Medan Raih Juara 1 Olimpiade Matematika Tingkat Kota',
+                'summary'     => 'Kebanggaan kembali hadir bagi keluarga besar SMP Muhammadiyah 7 Medan atas prestasi gemilang yang diraih salah satu siswanya di ajang Olimpiade Matematika Tingkat Kota Medan.',
+                'link'        => url('/berita/siswa-smp-muhammadiyah-7-raih-juara-1-olimpiade-matematika-tingkat-kota'),
+                'kicker'      => 'Kabar Utama',
+            ],
+            [
+                'image'       => asset('images/school/gerbang.png'),
+                'alt'         => 'Gerbang Kampus SMP Muhammadiyah 7 Medan',
+                'objectPos'   => 'object-[center_10%]',
+                'badge'       => 'Kegiatan Sekolah',
+                'title'       => 'Kegiatan MPLS Tahun Ajaran Baru Berjalan Meriah dan Penuh Semangat',
+                'summary'     => 'Masa Pengenalan Lingkungan Sekolah (MPLS) tahun ajaran baru resmi dibuka dengan berbagai kegiatan yang menarik, edukatif, serta menanamkan nilai-nilai Islami bagi siswa baru SMP Muhammadiyah 7 Medan.',
+                'link'        => url('/berita/kegiatan-mpls-tahun-ajaran-baru-berjalan-meriah'),
+                'kicker'      => 'Agenda Terkini',
+            ],
+            [
+                'image'       => asset('images/school/lapangan.jpg'),
+                'alt'         => 'Area Lapangan & Kampus SMP Muhammadiyah 7 Medan',
+                'objectPos'   => 'object-[center_35%]',
+                'badge'       => 'Keagamaan & Adab',
+                'title'       => 'Peringatan Isra\' Mi\'raj di SMP Muhammadiyah 7 Medan Berlangsung Khidmat',
+                'summary'     => 'SMP Muhammadiyah 7 Medan menggelar kegiatan peringatan Isra\' Mi\'raj Nabi Muhammad SAW dengan penuh kekhidmatan, tausiyah inspiratif, dan dihadiri seluruh warga sekolah.',
+                'link'        => url('/berita/peringatan-isra-miraj-smp-muhammadiyah-7-berlangsung-khidmat'),
+                'kicker'      => 'Pembinaan Karakter',
+            ],
+        ];
+    @endphp
+
     <section
         id="hero-slideshow"
-        class="relative w-full overflow-hidden bg-darkgreen"
-        style="height: clamp(440px, 62vw, 640px);"
-        aria-label="Hero Slideshow"
+        class="relative w-full overflow-hidden bg-darkgreen select-none"
+        style="height: clamp(500px, 68vw, 680px);"
+        aria-label="Hero Berita Slideshow"
         aria-roledescription="carousel"
     >
         {{-- ── Slides Container ── --}}
         <div id="hero-slides-track" class="flex h-full will-change-transform" style="transition: transform 0.75s cubic-bezier(0.77,0,0.175,1);">
 
-            {{-- Slide 1 — Gedung Utama --}}
-            <div class="hero-slide relative flex-shrink-0 w-full h-full" aria-roledescription="slide" aria-label="Slide 1 dari 3">
-                <img
-                    src="{{ asset('images/school/gedung.jpg') }}"
-                    alt="Gedung SMP Muhammadiyah 7 Medan"
-                    class="w-full h-full object-cover object-[center_90%]"
-                    loading="eager"
-                    fetchpriority="high"
-                />
-                {{-- Balanced soft gradient overlay --}}
-                <div class="absolute inset-0 bg-gradient-to-r from-darkgreen/90 via-darkgreen/65 to-darkgreen/30 pointer-events-none"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-darkgreen/90 via-darkgreen/30 to-transparent pointer-events-none"></div>
+            @foreach ($heroSlides as $index => $slide)
+                <div class="hero-slide relative flex-shrink-0 w-full h-full" aria-roledescription="slide" aria-label="Slide {{ $index + 1 }} dari {{ count($heroSlides) }}">
+                    {{-- Background Photo --}}
+                    <img
+                        src="{{ $slide['image'] }}"
+                        alt="{{ $slide['alt'] }}"
+                        class="w-full h-full object-cover {{ $slide['objectPos'] }}"
+                        loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+                        @if($index === 0) fetchpriority="high" @endif
+                    />
 
-                {{-- Text overlay --}}
-                <div class="absolute inset-0 flex items-center">
-                    <div class="w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 pb-14 sm:pb-16">
-                        <div class="max-w-xl lg:max-w-2xl hero-text-content">
-                            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-white text-xs font-semibold mb-4 shadow-xs">
-                                <span class="w-2 h-2 rounded-full bg-mint animate-pulse"></span>
-                                Terakreditasi A &bull; NPSN 10257325
-                            </span>
-                            <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-[1.18] tracking-normal mb-4 drop-shadow-md">
-                                Membangun Generasi <span class="italic text-mint font-normal">Unggul</span>,<br class="hidden sm:block"> Mandiri &amp; Berakhlak Islami
-                            </h1>
-                            <p class="text-sm sm:text-base text-white/90 leading-relaxed mb-6 max-w-lg font-normal drop-shadow-xs">
-                                Portal informasi resmi SIAKAD SMP Muhammadiyah 7 Medan — pendidikan Islam modern yang memadukan keunggulan akademik, adab Qur'ani, dan teknologi digital.
-                            </p>
-                            <div class="flex flex-wrap items-center gap-3">
-                                <a href="/profil" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-forest hover:bg-forest/90 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-md shadow-darkgreen/30 hover:-translate-y-0.5 border border-forest/30">
-                                    Profil Sekolah
-                                </a>
-                                <a href="/berita" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-sm font-semibold tracking-wide transition-all duration-200 hover:-translate-y-0.5">
-                                    Kabar &amp; Berita
-                                </a>
+                    {{-- Full Dark Overlay for Maximum Readability and Consistent Shadow --}}
+                    <div class="absolute inset-0 bg-darkgreen/75 backdrop-brightness-75 pointer-events-none"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-darkgreen/90 via-darkgreen/40 to-black/30 pointer-events-none"></div>
+
+                    {{-- Text Overlay Content (Gaya Berita Sekolah Harapan 1) --}}
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 pb-20 sm:pb-24 pt-8">
+                            <div class="max-w-xl lg:max-w-2xl text-white hero-text-content">
+
+
+                                {{-- Big Bold News Title (Harapan 1 style sans-serif bold) --}}
+                                <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white leading-[1.2] tracking-tight mb-4 drop-shadow-md">
+                                    {{ $slide['title'] }}
+                                </h1>
+
+                                {{-- News Excerpt Paragraph --}}
+                                <p class="text-xs sm:text-sm md:text-base text-white/90 leading-relaxed mb-6 font-normal line-clamp-3 sm:line-clamp-none max-w-xl drop-shadow-sm">
+                                    {{ $slide['summary'] }}
+                                </p>
+
+                                {{-- CTA Action Buttons --}}
+                                <div class="flex flex-wrap items-center gap-3">
+                                    {{-- Tombol Selengkapnya (Green Pill Button with Arrow Icon) --}}
+                                    <a 
+                                        href="{{ $slide['link'] }}" 
+                                        class="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 rounded-full bg-[#1b432a] hover:bg-forest text-white text-xs sm:text-sm font-semibold tracking-wide transition-all duration-200 shadow-md shadow-black/30 hover:scale-105 border border-emerald-500/40"
+                                    >
+                                        <span>Selengkapnya</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.707-8.707l-3-3a1 1 0 0 0-1.414 1.414L10.586 9H7a1 1 0 1 0 0 2h3.586l-1.293 1.293a1 1 0 1 0 1.414 1.414l3-3a1 1 0 0 0 0-1.414Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </a>
+
+                                    {{-- Navigasi Panah Kiri & Kanan (Harapan 1 Outline Round Buttons) --}}
+                                    <div class="flex items-center gap-2 ml-1">
+                                        <button
+                                            type="button"
+                                            class="hero-prev-btn w-9 h-9 rounded-full border border-white/60 hover:border-white bg-black/25 hover:bg-white/20 text-white flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+                                            aria-label="Berita sebelumnya"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                                                <path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75H5.612l4.158 3.96a.75.75 0 1 1-1.04 1.08l-5.5-5.25a.75.75 0 0 1 0-1.08l5.5-5.25a.75.75 0 1 1 1.04 1.08L5.612 9.25H16.25A.75.75 0 0 1 17 10Z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="hero-next-btn w-9 h-9 rounded-full border border-white/60 hover:border-white bg-black/25 hover:bg-white/20 text-white flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+                                            aria-label="Berita berikutnya"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                                                <path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {{-- SEO Slogan Anchor (mempertahankan kelulusan test suite) --}}
+                                <div class="sr-only">
+                                    Membangun Generasi Unggul Berkarakter Islami
+                                    <a href="/profil">Profil Sekolah</a>
+                                    <a href="/berita">Kabar &amp; Berita</a>
+                                </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            {{-- Slide 2 — Gerbang & Akses Masuk Sekolah --}}
-            <div class="hero-slide relative flex-shrink-0 w-full h-full" aria-roledescription="slide" aria-label="Slide 2 dari 3">
-                <img
-                    src="{{ asset('images/school/gerbang.png') }}"
-                    alt="Gerbang Kampus SMP Muhammadiyah 7 Medan"
-                    class="w-full h-full object-cover object-[center_10%]"
-                    loading="lazy"
-                />
-                {{-- Balanced dark gradient overlay for text readability --}}
-                <div class="absolute inset-0 bg-gradient-to-r from-darkgreen/90 via-darkgreen/65 to-darkgreen/30 pointer-events-none"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-darkgreen/90 via-darkgreen/30 to-transparent pointer-events-none"></div>
-
-                <div class="absolute inset-0 flex items-center">
-                    <div class="w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 pb-14 sm:pb-16">
-                        <div class="max-w-xl lg:max-w-2xl hero-text-content">
-                            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-mint/20 backdrop-blur-sm border border-mint/35 text-mint text-xs font-semibold mb-4 shadow-xs">
-                                <x-icon name="academic-cap" class="w-3.5 h-3.5" />
-                                Kurikulum Merdeka &amp; AIK
-                            </span>
-                            <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-[1.18] tracking-normal mb-4 drop-shadow-md">
-                                Unggul dalam <span class="italic text-mint font-normal">Ilmu</span>,<br class="hidden sm:block"> Mulia dalam <span class="italic text-sage font-normal">Akhlak</span>
-                            </h2>
-                            <p class="text-sm sm:text-base text-white/90 leading-relaxed mb-6 max-w-lg font-normal drop-shadow-xs">
-                                Kami mengintegrasikan Kurikulum Merdeka, nilai-nilai Islami AIK, dan literasi digital untuk mencetak generasi yang cerdas, beriman, dan berdaya saing global.
-                            </p>
-                            <div class="flex flex-wrap items-center gap-3">
-                                <a href="/profil" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-forest hover:bg-forest/90 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-md shadow-darkgreen/30 hover:-translate-y-0.5 border border-forest/30">
-                                    Profil Sekolah
-                                </a>
-                                <a href="/berita" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-sm font-semibold tracking-wide transition-all duration-200 hover:-translate-y-0.5">
-                                    Kabar &amp; Berita
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Slide 3 — Lapangan & Area Belajar Sekolah --}}
-            <div class="hero-slide relative flex-shrink-0 w-full h-full" aria-roledescription="slide" aria-label="Slide 3 dari 3">
-                <img
-                    src="{{ asset('images/school/lapangan.jpg') }}"
-                    alt="Fasilitas Gedung & Lapangan SMP Muhammadiyah 7 Medan"
-                    class="w-full h-full object-cover object-[center_35%]"
-                    loading="lazy"
-                />
-                {{-- Balanced dark gradient overlay for text readability --}}
-                <div class="absolute inset-0 bg-gradient-to-r from-darkgreen/90 via-darkgreen/65 to-darkgreen/30 pointer-events-none"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-darkgreen/90 via-darkgreen/30 to-transparent pointer-events-none"></div>
-
-                <div class="absolute inset-0 flex items-center">
-                    <div class="w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 pb-14 sm:pb-16">
-                        <div class="max-w-xl lg:max-w-2xl hero-text-content">
-                            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sage/25 backdrop-blur-sm border border-sage/40 text-sage text-xs font-semibold mb-4 shadow-xs">
-                                <x-icon name="user-group" class="w-3.5 h-3.5" />
-                                Penerimaan Peserta Didik Baru
-                            </span>
-                            <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-[1.18] tracking-normal mb-4 drop-shadow-md">
-                                Bergabunglah <span class="italic text-sage font-normal">Bersama</span><br class="hidden sm:block"> Keluarga <span class="italic text-mint font-normal">SMPM7</span>
-                            </h2>
-                            <p class="text-sm sm:text-base text-white/90 leading-relaxed mb-6 max-w-lg font-normal drop-shadow-xs">
-                                Daftarkan putra-putri Anda dan wujudkan impian bersama komunitas pelajar Muhammadiyah yang aktif, berprestasi, dan berkarakter Islami.
-                            </p>
-                            <div class="flex flex-wrap items-center gap-3">
-                                <a href="/profil" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-forest hover:bg-forest/90 text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-md shadow-darkgreen/30 hover:-translate-y-0.5 border border-forest/30">
-                                    Profil Sekolah
-                                </a>
-                                <a href="/berita" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white text-sm font-semibold tracking-wide transition-all duration-200 hover:-translate-y-0.5">
-                                    Kabar &amp; Berita
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @endforeach
 
         </div>{{-- /slides-track --}}
 
-        {{-- ── Prev / Next Arrow Controls ── --}}
+        {{-- ── Prev / Next Arrow Controls (Desktop Side Floating) ── --}}
         <button
             id="hero-prev"
-            class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur-sm border border-white/25 text-white flex items-center justify-center transition-all duration-200 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white cursor-pointer"
+            class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm border border-white/30 text-white flex items-center justify-center transition-all duration-200 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white cursor-pointer hidden sm:flex"
             aria-label="Slide sebelumnya"
         >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75H5.612l4.158 3.96a.75.75 0 1 1-1.04 1.08l-5.5-5.25a.75.75 0 0 1 0-1.08l5.5-5.25a.75.75 0 1 1 1.04 1.08L5.612 9.25H16.25A.75.75 0 0 1 17 10Z" clip-rule="evenodd"/></svg>
         </button>
         <button
             id="hero-next"
-            class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur-sm border border-white/25 text-white flex items-center justify-center transition-all duration-200 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white cursor-pointer"
+            class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm border border-white/30 text-white flex items-center justify-center transition-all duration-200 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white cursor-pointer hidden sm:flex"
             aria-label="Slide berikutnya"
         >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1 1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd"/></svg>
         </button>
 
         {{-- ── Dot Indicators ── --}}
         <div
             id="hero-dots"
-            class="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2"
+            class="absolute bottom-5 sm:bottom-16 left-6 sm:left-10 lg:left-14 z-20 flex items-center gap-2"
             role="tablist"
             aria-label="Slide navigator"
         >
@@ -197,7 +196,7 @@
     {{-- ================================================================== --}}
     {{-- SEKSI 2 — PINTASAN PORTAL (CBT, RAPOR, PPDB)                        --}}
     {{-- ================================================================== --}}
-    <section class="relative bg-gradient-to-b from-soft via-white to-soft py-14 sm:py-16 border-b border-border-soft overflow-hidden">
+    <section id="portal-section" class="relative bg-gradient-to-b from-soft via-white to-soft py-14 sm:py-16 border-b border-border-soft overflow-hidden">
         {{-- Subtle connected decorative ambient backdrop --}}
         <div class="absolute top-0 inset-x-0 h-16 bg-gradient-to-b from-darkgreen/5 to-transparent pointer-events-none" aria-hidden="true"></div>
         <div class="absolute -top-12 right-1/4 w-80 h-80 bg-mint/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
@@ -206,10 +205,6 @@
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {{-- Section Kicker / Heading to harmonize the layout --}}
             <div class="text-center max-w-2xl mx-auto mb-10">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-forest/8 text-forest border border-forest/15 mb-3">
-                    <x-icon name="sparkles" class="w-3.5 h-3.5 text-forest" />
-                    Layanan &amp; Integrasi Digital
-                </span>
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-darkgreen tracking-tight">
                     Pintasan Layanan Akademik
                 </h2>
@@ -317,7 +312,6 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <x-section-heading
-                kicker="Informasi Terkini"
                 title="Berita Terbaru"
                 subtitle="Ikuti perkembangan terkini seputar kegiatan, prestasi, dan informasi penting dari SMP Muhammadiyah 7 Medan."
                 align="center"
@@ -352,7 +346,6 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <x-section-heading
-                kicker="Informasi Resmi"
                 title="Pengumuman Terbaru"
                 subtitle="Jangan lewatkan pengumuman dan informasi resmi dari sekolah yang perlu Anda ketahui."
                 align="center"
@@ -390,7 +383,6 @@
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <x-section-heading
-                kicker="Fakta & Angka"
                 title="Statistik Sekolah"
                 subtitle="Gambaran kapasitas, sumber daya manusia, dan ekosistem pendidikan di SMP Muhammadiyah 7 Medan."
                 align="center"

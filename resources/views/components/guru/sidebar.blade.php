@@ -32,7 +32,7 @@
                 [
                     'id' => 'kelas-mapel',
                     'label' => 'Kelas & Mata Pelajaran',
-                    'icon' => 'building-office',
+                    'icon' => 'rectangle-group',
                     'route' => route('guru.kelas-mapel'),
                     'badge' => '4 Rombel',
                 ],
@@ -76,7 +76,7 @@
                 [
                     'id' => 'wali-kelas-catatan',
                     'label' => 'Catatan Siswa / BK',
-                    'icon' => 'clipboard-check',
+                    'icon' => 'clipboard-document-list',
                     'route' => route('guru.perwalian.catatan'),
                     'badge' => null,
                 ],

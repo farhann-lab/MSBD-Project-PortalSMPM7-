@@ -10,7 +10,7 @@
         'fill' => 'none',
         'viewBox' => '0 0 24 24',
         'stroke' => 'currentColor',
-        'stroke-width' => '2',
+        'stroke-width' => '1.8',
         'stroke-linecap' => 'round',
         'stroke-linejoin' => 'round',
     ]);
@@ -18,8 +18,12 @@
 
 <svg {{ $svgAttributes }}>
     @switch($name)
+        {{-- ========================================== --}}
+        {{-- PENCARIAN & NAVIGASI / ARROWS              --}}
+        {{-- ========================================== --}}
         @case('search')
-            <circle cx="11" cy="11" r="8" />
+        @case('magnifying-glass')
+            <circle cx="11" cy="11" r="7" />
             <path d="m21 21-4.35-4.35" />
             @break
 
@@ -35,6 +39,10 @@
 
         @case('chevron-down')
             <path d="m6 9 6 6 6-6" />
+            @break
+
+        @case('chevron-up')
+            <path d="m18 15-6-6-6 6" />
             @break
 
         @case('chevron-right')
@@ -53,11 +61,28 @@
             <path d="M19 12H5M12 19l-7-7 7-7" />
             @break
 
+        @case('arrow-up')
+            <path d="M12 19V5M5 12l7-7 7 7" />
+            @break
+
+        @case('arrow-down')
+            <path d="M12 5v14M19 12l-7 7-7-7" />
+            @break
+
         @case('arrow-top-right-on-square')
         @case('external-link')
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
             <polyline points="15 3 21 3 21 9" />
             <line x1="10" y1="14" x2="21" y2="3" />
+            @break
+
+        @case('arrow-up-right')
+            <path d="M7 17 17 7M7 7h10v10" />
+            @break
+
+        @case('arrow-right-circle')
+            <circle cx="12" cy="12" r="10" />
+            <path d="m12 16 4-4-4-4M8 12h8" />
             @break
 
         @case('arrow-path')
@@ -68,6 +93,16 @@
             <path d="M16 21h5v-5" />
             @break
 
+        @case('arrow-down-tray')
+        @case('download')
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+            @break
+
+        {{-- ========================================== --}}
+        {{-- AKADEMIK, PENDIDIKAN & KELEMBAGAAN         --}}
+        {{-- ========================================== --}}
         @case('academic-cap')
             <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
             <path d="M6 12v5c3 3 9 3 12 0v-5" />
@@ -86,6 +121,13 @@
             <path d="M10 11h.01M14 11h.01M10 15h.01M14 15h.01" />
             @break
 
+        @case('rectangle-group')
+            <rect width="7" height="7" x="3" y="3" rx="1.5" />
+            <rect width="7" height="7" x="14" y="3" rx="1.5" />
+            <rect width="7" height="7" x="14" y="14" rx="1.5" />
+            <rect width="7" height="7" x="3" y="14" rx="1.5" />
+            @break
+
         @case('user-group')
         @case('users')
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -99,6 +141,13 @@
             <circle cx="12" cy="7" r="4" />
             @break
 
+        @case('user-plus')
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <line x1="19" x2="19" y1="8" y2="14" />
+            <line x1="22" x2="16" y1="11" y2="11" />
+            @break
+
         @case('trophy')
             <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
             <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
@@ -107,8 +156,83 @@
             <path d="M18 4H6v7a6 6 0 0 0 12 0V4z" />
             @break
 
+        @case('star')
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            @break
+
         @case('sparkles')
             <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z" />
+            @break
+
+        {{-- ========================================== --}}
+        {{-- DOKUMEN, FILE, FORM & CETAK                --}}
+        {{-- ========================================== --}}
+        @case('document-text')
+        @case('file-text')
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" x2="8" y1="13" y2="13" />
+            <line x1="16" x2="8" y1="17" y2="17" />
+            <line x1="10" x2="8" y1="9" y2="9" />
+            @break
+
+        @case('clipboard-document-check')
+        @case('clipboard-check')
+            <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+            <path d="m9 14 2 2 4-4" />
+            @break
+
+        @case('clipboard-document-list')
+            <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+            <path d="M9 12h6M9 16h6" />
+            @break
+
+        @case('paper-clip')
+            <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+            @break
+
+        @case('printer')
+        @case('print')
+            <polyline points="6 9 6 2 18 2 18 9" />
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+            <rect width="12" height="8" x="6" y="14" rx="1" />
+            @break
+
+        @case('plus')
+            <path d="M12 5v14M5 12h14" />
+            @break
+
+        @case('pencil')
+        @case('pencil-square')
+        @case('edit')
+            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+            <path d="m15 5 4 4" />
+            @break
+
+        @case('trash')
+        @case('delete')
+            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            <line x1="10" x2="10" y1="11" y2="17" />
+            <line x1="14" x2="14" y1="11" y2="17" />
+            @break
+
+        {{-- ========================================== --}}
+        {{-- MEDIA, HARDWARE & KOMUNIKASI               --}}
+        {{-- ========================================== --}}
+        @case('photo')
+        @case('image')
+            <rect width="18" height="18" x="3" y="3" rx="2" />
+            <circle cx="9" cy="9" r="2" />
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+            @break
+
+        @case('computer-desktop')
+        @case('monitor')
+            <rect width="20" height="14" x="2" y="3" rx="2" />
+            <line x1="8" x2="16" y1="21" y2="21" />
+            <line x1="12" x2="12" y1="17" y2="21" />
             @break
 
         @case('phone')
@@ -139,118 +263,9 @@
             <polyline points="12 6 12 12 16 14" />
             @break
 
-        @case('check')
-            <polyline points="20 6 9 17 4 12" />
-            @break
-
-        @case('check-circle')
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-            <polyline points="22 4 12 14.01 9 11.01" />
-            @break
-
-        @case('information-circle')
-        @case('info')
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" x2="12" y1="16" y2="12" />
-            <line x1="12" x2="12.01" y1="8" y2="8" />
-            @break
-
-        @case('exclamation-circle')
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" x2="12" y1="8" y2="12" />
-            <line x1="12" x2="12.01" y1="16" y2="16" />
-            @break
-
-        @case('photo')
-        @case('image')
-            <rect width="18" height="18" x="3" y="3" rx="2" />
-            <circle cx="9" cy="9" r="2" />
-            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-            @break
-
-        @case('document-text')
-        @case('file-text')
-            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-            <polyline points="14 2 14 8 20 8" />
-            <line x1="16" x2="8" y1="13" y2="13" />
-            <line x1="16" x2="8" y1="17" y2="17" />
-            <line x1="10" x2="8" y1="9" y2="9" />
-            @break
-
-        @case('computer-desktop')
-        @case('monitor')
-            <rect width="20" height="14" x="2" y="3" rx="2" />
-            <line x1="8" x2="16" y1="21" y2="21" />
-            <line x1="12" x2="12" y1="17" y2="21" />
-            @break
-
-        @case('identification')
-            <rect width="18" height="14" x="3" y="5" rx="2" />
-            <circle cx="9" cy="11" r="2" />
-            <path d="M7 16a2 2 0 0 1 4 0" />
-            <line x1="14" x2="17" y1="10" y2="10" />
-            <line x1="14" x2="17" y1="14" y2="14" />
-            @break
-
-        @case('funnel')
-        @case('filter')
-            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-            @break
-
         @case('newspaper')
             <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
             <path d="M18 14h-8M15 18h-5M10 6h8v4h-8V6Z" />
-            @break
-
-        @case('shield-check')
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            <path d="m9 12 2 2 4-4" />
-            @break
-
-        @case('lock')
-        @case('lock-closed')
-            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            @break
-
-        @case('eye')
-            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-            <circle cx="12" cy="12" r="3" />
-            @break
-
-        @case('eye-slash')
-            <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
-            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
-            <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
-            <line x1="2" x2="22" y1="2" y2="22" />
-            @break
-
-        @case('question-mark-circle')
-        @case('help')
-            <circle cx="12" cy="12" r="10" />
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-            <line x1="12" x2="12.01" y1="17" y2="17" />
-            @break
-
-        @case('arrow-right-on-rectangle')
-        @case('login')
-            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-            <polyline points="10 17 15 12 10 7" />
-            <line x1="15" x2="3" y1="12" y2="12" />
-            @break
-
-        @case('clipboard-document-check')
-        @case('clipboard-check')
-            <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-            <path d="m9 14 2 2 4-4" />
-            @break
-
-        @case('user-plus')
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <line x1="19" x2="19" y1="8" y2="14" />
-            <line x1="22" x2="16" y1="11" y2="11" />
             @break
 
         @case('megaphone')
@@ -279,19 +294,6 @@
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
             @break
 
-        @case('arrow-left-on-rectangle')
-        @case('logout')
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" x2="9" y1="12" y2="12" />
-            @break
-
-        @case('key')
-            <path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.3-2.3a1 1 0 0 0 0-1.4l-2.3-2.3a1 1 0 0 0-1.4 0L15.5 6" />
-            <path d="m21 2-9.6 9.6" />
-            <circle cx="7.5" cy="15.5" r="5.5" />
-            @break
-
         @case('globe-alt')
         @case('globe')
             <circle cx="12" cy="12" r="10" />
@@ -305,6 +307,117 @@
             <circle cx="18" cy="19" r="3"/>
             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            @break
+
+        @case('funnel')
+        @case('filter')
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            @break
+
+        @case('circle-stack')
+        @case('database')
+            <ellipse cx="12" cy="5" rx="9" ry="3" />
+            <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+            <path d="M3 12A9 3 0 0 0 21 12" />
+            @break
+
+        {{-- ========================================== --}}
+        {{-- KEAMANAN, STATUS & FEEDBACK                --}}
+        {{-- ========================================== --}}
+        @case('shield-check')
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            <path d="m9 12 2 2 4-4" />
+            @break
+
+        @case('shield')
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            @break
+
+        @case('lock')
+        @case('lock-closed')
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            @break
+
+        @case('key')
+            <path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.3-2.3a1 1 0 0 0 0-1.4l-2.3-2.3a1 1 0 0 0-1.4 0L15.5 6" />
+            <path d="m21 2-9.6 9.6" />
+            <circle cx="7.5" cy="15.5" r="5.5" />
+            @break
+
+        @case('eye')
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+            <circle cx="12" cy="12" r="3" />
+            @break
+
+        @case('eye-slash')
+        @case('eye-off')
+            <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+            <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+            <line x1="2" x2="22" y1="2" y2="22" />
+            @break
+
+        @case('check')
+            <polyline points="20 6 9 17 4 12" />
+            @break
+
+        @case('check-circle')
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+            @break
+
+        @case('x-circle')
+            <circle cx="12" cy="12" r="10" />
+            <path d="m15 9-6 6M9 9l6 6" />
+            @break
+
+        @case('information-circle')
+        @case('info')
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" x2="12" y1="16" y2="12" />
+            <line x1="12" x2="12.01" y1="8" y2="8" />
+            @break
+
+        @case('exclamation-circle')
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" x2="12" y1="8" y2="12" />
+            <line x1="12" x2="12.01" y1="16" y2="16" />
+            @break
+
+        @case('alert-triangle')
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+            <line x1="12" x2="12" y1="9" y2="13" />
+            <line x1="12" x2="12.01" y1="17" y2="17" />
+            @break
+
+        @case('question-mark-circle')
+        @case('help')
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <line x1="12" x2="12.01" y1="17" y2="17" />
+            @break
+
+        @case('identification')
+            <rect width="18" height="14" x="3" y="5" rx="2" />
+            <circle cx="9" cy="11" r="2" />
+            <path d="M7 16a2 2 0 0 1 4 0" />
+            <line x1="14" x2="17" y1="10" y2="10" />
+            <line x1="14" x2="17" y1="14" y2="14" />
+            @break
+
+        @case('arrow-right-on-rectangle')
+        @case('login')
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+            <polyline points="10 17 15 12 10 7" />
+            <line x1="15" x2="3" y1="12" y2="12" />
+            @break
+
+        @case('arrow-left-on-rectangle')
+        @case('logout')
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" x2="9" y1="12" y2="12" />
             @break
 
         @default

@@ -77,7 +77,7 @@
                 [
                     'id' => 'master-kelas',
                     'label' => 'Manajemen Kelas',
-                    'icon' => 'building-office',
+                    'icon' => 'rectangle-group',
                     'route' => route('admin.master.kelas'),
                     'badge' => '10 Rombel',
                 ],
@@ -105,7 +105,7 @@
                 [
                     'id' => 'master-ekskul',
                     'label' => 'Ekstrakurikuler',
-                    'icon' => 'trophy',
+                    'icon' => 'star',
                     'route' => route('admin.master.ekskul'),
                     'badge' => null,
                 ],

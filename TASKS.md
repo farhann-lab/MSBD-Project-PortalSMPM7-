@@ -43,13 +43,26 @@ flowchart TD
 
 | Milestone | Fase / Urutan | Sasaran Utama | Target Output / Objek DBMS | Status |
 |---|---|---|---|---|
-| **M0: Public Web Frontend** | Phase 0 | Antarmuka publik 16 rute responsif | Blade views, CSS tokens, Dummy fixtures, Feature tests | **DONE** |
+| **M0: Public Web Frontend** | Phase 0 | Antarmuka publik 16 rute responsif | Blade views, CSS tokens, Dummy fixtures, Feature tests | **DONE** ✅ |
 | **M1: Database Foundation** | Phase 1 (DBMS) | 15 tabel `siakad_*`, Views, SP, Triggers, Privileges | Migrations, `database/sql/*.sql`, Database users | **READY TO START** |
-| **M2: Auth & Admin Shell** | Phase 2 (Urutan 1) | Login terpadu multi-role, ubah password, dashboard admin | `siakad_users`, Session guard, Role middleware, Topbar semester | **PENDING** |
-| **M3: Public Web Integration**| Phase 3 (Urutan 2) | CMS konten admin, direktori publik membaca DB RKM via view | `v_publik_guru`, `v_publik_siswa`, `siakad_*` konten | **PENDING** |
-| **M4: Master Data Engine** | Phase 4 (Urutan 3) | Siswa (~30 kolom + staging Excel), Guru, Kelas, Penugasan | `sp_impor_siswa_commit`, `sp_salin_penugasan`, `sp_salin_walikelas` | **PENDING** |
+| **M2: Auth & Admin Shell** | Phase 2 (Urutan 1) | Login terpadu multi-role, ubah password, dashboard admin | `siakad_users`, Session guard, Role middleware, Topbar semester | **DONE** ✅ |
+| **M3: Public Web Integration**| Phase 3 (Urutan 2) | CMS konten admin, direktori publik membaca DB RKM via view | `v_publik_guru`, `v_publik_siswa`, `siakad_*` konten | **DONE** ✅ |
+| **M4: Master Data Engine** | Phase 4 (Urutan 3) | Siswa (~30 kolom + staging Excel), Guru, Kelas, Mapel, Penugasan, Tahun Ajaran | `sp_impor_siswa_commit`, `sp_salin_penugasan`, `sp_salin_walikelas` | **IN PROGRESS** 🔄 |
 | **M5: Learning & Attendance** | Phase 5 (Urutan 4) | Jadwal, Sesi Pertemuan, Absensi Siswa, Materi Pelajaran | `siakad_jadwal`, `siakad_absensi_siswa`, Panel Guru & Siswa | **PENDING** |
 | **M6: Promotion & Demo** | Phase 6 (Urutan 5) | Kenaikan kelas, ekskul akademik, persiapan demo hosting | `sp_proses_kenaikan_kelas`, `v_pratinjau_kenaikan` | **PENDING** |
+
+### 📌 Legenda Role / Panel
+
+Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan di device berbeda:
+
+| Label | Keterangan |
+|---|---|
+| 🛡️ **Admin** | Fitur untuk panel admin — dapat dikerjakan di **Device Admin** |
+| 👨‍🏫 **Panel Guru** | Fitur khusus panel guru & wali kelas — dapat dikerjakan di **Device Guru** |
+| 👩‍🎓 **Panel Siswa** | Fitur khusus panel siswa — dapat dikerjakan di **Device Siswa** |
+| 🔧 **Infrastruktur** | Foundation/backend — harus dikerjakan terlebih dahulu sebelum task lain |
+
+> 💡 **Strategi Paralelisasi:** Setelah Phase 4 (Master Data) selesai, **Phase 5 dapat dibagi ke tiga device secara bersamaan**: Device Admin mengerjakan `OPS-JDW-001` dan `ADMIN-PAS-001`; Device Guru mengerjakan `OPS-ABS-001`, `OPS-MTR-001`, dan `GURU-PANEL-001`; Device Siswa mengerjakan `SISWA-PANEL-001`.
 
 ---
 
@@ -181,6 +194,7 @@ flowchart TD
 - **Phase:** Phase 2
 - **Priority:** P0
 - **Status:** Done
+- **Role/Panel:** 🔧 Infrastruktur (semua role)
 - **Category:** Authentication
 - **Description:** Mengganti placeholder `/login` dengan form login terpadu menggunakan model `siakad_users` (bcrypt password hash), pembatasan rate limiting, dan proteksi brute force.
 - **Source Requirements:** `PRD.md` AUT-1 s.d. AUT-5; `DESIGN.md` Bab 9; `ARCHITECTURE.md` Bagian 10.
@@ -200,6 +214,7 @@ flowchart TD
 - **Phase:** Phase 2
 - **Priority:** P1
 - **Status:** Done
+- **Role/Panel:** 🔧 Infrastruktur (semua role)
 - **Category:** Authentication
 - **Description:** Membangun form ubah password (password lama, password baru minimal 8 karakter, konfirmasi) dan middleware isolasi "Mode Wajib Ganti Password".
 - **Source Requirements:** `PRD.md` AUT-6, AUT-7, AUT-9; `DESIGN.md` Bab 11.
@@ -213,10 +228,32 @@ flowchart TD
 
 ---
 
+#### [AUTH-003] Halaman Profil Pengguna (Guru & Siswa)
+- **Phase:** Phase 2 / Phase 4
+- **Priority:** P1
+- **Status:** Not Started
+- **Role/Panel:** 🔧 Infrastruktur (semua role)
+- **Category:** Authentication & Profile
+- **Description:** Membangun halaman profil yang menampilkan informasi pengguna yang diizinkan, diambil dari data master berdasarkan ID yang terhubung ke akun. Guru melihat profil dari `m_guru`, siswa dari `m_siswa`.
+- **Source Requirements:** `PRD.md` AUT-7; `DESIGN.md` Bab 11.
+- **Dependencies:** `AUTH-001`, `MASTER-GRU-001`, `MASTER-SIS-001`
+- **Implementation Notes:**
+  - Guru melihat: nama, NIP (jika ada), jenis kelamin, status aktif — data dari `m_guru`.
+  - Siswa melihat: nama, NIS, kelas aktif — data dari `m_siswa` dan `t_kelas_siswa`. Tidak menampilkan tanggal lahir, alamat, atau data orang tua.
+  - Halaman profil hanya menampilkan data yang diizinkan (DIR-8 berlaku).
+- **Acceptance Criteria:**
+  - [ ] Guru dapat melihat profil dasar dari data master.
+  - [ ] Siswa dapat melihat profil dasar dan kelas aktifnya.
+  - [ ] Data sensitif tidak tampil (NIP tersembunyi jika tidak diperlukan; NIK, alamat, tanggal lahir tidak ditampilkan ke siswa lain).
+- **Verification:** Login sebagai guru dan siswa, buka menu profil, verifikasi data yang tampil sesuai aturan.
+
+---
+
 #### [DASH-001] Shell Layout Dashboard Admin & Indikator Periode Akademik
 - **Phase:** Phase 2
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
+- **Role/Panel:** 🛡️ Admin
 - **Category:** Layout & Admin
 - **Description:** Membangun kerangka dashboard admin dengan sidebar navigasi responsif, topbar kontekstual (menampilkan nama semester aktif, misal *2024/2025 Semester 2*, bukan kode `20242`), kartu statistik ringkasan, dan menu profil.
 - **Source Requirements:** `PRD.md` DSH-1, DSH-2; `DESIGN.md` Bab 6.2, 10; `ARCHITECTURE.md` Bagian 7.
@@ -225,8 +262,8 @@ flowchart TD
   - Sesuai `ARCHITECTURE.md` Bagian 7, panel admin dapat menggunakan Blade kustom terstruktur atau Filament `[USULAN]`.
   - Kartu statistik beranda admin: total guru aktif, siswa aktif, rombel aktif, dan status periode berjalan.
 - **Acceptance Criteria:**
-  - [ ] Topbar menampilkan nama periode ramah baca dari `v_periode_aktif`.
-  - [ ] Navigasi sidebar responsif (berubah jadi drawer di tablet/ponsel).
+  - [x] Topbar menampilkan nama periode ramah baca dari `v_periode_aktif`.
+  - [x] Navigasi sidebar responsif (berubah jadi drawer di tablet/ponsel).
 - **Verification:** Akses rute `/admin` setelah login dan periksa kesesuaian layout visual dengan `DESIGN.md`.
 
 ---
@@ -257,6 +294,7 @@ flowchart TD
 - **Phase:** Phase 3
 - **Priority:** P1
 - **Status:** Done
+- **Role/Panel:** 🛡️ Admin
 - **Category:** CMS
 - **Description:** Membangun antarmuka admin untuk membuat, mengedit, menghapus (soft delete), dan mempublikasikan berita serta pengumuman sekolah ke tabel `siakad_berita` dan `siakad_pengumuman`.
 - **Source Requirements:** `PRD.md` ADM-1, ADM-2, BRT-4, PGM-4; `DESIGN.md` Bab 11 & 12.
@@ -275,6 +313,7 @@ flowchart TD
 - **Phase:** Phase 3
 - **Priority:** P1
 - **Status:** Done
+- **Role/Panel:** 🛡️ Admin
 - **Category:** CMS
 - **Description:** Membangun antarmuka admin untuk mengelola katalog fasilitas (`siakad_fasilitas`), galeri foto kegiatan (`siakad_galeri`), dan prestasi siswa publik (`siakad_prestasi_publik`).
 - **Source Requirements:** `PRD.md` ADM-3, ADM-4, ADM-5, PRF-8, KSW-6, GAL-4.
@@ -292,6 +331,7 @@ flowchart TD
 - **Phase:** Phase 3
 - **Priority:** P0
 - **Status:** Done
+- **Role/Panel:** 🌐 Publik & 🛡️ Admin
 - **Category:** Integration
 - **Description:** Menghubungkan controller halaman publik `/guru` dan `/siswa` untuk membaca data dari view database `v_publik_guru` dan `v_publik_siswa`.
 - **Source Requirements:** `PRD.md` DIR-1 s.d. DIR-11; `ARCHITECTURE.md` Bagian 8.4; `DESIGN.md` Bab 8.
@@ -311,6 +351,7 @@ flowchart TD
 - **Phase:** Phase 3
 - **Priority:** P1
 - **Status:** Done
+- **Role/Panel:** 🌐 Publik & 🛡️ Admin
 - **Category:** Integration
 - **Description:** Mengganti angka statistik dummy pada beranda (`BRD-6`) dengan kalkulasi nyata dari database (jumlah siswa aktif di periode berjalan, guru aktif, dan rombel aktif), serta menghubungkan 3 pintasan portal ke database/pengaturan.
 - **Source Requirements:** `PRD.md` BRD-6, BRD-8, BRD-9; `ARCHITECTURE.md` Bagian 9.
@@ -324,6 +365,24 @@ flowchart TD
 
 ---
 
+#### [CMS-LOG-001] Pencatatan Log Aktivitas Pengelolaan Konten Publik
+- **Phase:** Phase 3
+- **Priority:** P2
+- **Status:** Not Started
+- **Role/Panel:** 🛡️ Admin
+- **Category:** CMS & Audit
+- **Description:** Mengimplementasikan pencatatan riwayat aktivitas aksi admin pada modul berita, pengumuman, fasilitas, galeri, dan prestasi ke tabel `siakad_log_aktivitas` (siapa, jenis konten, aksi: tambah/ubah/hapus/terbit, waktu) sesuai ADM-11.
+- **Source Requirements:** `PRD.md` ADM-11, DSH-4; `ARCHITECTURE.md` Bagian 8.2, 8.5.
+- **Dependencies:** `CMS-PUB-001`, `CMS-PUB-002`
+- **Implementation Notes:**
+  - Dapat dipicu via Model Observer / Event Listener Eloquent saat konten dibuat, diubah, atau dihapus.
+  - Data log ini menjadi sumber data yang ditampilkan di feed aktivitas Dashboard Admin (`DSH-4`).
+- **Acceptance Criteria:**
+  - [ ] Setiap aksi CRUD konten publik otomatis mencatat baris baru di `siakad_log_aktivitas`.
+- **Verification:** Buat atau edit 1 artikel berita, lalu periksa tabel `siakad_log_aktivitas`.
+
+---
+
 ### Phase 4: Urutan 3 — Data Master & Manajemen Akademik
 
 *Fokus: Mengelola data guru, siswa, kelas, penempatan, wali kelas, mapel, penugasan, dan akun massal.*
@@ -332,6 +391,7 @@ flowchart TD
 - **Phase:** Phase 4
 - **Priority:** P1
 - **Status:** Done
+- **Role/Panel:** 🛡️ Admin
 - **Category:** Master Data
 - **Description:** Membangun CRUD data guru pada tabel bersama `m_guru` dengan pencarian nama, filter status aktif, dan pengelolaan akun login guru.
 - **Source Requirements:** `PRD.md` GRU-1 s.d. GRU-6, AKN-1; `DESIGN.md` Bab 11.
@@ -350,6 +410,7 @@ flowchart TD
 - **Phase:** Phase 4
 - **Priority:** P1
 - **Status:** Not Started
+- **Role/Panel:** 🛡️ Admin
 - **Category:** Master Data
 - **Description:** Membangun antarmuka penambahan dan pengeditan data siswa pada tabel `m_siswa` dengan form terstruktur dalam 3 tab (Identitas, Sekolah Asal, Orang Tua/Wali).
 - **Source Requirements:** `PRD.md` SIS-1 s.d. SIS-4, SIS-12; `DESIGN.md` Bab 11.
@@ -369,6 +430,7 @@ flowchart TD
 - **Phase:** Phase 4
 - **Priority:** P1
 - **Status:** Not Started
+- **Role/Panel:** 🛡️ Admin
 - **Category:** Master Data
 - **Description:** Mengimplementasikan fitur unggah file Excel data siswa dengan tabel perantara (`siakad_impor_siswa_baris`), validasi baris, pratinjau error, dan eksekusi commit via Stored Procedure bertransaksi.
 - **Source Requirements:** `PRD.md` SIS-5 s.d. SIS-11; `ARCHITECTURE.md` Bagian 8.6, 8.8, 12.
@@ -388,6 +450,7 @@ flowchart TD
 - **Phase:** Phase 4
 - **Priority:** P1
 - **Status:** Not Started
+- **Role/Panel:** 🛡️ Admin
 - **Category:** Master Data & Auth
 - **Description:** Membangun fitur pembuatan akun siswa massal untuk siswa aktif yang belum berakun serta tombol reset password paksa oleh admin.
 - **Source Requirements:** `PRD.md` AKN-9 s.d. AKN-11; `DESIGN.md` Bab 11.
@@ -406,6 +469,7 @@ flowchart TD
 - **Phase:** Phase 4
 - **Priority:** P1
 - **Status:** Not Started
+- **Role/Panel:** 🛡️ Admin
 - **Category:** Academic Management
 - **Description:** Mengelola data rombel (`m_kelas`), penempatan siswa per tahun ajaran (`t_kelas_siswa`), penetapan wali kelas per periode (`t_walikelas`), serta modal salin wali kelas antar-periode.
 - **Source Requirements:** `PRD.md` KLS-1..3, PNS-1..6, PWK-1..6; `ARCHITECTURE.md` Bagian 8.6; `DESIGN.md` Bab 11.
@@ -425,6 +489,7 @@ flowchart TD
 - **Phase:** Phase 4
 - **Priority:** P1
 - **Status:** Not Started
+- **Role/Panel:** 🛡️ Admin
 - **Category:** Academic Management
 - **Description:** Mengelola kurikulum mapel (`m_mapel`), penugasan guru per kelas dan semester (`t_guru_mapel`), modal salin penugasan antar-semester, dan pengecekan dependensi nilai sebelum penonaktifan.
 - **Source Requirements:** `PRD.md` MPL-1..3, PGS-1..7; `ARCHITECTURE.md` Bagian 8.6; `DESIGN.md` Bab 11.
@@ -440,6 +505,45 @@ flowchart TD
 
 ---
 
+#### [MASTER-TAJ-001] Manajemen Periode Tahun Ajaran & Semester
+- **Phase:** Phase 4
+- **Priority:** P1
+- **Status:** Not Started
+- **Role/Panel:** 🛡️ Admin
+- **Category:** Academic Management
+- **Description:** Membangun antarmuka pengelolaan data periode tahun ajaran pada tabel `tahun` (tasm 5-karakter), pergantian periode aktif via `sp_set_periode_aktif(tasm)`, serta penetapan tanggal tanda tangan rapor kepsek sesuai TAJ-1 s.d. TAJ-5.
+- **Source Requirements:** `PRD.md` TAJ-1 s.d. TAJ-5; `ARCHITECTURE.md` Bagian 8.6; `DESIGN.md` Bab 11.
+- **Dependencies:** `DASH-001`, `DB-SP-001`
+- **Implementation Notes:**
+  - Menampilkan daftar periode dengan penanda jelas mana yang sedang aktif (`aktif = 'Y'`).
+  - Form tambah tahun ajaran baru: kode periode `tasm`, nama kepsek, NIP, tanggal cetak rapor kelas 7/8 dan kelas 9.
+  - Aksi aktivasi memanggil stored procedure `sp_set_periode_aktif(tasm)` yang menonaktifkan periode lama dan mengaktifkan yang baru dalam 1 transaksi.
+- **Acceptance Criteria:**
+  - [ ] Admin dapat melihat dan menambah periode tahun ajaran baru.
+  - [ ] Aktivasi periode mengubah indikator periode aktif di seluruh sistem seketika.
+- **Verification:** Buat periode baru dan aktifkan, verifikasi topbar menampilkan periode baru tersebut.
+
+---
+
+#### [MASTER-AKN-002] Pembuatan Akun Satuan Guru & Siswa oleh Admin
+- **Phase:** Phase 4
+- **Priority:** P1
+- **Status:** Not Started
+- **Role/Panel:** 🛡️ Admin
+- **Category:** Master Data & Auth
+- **Description:** Memfasilitasi pembuatan akun login secara individual untuk guru atau siswa baru yang belum berakun langsung dari daftar master masing-masing (AKN-1 & AKN-2).
+- **Source Requirements:** `PRD.md` AKN-1, AKN-2; `DESIGN.md` Bab 11.
+- **Dependencies:** `MASTER-GRU-001`, `MASTER-SIS-001`
+- **Implementation Notes:**
+  - Pada baris guru yang belum punya akun di menu Data Guru, sediakan tombol "Buat Akun" (tentukan username, generate password awal acak).
+  - Pada baris siswa yang belum punya akun di menu Data Siswa, sediakan tombol "Buat Akun" (username otomatis = NIS, password acak, flag wajib_ganti_password=1).
+- **Acceptance Criteria:**
+  - [ ] Admin dapat mengaktifkan akun untuk seorang guru tertentu yang belum memiliki akun.
+  - [ ] Admin dapat mengaktifkan akun untuk seorang siswa tertentu dengan username NIS.
+- **Verification:** Buat akun untuk 1 siswa secara manual dan uji coba login dengan kredensial tersebut.
+
+---
+
 ### Phase 5: Urutan 4 — Operasional Pembelajaran & Presensi
 
 *Fokus: Mengelola jadwal mingguan, sesi pertemuan, presensi siswa per mapel, materi pembelajaran, dan panel dashboard guru/siswa.*
@@ -448,6 +552,7 @@ flowchart TD
 - **Phase:** Phase 5
 - **Priority:** P1
 - **Status:** Not Started
+- **Role/Panel:** 🛡️ Admin
 - **Category:** Learning Operations
 - **Description:** Membangun antarmuka pembuatan jadwal pelajaran per rombel (hari, jam mulai, jam selesai, penugasan mapel) dengan validasi pencegahan bentrok guru dan kelas.
 - **Source Requirements:** `PRD.md` JDW-1 s.d. JDW-8; `ARCHITECTURE.md` Bagian 8.5; `DESIGN.md` Bab 11.
@@ -463,10 +568,30 @@ flowchart TD
 
 ---
 
+#### [ADMIN-PAS-001] Pemantauan Absensi Siswa oleh Admin
+- **Phase:** Phase 5
+- **Priority:** P1
+- **Status:** Not Started
+- **Role/Panel:** 🛡️ Admin
+- **Category:** Learning Operations & Monitoring
+- **Description:** Membangun antarmuka khusus admin untuk memantau absensi siswa seluruh kelas dengan filter rombel, guru pengampu, mapel, dan rentang tanggal. Menampilkan daftar pertemuan yang sudah dan belum diabsen (`v_pertemuan_tanpa_absensi`), serta rekap ketidakhadiran (PAS-1 s.d. PAS-5).
+- **Source Requirements:** `PRD.md` PAS-1 s.d. PAS-5, DSH-3; `ARCHITECTURE.md` Bagian 8.4 (`v_pertemuan_tanpa_absensi`, `v_rekap_absensi_kelas`).
+- **Dependencies:** `OPS-ABS-001`, `DB-VIEW-001`
+- **Implementation Notes:**
+  - Admin HANYA membaca dan memantau, tidak mengubah data absensi guru (PAS-5).
+  - Terdapat indikator visual kelas/mapel yang belum menginput absensi pada hari ini/minggu ini.
+- **Acceptance Criteria:**
+  - [ ] Admin dapat memfilter dan melihat status pengisian absensi seluruh kelas.
+  - [ ] Muncul peringatan jelas untuk sesi pertemuan yang terlewat tanpa absensi.
+- **Verification:** Buka menu `/admin/pemantauan-absensi` dan periksa kelengkapan data sesi tanpa absensi.
+
+---
+
 #### [OPS-ABS-001] Sesi Pertemuan & Pencatatan Presensi Siswa per Pertemuan
 - **Phase:** Phase 5
 - **Priority:** P1
 - **Status:** Not Started
+- **Role/Panel:** 👨‍🏫 Panel Guru
 - **Category:** Learning Operations
 - **Description:** Membangun modul presensi bagi guru untuk membuka sesi pertemuan (`siakad_pertemuan`) berdasarkan jadwal dan menginput status kehadiran siswa (Hadir, Sakit, Izin, Alpa) ke `siakad_absensi_siswa`.
 - **Source Requirements:** `PRD.md` ABS-1 s.d. ABS-8, GSW-1; `ARCHITECTURE.md` Bagian 8.2, 8.8.
@@ -485,6 +610,7 @@ flowchart TD
 - **Phase:** Phase 5
 - **Priority:** P2
 - **Status:** Not Started
+- **Role/Panel:** 👨‍🏫 Panel Guru & 👩‍🎓 Siswa
 - **Category:** Learning Operations
 - **Description:** Membangun modul unggah materi (dokumen PDF/Word atau tautan eksternal) oleh guru per penugasan kelas (`siakad_materi`, `siakad_materi_kelas`) dengan controller unduh berotorisasi.
 - **Source Requirements:** `PRD.md` MTR-1 s.d. MTR-7, SSW-2; `ARCHITECTURE.md` Bagian 10 & 12.
@@ -499,21 +625,42 @@ flowchart TD
 
 ---
 
-#### [OPS-PANEL-001] Dashboard Interaktif Guru, Wali Kelas, & Siswa
+#### [GURU-PANEL-001] Dashboard Interaktif Guru & Monitoring Wali Kelas
 - **Phase:** Phase 5
 - **Priority:** P1
 - **Status:** Not Started
+- **Role/Panel:** 👨‍🏫 Panel Guru (Device Guru)
 - **Category:** Panels
-- **Description:** Membangun dashboard khusus peran Guru (jadwal hari ini, kelas aktif), Wali Kelas (rekap kehadiran rombel binaan, daftar siswa bermasalah absensi), dan Siswa (jadwal mingguan, materi pelajaran, persentase kehadiran).
-- **Source Requirements:** `PRD.md` DSH-6, DSH-7, DSH-8, WKL-1..4, SSW-1..4, RKM-1.
+- **Description:** Membangun dashboard dan panel navigasi khusus peran Guru Mata Pelajaran (jadwal mengajar hari ini, daftar kelas aktif, notifikasi absensi yang belum diisi) serta penambahan menu Wali Kelas jika guru aktif sebagai wali kelas (rekap absensi rombel binaan via `v_rekap_absensi_kelas`, daftar siswa alpa tinggi, tombol pintasan ke RKM).
+- **Source Requirements:** `PRD.md` DSH-5, DSH-6, WKL-1..8, GSW-1..4, RKM-1, RKM-2; `DESIGN.md` Bab 10, 11.
 - **Dependencies:** `OPS-ABS-001`, `OPS-MTR-001`
 - **Implementation Notes:**
-  - Wali kelas memiliki tombol pintasan menuju sistem RKM untuk pengisian rapor nilai rapor digital.
-  - Antarmuka mengutamakan kemudahan navigasi di layar smartphone.
+  - Satu akun guru dapat otomatis memuat menu wali kelas jika terdaftar di `t_walikelas` pada `tasm` aktif.
+  - Tautan langsung menuju aplikasi RKM eksternal pada sidebar.
 - **Acceptance Criteria:**
-  - [ ] Guru melihat jadwal mengajar hari ini saat pertama kali login.
-  - [ ] Wali kelas dapat memantau siswa yang memiliki akumulasi alpa tinggi.
-- **Verification:** Login berturut-turut dengan akun guru, wali kelas, dan siswa untuk memvalidasi masing-masing dashboard.
+  - [ ] Guru melihat jadwal mengajar hari ini saat pertama kali login ke `/guru-panel`.
+  - [ ] Jika bertindak sebagai wali kelas, muncul submenu Rekap Kelas Binaan dan pintasan RKM.
+- **Verification:** Login dengan akun guru biasa dan akun guru wali kelas, bandingkan hak akses dan visual dashboard.
+
+---
+
+#### [SISWA-PANEL-001] Dashboard & Portal Akademik Siswa
+- **Phase:** Phase 5
+- **Priority:** P1
+- **Status:** Not Started
+- **Role/Panel:** 👩‍🎓 Panel Siswa (Device Siswa)
+- **Category:** Panels
+- **Description:** Membangun antarmuka portal siswa (`/siswa-panel`) yang responsif untuk perangkat ponsel: informasi kelas & tahun ajaran aktif, kartu jadwal pelajaran mingguan per hari, repositori unduh materi belajar kelasnya, dan rekap akumulasi absensi pribadi (hadir/sakit/izin/alpa).
+- **Source Requirements:** `PRD.md` DSH-7, DSH-8, SSW-1 s.d. SSW-7; `DESIGN.md` Bab 10, 11.
+- **Dependencies:** `OPS-JDW-001`, `OPS-ABS-001`, `OPS-MTR-001`
+- **Implementation Notes:**
+  - Siswa HANYA dapat membaca data miliknya sendiri (Strict Authorization Check).
+  - UI dioptimalkan untuk akses layar ponsel/smartphone siswa.
+- **Acceptance Criteria:**
+  - [ ] Siswa melihat jadwal kelasnya sendiri yang dikelompokkan per hari.
+  - [ ] Siswa dapat mengunduh materi yang ditujukan untuk kelasnya.
+  - [ ] Siswa dapat melihat persentase kehadirannya tanpa bisa mengedit.
+- **Verification:** Login dengan akun NIS siswa (mis. `3901`), pastikan hanya data kelas siswa terkait yang dapat diakses.
 
 ---
 
@@ -525,6 +672,7 @@ flowchart TD
 - **Phase:** Phase 6
 - **Priority:** P1
 - **Status:** Not Started
+- **Role/Panel:** 🛡️ Admin
 - **Category:** Academic Progression
 - **Description:** Membangun antarmuka pratinjau kenaikan kelas yang membaca keputusan dari `t_naikkelas` RKM (read-only), memungkinkan admin memetakan rombel kelas baru, dan mengeksekusi penempatan siswa ke tahun ajaran baru via Stored Procedure.
 - **Source Requirements:** `PRD.md` KNK-1 s.d. KNK-9; `ARCHITECTURE.md` Bagian 8.6; `DESIGN.md` Bab 11.
@@ -541,10 +689,30 @@ flowchart TD
 
 ---
 
+#### [DASH-002] Integrasi Metrik Absensi & Feed Aktivitas Konten di Dashboard Admin
+- **Phase:** Phase 6
+- **Priority:** P2
+- **Status:** Not Started
+- **Role/Panel:** 🛡️ Admin
+- **Category:** Dashboard & Analytics
+- **Description:** Mengintegrasikan kartu ringkasan absensi harian (`DSH-3`) yang mengarah ke modul Pemantauan Absensi (`ADMIN-PAS-001`), serta widget feed catatan aktivitas pengelolaan konten publik (`DSH-4`) yang bersumber dari tabel `siakad_log_aktivitas` (`CMS-LOG-001`).
+- **Source Requirements:** `PRD.md` DSH-3, DSH-4, ADM-11; `DESIGN.md` Bab 10.
+- **Dependencies:** `ADMIN-PAS-001`, `CMS-LOG-001`
+- **Implementation Notes:**
+  - Menambahkan baris widget aktivitas konten terbaru di dashboard utama admin.
+  - Kartu statistik pemantauan absensi (berapa rombel sudah diabsen hari ini).
+- **Acceptance Criteria:**
+  - [ ] Dashboard admin menampilkan ringkasan kehadiran siswa hari berjalan.
+  - [ ] Feed riwayat aktivitas admin (artikel/fasilitas baru ditambah) tampil di dashboard.
+- **Verification:** Buka `/admin` dan verifikasi kartu absensi dan log aktivitas memuat data dinamis.
+
+---
+
 #### [EKS-001] Manajemen Ekstrakurikuler Akademik & Pemisahan Konten Promosi
 - **Phase:** Phase 6
 - **Priority:** P2
 - **Status:** Not Started
+- **Role/Panel:** 🛡️ Admin & 🌐 Publik
 - **Category:** Master Data
 - **Description:** Mengelola data master ekstrakurikuler sekolah pada tabel bersama RKM `m_ekstra` dan menghubungkannya dengan deskripsi promosi publik pada `siakad_ekstra_publik`.
 - **Source Requirements:** `PRD.md` EKS-1 s.d. EKS-4; `ARCHITECTURE.md` Bagian 8.2.
@@ -562,6 +730,7 @@ flowchart TD
 - **Phase:** Phase 6
 - **Priority:** P0
 - **Status:** Not Started
+- **Role/Panel:** 🔧 Infrastruktur & QA
 - **Category:** Release & Testing
 - **Description:** Menjalankan audit menyeluruh terhadap performa query, keamanan hak akses database, kestabilan aplikasi di lingkungan lokal (target demo awal Desember 2026), dan persiapan migrasi ke hosting Niagahoster.
 - **Source Requirements:** `PRD.md` Bab 4.3, Bab 9; `ARCHITECTURE.md` Bagian 11 & 14.
@@ -579,23 +748,28 @@ flowchart TD
 
 ## 5. Requirement Traceability Matrix (PRD v0.4 to TASKS)
 
-| Modul PRD | Deskripsi Requirement | Task ID Implementasi | Status |
-|---|---|---|---|
-| **NAV, BRD, PRF, KSW, GAL, BRT, PGM** | Antarmuka Publik & Fitur Website Sekolah | `FE-SETUP-001` s.d. `FE-QA-004` | **Done** |
-| **AUT-1 s.d. AUT-9** | Sistem Autentikasi, Guard Multi-Role, Ubah Password | `AUTH-001`, `AUTH-002` | Not Started |
-| **AKN-1 s.d. AKN-11** | Manajemen Akun Admin, Guru, Siswa (Massal & Reset) | `ADMIN-AKN-001`, `MASTER-GRU-001`, `MASTER-AKN-001` | Not Started |
-| **DSH-1 s.d. DSH-8** | Dashboard Admin, Guru, Wali Kelas, dan Siswa | `DASH-001`, `OPS-PANEL-001` | Not Started |
-| **ADM-1 s.d. ADM-6** | CMS Pengelolaan Konten Publik oleh Admin | `CMS-PUB-001`, `CMS-PUB-002`, `BE-HOME-001` | Not Started |
-| **DIR-1 s.d. DIR-11** | Direktori Guru & Siswa terhubung Database Master | `DB-VIEW-001`, `BE-DIR-001` | Not Started |
-| **GRU-1 s.d. GRU-6** | Manajemen Data Guru & Status Keaktifan | `MASTER-GRU-001` | Not Started |
-| **SIS-1 s.d. SIS-12** | Data Siswa Lengkap (~30 kolom) & Impor Excel Staging | `MASTER-SIS-001`, `MASTER-SIS-002` | Not Started |
-| **KLS, PNS, PWK** | Rombel Kelas, Penempatan Siswa, Penetapan Wali Kelas | `MASTER-AKD-001` | Not Started |
-| **MPL, PGS, TAJ** | Mapel, Penugasan Guru, Salin Periode, Periode `tasm` | `MASTER-AKD-002`, `DASH-001` | Not Started |
-| **JDW-1 s.d. JDW-8** | Jadwal Pelajaran Mingguan & Deteksi Bentrok | `OPS-JDW-001`, `DB-TRIGGER-001` | Not Started |
-| **ABS, GSW, WKL** | Sesi Pertemuan, Presensi Siswa, Rekap Wali Kelas | `OPS-ABS-001`, `OPS-PANEL-001` | Not Started |
-| **MTR, SSW** | Materi Pembelajaran & Portal Akses Siswa | `OPS-MTR-001`, `OPS-PANEL-001` | Not Started |
-| **KNK, EKS, PAS** | Kenaikan Kelas, Ekstrakurikuler Akademik, Profil | `KNK-001`, `EKS-001` | Not Started |
-| **DBMS Objects** | Views, Triggers, Stored Procedures, Privileges | `DB-MIGRATE-001`, `DB-VIEW-001`, `DB-SP-001`, `DB-TRIGGER-001`, `DB-PRIV-001` | Not Started |
+| Modul PRD | Deskripsi Requirement | Task ID Implementasi | Role/Panel | Status |
+|---|---|---|---|---|
+| **NAV, BRD, PRF, KSW, GAL, BRT, PGM** | Antarmuka Publik & Fitur Website Sekolah | `FE-SETUP-001` s.d. `FE-QA-004` | 🌐 Publik | **Done** ✅ |
+| **AUT-1 s.d. AUT-9** | Sistem Autentikasi, Guard Multi-Role, Ubah Password, Profil | `AUTH-001`, `AUTH-002`, `AUTH-003` | 🔧 Infrastruktur | **AUTH-001/002: Done ✅**<br>`AUTH-003: Not Started` |
+| **AKN-1 s.d. AKN-11** | Manajemen Akun Admin, Guru, Siswa (Satuan, Massal & Reset) | `ADMIN-AKN-001`, `MASTER-AKN-001`, `MASTER-AKN-002` | 🛡️ Admin | **ADMIN-AKN-001: Done ✅**<br>`MASTER-AKN: Not Started` |
+| **DSH-1 s.d. DSH-8** | Dashboard Admin, Guru, Wali Kelas, dan Siswa | `DASH-001`, `DASH-002`, `GURU-PANEL-001`, `SISWA-PANEL-001` | Multi-role | **DASH-001: Done ✅**<br>`Lainnya: Not Started` |
+| **ADM-1 s.d. ADM-11** | CMS Pengelolaan Konten Publik oleh Admin & Log Aktivitas | `CMS-PUB-001`, `CMS-PUB-002`, `CMS-LOG-001`, `BE-HOME-001` | 🛡️ Admin | **CMS-PUB / BE-HOME: Done ✅**<br>`CMS-LOG-001: Not Started` |
+| **DIR-1 s.d. DIR-11** | Direktori Guru & Siswa terhubung Database Master | `DB-VIEW-001`, `BE-DIR-001` | 🌐 Publik & 🛡️ Admin | **BE-DIR-001: Done ✅** |
+| **GRU-1 s.d. GRU-6** | Manajemen Data Guru & Status Keaktifan | `MASTER-GRU-001` | 🛡️ Admin | **Done** ✅ |
+| **SIS-1 s.d. SIS-12** | Data Siswa Lengkap (~30 kolom) & Impor Excel Staging | `MASTER-SIS-001`, `MASTER-SIS-002` | 🛡️ Admin | Not Started |
+| **KLS, PNS, PWK** | Rombel Kelas, Penempatan Siswa, Penetapan Wali Kelas | `MASTER-AKD-001` | 🛡️ Admin | Not Started |
+| **MPL, PGS** | Mapel & Penugasan Guru Per Semester | `MASTER-AKD-002` | 🛡️ Admin | Not Started |
+| **TAJ-1 s.d. TAJ-5** | Periode Tahun Ajaran & Semester (`tasm`), Aktivasi Periode | `MASTER-TAJ-001` | 🛡️ Admin | Not Started |
+| **JDW-1 s.d. JDW-8** | Jadwal Pelajaran Mingguan & Deteksi Bentrok | `OPS-JDW-001`, `DB-TRIGGER-001` | 🛡️ Admin | Not Started |
+| **PAS-1 s.d. PAS-5** | Pemantauan Absensi Siswa Seluruh Kelas oleh Admin | `ADMIN-PAS-001` | 🛡️ Admin | Not Started |
+| **ABS, GSW** | Sesi Pertemuan & Presensi Siswa per Pertemuan oleh Guru | `OPS-ABS-001` | 👨‍🏫 Panel Guru | Not Started |
+| **WKL-1 s.d. WKL-8** | Rekap Absensi Kelas Binaan Wali Kelas & Pintasan RKM | `GURU-PANEL-001` | 👨‍🏫 Panel Guru | Not Started |
+| **MTR-1 s.d. MTR-8** | Materi Pembelajaran (Unggah Guru, Akses Terproteksi) | `OPS-MTR-001` | 👨‍🏫 Guru & 👩‍🎓 Siswa | Not Started |
+| **SSW-1 s.d. SSW-7** | Portal & Jadwal, Materi, Absensi Pribadi Siswa | `SISWA-PANEL-001` | 👩‍🎓 Panel Siswa | Not Started |
+| **KNK-1 s.d. KNK-9** | Kenaikan Kelas & Penempatan Tahun Ajaran Baru | `KNK-001` | 🛡️ Admin | Not Started |
+| **EKS-1 s.d. EKS-4** | Ekstrakurikuler Akademik & Pemisahan Konten Promosi | `EKS-001` | 🛡️ Admin & 🌐 Publik | Not Started |
+| **DBMS Objects** | Views, Triggers, Stored Procedures, Privileges | `DB-MIGRATE-001`, `DB-VIEW-001`, `DB-SP-001`, `DB-TRIGGER-001`, `DB-PRIV-001` | 🔧 Infrastruktur | Not Started |
 
 ---
 

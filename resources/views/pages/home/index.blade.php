@@ -4,38 +4,8 @@
     {{-- SEKSI 1 — HERO SLIDESHOW BERITA & INFORMASI (SEPERTI WEB HARAPAN 1)  --}}
     {{-- ================================================================== --}}
     @php
-        $heroSlides = [
-            [
-                'image'       => asset('images/school/gedung.jpg'),
-                'alt'         => 'Gedung SMP Muhammadiyah 7 Medan',
-                'objectPos'   => 'object-[center_90%]',
-                'badge'       => 'Prestasi Akademik',
-                'title'       => 'Siswa SMP Muhammadiyah 7 Medan Raih Juara 1 Olimpiade Matematika Tingkat Kota',
-                'summary'     => 'Kebanggaan kembali hadir bagi keluarga besar SMP Muhammadiyah 7 Medan atas prestasi gemilang yang diraih salah satu siswanya di ajang Olimpiade Matematika Tingkat Kota Medan.',
-                'link'        => url('/berita/siswa-smp-muhammadiyah-7-raih-juara-1-olimpiade-matematika-tingkat-kota'),
-                'kicker'      => 'Kabar Utama',
-            ],
-            [
-                'image'       => asset('images/school/gerbang.png'),
-                'alt'         => 'Gerbang Kampus SMP Muhammadiyah 7 Medan',
-                'objectPos'   => 'object-[center_10%]',
-                'badge'       => 'Kegiatan Sekolah',
-                'title'       => 'Kegiatan MPLS Tahun Ajaran Baru Berjalan Meriah dan Penuh Semangat',
-                'summary'     => 'Masa Pengenalan Lingkungan Sekolah (MPLS) tahun ajaran baru resmi dibuka dengan berbagai kegiatan yang menarik, edukatif, serta menanamkan nilai-nilai Islami bagi siswa baru SMP Muhammadiyah 7 Medan.',
-                'link'        => url('/berita/kegiatan-mpls-tahun-ajaran-baru-berjalan-meriah'),
-                'kicker'      => 'Agenda Terkini',
-            ],
-            [
-                'image'       => asset('images/school/lapangan.jpg'),
-                'alt'         => 'Area Lapangan & Kampus SMP Muhammadiyah 7 Medan',
-                'objectPos'   => 'object-[center_35%]',
-                'badge'       => 'Keagamaan & Adab',
-                'title'       => 'Peringatan Isra\' Mi\'raj di SMP Muhammadiyah 7 Medan Berlangsung Khidmat',
-                'summary'     => 'SMP Muhammadiyah 7 Medan menggelar kegiatan peringatan Isra\' Mi\'raj Nabi Muhammad SAW dengan penuh kekhidmatan, tausiyah inspiratif, dan dihadiri seluruh warga sekolah.',
-                'link'        => url('/berita/peringatan-isra-miraj-smp-muhammadiyah-7-berlangsung-khidmat'),
-                'kicker'      => 'Pembinaan Karakter',
-            ],
-        ];
+        // Menggunakan heroSlides yang dioper dari HomeController (dinamis dari database Berita)
+        $heroSlides = $heroSlides ?? [];
     @endphp
 
     <section
@@ -54,7 +24,7 @@
                     <img
                         src="{{ $slide['image'] }}"
                         alt="{{ $slide['alt'] }}"
-                        class="w-full h-full object-cover {{ $slide['objectPos'] }}"
+                        class="w-full h-full object-cover {{ $slide['objectPos'] ?? 'object-center' }}"
                         loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
                         @if($index === 0) fetchpriority="high" @endif
                     />
@@ -68,6 +38,13 @@
                         <div class="w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 pb-20 sm:pb-24 pt-8">
                             <div class="max-w-xl lg:max-w-2xl text-white hero-text-content">
 
+                                {{-- Category / Kicker Badge --}}
+                                @if(!empty($slide['badge']))
+                                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-mint/20 border border-mint/40 text-mint text-xs font-semibold uppercase tracking-wider mb-3 backdrop-blur-xs">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-mint"></span>
+                                        <span>{{ $slide['badge'] }}</span>
+                                    </div>
+                                @endif
 
                                 {{-- Big Bold News Title (Harapan 1 style sans-serif bold) --}}
                                 <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white leading-[1.2] tracking-tight mb-4 drop-shadow-md">
@@ -92,6 +69,7 @@
                                         </svg>
                                     </a>
 
+                                    @if(count($heroSlides) > 1)
                                     {{-- Navigasi Panah Kiri & Kanan (Harapan 1 Outline Round Buttons) --}}
                                     <div class="flex items-center gap-2 ml-1">
                                         <button
@@ -112,7 +90,8 @@
                                                 <path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd"/>
                                             </svg>
                                         </button>
-                                    </div>
+                                    @endif
+                                </div>
                                 </div>
 
                                 {{-- SEO Slogan Anchor (mempertahankan kelulusan test suite) --}}
@@ -130,6 +109,7 @@
 
         </div>{{-- /slides-track --}}
 
+        @if(count($heroSlides) > 1)
         {{-- ── Prev / Next Arrow Controls (Desktop Side Floating) ── --}}
         <button
             id="hero-prev"
@@ -153,10 +133,17 @@
             role="tablist"
             aria-label="Slide navigator"
         >
-            <button role="tab" aria-selected="true"  aria-label="Slide 1" data-dot="0" class="hero-dot w-6 h-2 rounded-full bg-white transition-all duration-300 cursor-pointer"></button>
-            <button role="tab" aria-selected="false" aria-label="Slide 2" data-dot="1" class="hero-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer"></button>
-            <button role="tab" aria-selected="false" aria-label="Slide 3" data-dot="2" class="hero-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer"></button>
+            @foreach ($heroSlides as $i => $s)
+                <button
+                    role="tab"
+                    aria-selected="{{ $i === 0 ? 'true' : 'false' }}"
+                    aria-label="Slide {{ $i + 1 }}"
+                    data-dot="{{ $i }}"
+                    class="hero-dot {{ $i === 0 ? 'w-6 bg-white' : 'w-2 bg-white/50' }} h-2 rounded-full transition-all duration-300 cursor-pointer"
+                ></button>
+            @endforeach
         </div>
+        @endif
 
         {{-- ── Trust Signals Strip at Bottom ── --}}
         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-darkgreen/95 via-forest/90 to-darkgreen/95 backdrop-blur-md border-t border-white/15 hidden sm:block z-10 shadow-lg">

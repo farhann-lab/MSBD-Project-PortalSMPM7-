@@ -19,6 +19,7 @@ class HomeController extends Controller
     public function index(): View
     {
         $news          = $this->getLatestNews();
+        $heroSlides    = $this->getHeroSlides($news);
         $announcements = $this->getLatestAnnouncements();
         $statistik     = $this->getStatistik();
         $periodeAktif  = $this->getPeriodeAktif();
@@ -26,6 +27,7 @@ class HomeController extends Controller
 
         return view('pages.home.index', compact(
             'news',
+            'heroSlides',
             'announcements',
             'statistik',
             'periodeAktif',
@@ -34,6 +36,70 @@ class HomeController extends Controller
     }
 
     // ─── Private Helpers ────────────────────────────────────────────────────────
+
+    /**
+     * Mempersiapkan data slides untuk hero section beranda yang dinamis berbasis berita.
+     * Menggunakan gambar berita atau fallback estetis ke foto lingkungan sekolah.
+     */
+    private function getHeroSlides(array $news): array
+    {
+        $defaultImages = [
+            [
+                'image'     => asset('images/school/gedung.jpg'),
+                'alt'       => 'Gedung SMP Muhammadiyah 7 Medan',
+                'objectPos' => 'object-[center_90%]',
+                'kicker'    => 'Kabar Utama',
+            ],
+            [
+                'image'     => asset('images/school/gerbang.png'),
+                'alt'       => 'Gerbang Kampus SMP Muhammadiyah 7 Medan',
+                'objectPos' => 'object-[center_10%]',
+                'kicker'    => 'Agenda Terkini',
+            ],
+            [
+                'image'     => asset('images/school/lapangan.jpg'),
+                'alt'       => 'Area Lapangan & Kampus SMP Muhammadiyah 7 Medan',
+                'objectPos' => 'object-[center_35%]',
+                'kicker'    => 'Pembinaan Karakter',
+            ],
+        ];
+
+        $slides = [];
+        $items = !empty($news) ? array_slice($news, 0, 5) : [];
+
+        foreach ($items as $index => $item) {
+            $defaultConfig = $defaultImages[$index % count($defaultImages)];
+
+            $slides[] = [
+                'id'        => $item['id'] ?? null,
+                'title'     => $item['title'],
+                'summary'   => $item['summary'] ?? '',
+                'link'      => url('/berita/' . ($item['slug'] ?? '')),
+                'badge'     => $item['category'] ?? 'Berita Sekolah',
+                'kicker'    => $defaultConfig['kicker'],
+                'image'     => !empty($item['image']) ? $item['image'] : $defaultConfig['image'],
+                'alt'       => $item['title'] ?: $defaultConfig['alt'],
+                'objectPos' => !empty($item['image']) ? 'object-cover object-center' : $defaultConfig['objectPos'],
+            ];
+        }
+
+        // Jika berita benar-benar kosong, sediakan minimal 1 slide fallback
+        if (empty($slides)) {
+            $slides[] = [
+                'id'        => null,
+                'title'     => 'SMP Muhammadiyah 7 Medan',
+                'summary'   => 'Membangun Generasi Unggul Berkarakter Islami melalui pendidikan terpadu, berakhlak mulia, dan berprestasi.',
+                'link'      => url('/profil'),
+                'badge'     => 'Profil Sekolah',
+                'kicker'    => 'Selamat Datang',
+                'image'     => asset('images/school/gedung.jpg'),
+                'alt'       => 'Gedung SMP Muhammadiyah 7 Medan',
+                'objectPos' => 'object-[center_90%]',
+            ];
+        }
+
+        return $slides;
+    }
 
     private function getLatestNews(): array
     {

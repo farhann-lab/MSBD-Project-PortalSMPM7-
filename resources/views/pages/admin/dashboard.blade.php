@@ -4,10 +4,10 @@
         <!-- Welcome Banner Section (Forest Green Theme) -->
         <div class="relative overflow-hidden rounded-3xl bg-linear-to-br from-[#0F1D0F] via-[#162719] to-[#344B39] text-white p-6 sm:p-8 shadow-md">
             <div class="relative z-10 max-w-3xl space-y-3">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-mint text-xs font-semibold backdrop-blur-xs border border-white/15">
+                {{-- <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-mint text-xs font-semibold backdrop-blur-xs border border-white/15">
                     <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                     <span>{{ $periodeAktif['label_lengkap'] ?? ($globalPeriodeAktif['label_lengkap'] ?? 'Tahun Ajaran 2026/2027 Semester 1 (Ganjil)') }}</span>
-                </div>
+                </div> --}}
                 <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight font-sans">
                     Selamat Datang di SIAKAD Admin, {{ auth()->user()->username ?? 'Administrator' }}!
                 </h1>

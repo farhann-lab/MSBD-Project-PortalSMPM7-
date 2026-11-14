@@ -8,12 +8,8 @@
     <div class="mb-8 rounded-3xl bg-linear-to-r from-darkgreen to-forest p-6 sm:p-8 text-white relative overflow-hidden shadow-sm">
         <div class="absolute -right-12 -bottom-12 w-64 h-64 rounded-full bg-white/5 pointer-events-none"></div>
         <div class="relative z-10 max-w-2xl">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-emerald-200 text-xs font-semibold uppercase tracking-wider mb-3 border border-white/15">
-                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span>Tahun Ajaran 2026/2027 Semester 1</span>
-            </div>
             <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
-                Selamat Datang, {{ auth()->user()->username ?? 'Budi Santoso, S.Pd.' }}! 👋
+                Selamat Datang, {{ auth()->user()->username ?? 'Budi Santoso, S.Pd.' }}! 
             </h1>
             <p class="text-white/80 text-xs sm:text-sm leading-relaxed">
                 Portal Guru SIAKAD SMP Muhammadiyah 7 Medan. Anda mengampu <strong class="text-white">4 Rombel</strong> mata pelajaran <strong class="text-white">IPA</strong> serta bertugas sebagai <strong class="text-emerald-300">Wali Kelas VIII-B</strong>.

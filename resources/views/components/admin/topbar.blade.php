@@ -48,13 +48,13 @@
         <!-- Right Section: Badges, Notifikasi & Profil Admin -->
         <div class="flex items-center gap-3 sm:gap-4 shrink-0">
             
-            <!-- Academic Period Badge (DESIGN.md: ditampilkan sebagai nama periode, mis. 2026/2027 Semester 1) -->
-            <div class="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-soft border border-border-soft text-xs text-darkgreen">
-                <span class="w-2 h-2 rounded-full {{ ($globalPeriodeAktif['is_aktif'] ?? true) ? 'bg-emerald-500' : 'bg-amber-500' }}"></span>
-                <span class="font-medium">{{ $globalPeriodeAktif['label_topbar'] ?? '2026/2027 Semester 1' }}</span>
+            <!-- Academic Period Badge (DESIGN.md: ditampilkan sebagai nama periode, mis. 2026/2027 Semester 1) -->  
+                <div class="flex flex-col text-right leading-tight">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-muted-text">Tahun Ajaran</span>
+                    <span class="text-xs font-black text-darkgreen mt-0.5">2026/2027 Semester 1</span>
+                </div>
                 <span class="text-muted-text">|</span>
-                <span class="text-forest font-semibold">{{ ($globalPeriodeAktif['is_aktif'] ?? true) ? 'Aktif' : 'Arsip' }}</span>
-            </div>
+               
 
             <!-- Server / Security Status (Micro Badge) -->
             <div class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-medium">

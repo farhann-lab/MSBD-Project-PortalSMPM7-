@@ -291,7 +291,7 @@ flowchart TD
 #### [BE-DIR-001] Integrasi Direktori Guru & Siswa ke Database Views
 - **Phase:** Phase 3
 - **Priority:** P0
-- **Status:** Not Started
+- **Status:** Done
 - **Category:** Integration
 - **Description:** Menghubungkan controller halaman publik `/guru` dan `/siswa` untuk membaca data dari view database `v_publik_guru` dan `v_publik_siswa`.
 - **Source Requirements:** `PRD.md` DIR-1 s.d. DIR-11; `ARCHITECTURE.md` Bagian 8.4; `DESIGN.md` Bab 8.
@@ -301,8 +301,8 @@ flowchart TD
   - Pagination 15-20 data per halaman, filter nama via LIKE, filter mapel dan filter kelas aktif.
   - Tetap menjamin 100% kepatuhan aturan privasi DIR-8.
 - **Acceptance Criteria:**
-  - [ ] Data yang muncul di `/guru` dan `/siswa` berasal dari tabel master database RKM.
-  - [ ] `FrontendQualityAssuranceTest` tetap lulus tanpa kebocoran data pribadi.
+  - [x] Data yang muncul di `/guru` dan `/siswa` berasal dari tabel master database RKM.
+  - [x] `FrontendQualityAssuranceTest` tetap lulus tanpa kebocoran data pribadi.
 - **Verification:** Jalankan `php artisan test tests/Feature/PublicPagesMvpTest.php`.
 
 ---
@@ -310,7 +310,7 @@ flowchart TD
 #### [BE-HOME-001] Integrasi Statistik Beranda & Konfigurasi Profil
 - **Phase:** Phase 3
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Category:** Integration
 - **Description:** Mengganti angka statistik dummy pada beranda (`BRD-6`) dengan kalkulasi nyata dari database (jumlah siswa aktif di periode berjalan, guru aktif, dan rombel aktif), serta menghubungkan 3 pintasan portal ke database/pengaturan.
 - **Source Requirements:** `PRD.md` BRD-6, BRD-8, BRD-9; `ARCHITECTURE.md` Bagian 9.
@@ -318,8 +318,8 @@ flowchart TD
 - **Implementation Notes:**
   - Angka statistik dihitung dari query `COUNT` pada view aktif atau di-cache file dengan TTL pendek (1-2 jam) untuk menghemat CPU hosting 1-core.
 - **Acceptance Criteria:**
-  - [ ] Label penanda data dummy pada statistik beranda dihapus setelah angka tersinkronisasi ke database.
-  - [ ] Waktu pemuatan halaman beranda tetap cepat (< 1 detik).
+  - [x] Label penanda data dummy pada statistik beranda dihapus setelah angka tersinkronisasi ke database.
+  - [x] Waktu pemuatan halaman beranda tetap cepat (< 1 detik).
 - **Verification:** Periksa response time dan angka statistik di halaman beranda `/`.
 
 ---
@@ -331,7 +331,7 @@ flowchart TD
 #### [MASTER-GRU-001] Manajemen Data Guru & Status Keaktifan
 - **Phase:** Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Category:** Master Data
 - **Description:** Membangun CRUD data guru pada tabel bersama `m_guru` dengan pencarian nama, filter status aktif, dan pengelolaan akun login guru.
 - **Source Requirements:** `PRD.md` GRU-1 s.d. GRU-6, AKN-1; `DESIGN.md` Bab 11.
@@ -340,8 +340,8 @@ flowchart TD
   - Penghapusan guru menggunakan soft delete via kolom `stat_data` bawaan RKM (bukan delete fisik).
   - Saat guru didaftarkan, admin dapat langsung mengaktifkan akun login di `siakad_users`.
 - **Acceptance Criteria:**
-  - [ ] Admin dapat menambah, mengedit, dan menonaktifkan guru.
-  - [ ] Guru yang dinonaktifkan otomatis tidak dapat login dan tidak muncul di direktori aktif.
+  - [x] Admin dapat menambah, mengedit, dan menonaktifkan guru.
+  - [x] Guru yang dinonaktifkan otomatis tidak dapat login dan tidak muncul di direktori aktif.
 - **Verification:** Uji tambah guru baru dan nonaktifkan guru via panel admin.
 
 ---

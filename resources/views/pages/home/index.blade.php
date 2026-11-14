@@ -186,7 +186,7 @@
                     <div class="w-6 h-6 rounded-md bg-white/10 flex items-center justify-center shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5 text-sage"><path d="M7 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM14.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM1.615 16.428a1.224 1.224 0 0 1-.569-1.175 6.002 6.002 0 0 1 11.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 0 1 7 17a9.953 9.953 0 0 1-5.385-1.572ZM14.5 16h-.106c.07-.297.088-.611.048-.933a7.47 7.47 0 0 0-1.588-3.755 4.502 4.502 0 0 1 5.874 2.636.818.818 0 0 1-.36.98A7.465 7.465 0 0 1 14.5 16Z"/></svg>
                     </div>
-                    <span class="text-xs font-semibold">{{ config('sekolah.statistik.siswa', '500+') }} Siswa Aktif</span>
+                    <span class="text-xs font-semibold">{{ $statistik['siswa'] ?? config('sekolah.statistik.siswa', '1.000+') }} Siswa Aktif</span>
                 </div>
             </div>
         </div>
@@ -373,11 +373,10 @@
         </div>
     </section>
 
-    {{-- ================================================================== --}}
+     {{-- ================================================================== --}}
     {{-- SEKSI 6 — STATISTIK SEKOLAH                                         --}}
     {{-- ================================================================== --}}
     <section class="relative bg-forest py-16 sm:py-20 text-white overflow-hidden">
-        {{-- Background Pattern Subtle Glows --}}
         <div class="absolute -top-24 -left-24 w-96 h-96 bg-mint/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
         <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-sage/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
 
@@ -393,30 +392,37 @@
 
             <div class="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
                 <x-stat-card
-                    value="{{ config('sekolah.statistik.siswa') }}"
+                    :value="$statistik['siswa']"
                     label="Siswa Aktif"
                     icon="users"
                     description="Total peserta didik terdaftar"
                 />
                 <x-stat-card
-                    value="{{ config('sekolah.statistik.guru') }}"
+                    :value="$statistik['guru']"
                     label="Tenaga Pendidik"
                     icon="academic-cap"
                     description="Guru dan staf pengajar"
                 />
                 <x-stat-card
-                    value="{{ config('sekolah.statistik.kelas') }}"
+                    :value="$statistik['kelas']"
                     label="Rombel Kelas"
                     icon="rectangle-group"
                     description="Rombongan belajar aktif"
                 />
                 <x-stat-card
-                    value="{{ config('sekolah.statistik.ekskul') }}"
+                    :value="$statistik['ekskul']"
                     label="Ekstrakurikuler"
                     icon="star"
                     description="Kegiatan pengembangan diri"
                 />
             </div>
+
+            @if (!empty($statistik['is_dummy']))
+                <p class="mt-8 text-center text-xs italic text-mint/80">
+                    * Sebagian angka merupakan estimasi dan akan diperbarui otomatis dari database akademik.
+                </p>
+            @endif
+
         </div>
     </section>
 

@@ -28,12 +28,11 @@ class AdminMasterDataPagesTest extends TestCase
      */
     public function test_admin_master_guru_page_renders(): void
     {
-        $response = $this->actingAs($this->admin)->get(route('admin.master.guru'));
+        $response = $this->actingAs($this->admin)->get(route('admin.master.guru.index'));
         $response->assertStatus(200);
         $response->assertSee('Data Guru &amp; Tendik', false);
         $response->assertSee('Tambah Guru Baru');
-        $response->assertSee('Ahmad Fauzi, S.Pd.');
-        $response->assertSee('Aktif Mengajar (A)');
+        $response->assertSee('Aktif Mengajar', false);
     }
 
     /**

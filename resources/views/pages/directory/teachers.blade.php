@@ -70,21 +70,28 @@
             {{-- Result Count --}}
             <div class="mt-6 flex items-center justify-between">
                 <p class="text-sm text-muted-text">
-                    Menampilkan <span class="font-semibold text-darkgreen">{{ count($teachers) }}</span> guru{{ request('q') || request('mapel') ? ' (hasil penyaringan)' : '' }}
+                    Menampilkan <span class="font-semibold text-darkgreen">{{ $totalCount ?? (is_countable($teachers) ? count($teachers) : $teachers->total()) }}</span> guru{{ request('q') || request('mapel') ? ' (hasil penyaringan)' : '' }}
                 </p>
             </div>
 
             {{-- Teacher Grid --}}
-            @if(!empty($teachers))
+            @if(!empty($teachers) && (is_countable($teachers) ? count($teachers) > 0 : $teachers->count() > 0))
                 <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     @foreach($teachers as $guru)
                         <x-teacher-card
                             :name="$guru['nama_lengkap']"
                             :mapel="$guru['mapel']"
-                            :jabatan="$guru['jabatan']"
+                            :jabatan="$guru['jabatan'] ?? null"
                         />
                     @endforeach
                 </div>
+
+                {{-- Pagination Links jika menggunakan paginator --}}
+                @if(method_exists($teachers, 'hasPages') && $teachers->hasPages())
+                    <div class="mt-10">
+                        {{ $teachers->links() }}
+                    </div>
+                @endif
             @else
                 <div class="mt-8">
                     <x-empty-state

@@ -70,12 +70,12 @@
             {{-- Result Count --}}
             <div class="mt-6 flex items-center justify-between">
                 <p class="text-sm text-muted-text">
-                    Menampilkan <span class="font-semibold text-darkgreen">{{ count($students) }}</span> siswa{{ request('q') || request('kelas') ? ' (hasil penyaringan)' : '' }}
+                    Menampilkan <span class="font-semibold text-darkgreen">{{ $totalCount ?? (is_countable($students) ? count($students) : $students->total()) }}</span> siswa{{ request('q') || request('kelas') ? ' (hasil penyaringan)' : '' }}
                 </p>
             </div>
 
             {{-- Student Grid --}}
-            @if(!empty($students))
+            @if(!empty($students) && (is_countable($students) ? count($students) > 0 : $students->count() > 0))
                 <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     @foreach($students as $siswa)
                         <x-student-card
@@ -84,6 +84,13 @@
                         />
                     @endforeach
                 </div>
+
+                {{-- Pagination Links jika menggunakan paginator --}}
+                @if(method_exists($students, 'hasPages') && $students->hasPages())
+                    <div class="mt-10">
+                        {{ $students->links() }}
+                    </div>
+                @endif
             @else
                 <div class="mt-8">
                     <x-empty-state

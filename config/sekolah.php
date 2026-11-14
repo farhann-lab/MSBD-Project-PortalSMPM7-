@@ -65,11 +65,12 @@ return [
     ],
 
     'statistik' => [
-        'is_dummy' => true,
-        'catatan' => '/* DUMMY DATA - BELUM DIBACA DARI DATABASE RKM */',
-        'siswa' => 320,
-        'guru' => 28,
-        'kelas' => 12,
-        'ekskul' => 8,
+        // Nilai fallback jika koneksi database gagal.
+        // Data nyata dibaca dari database (m_siswa, m_guru, m_kelas) di HomeController
+        // dengan cache TTL 2 jam (Cache::remember).
+        'siswa'    => 1691,
+        'guru'     => 41,
+        'kelas'    => 20,
+        'ekskul'   => 8,
     ],
 ];

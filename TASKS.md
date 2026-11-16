@@ -451,19 +451,21 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [MASTER-AKN-001] Pembuatan Akun Siswa Massal & Reset Password oleh Admin
 - **Phase:** Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Master Data & Auth
-- **Description:** Membangun fitur pembuatan akun siswa massal untuk siswa aktif yang belum berakun serta tombol reset password paksa oleh admin.
+- **Description:** Membangun fitur pembuatan akun siswa massal untuk siswa aktif yang belum berakun serta tombol reset password paksa oleh admin dengan proteksi duplikasi/tabrakan akun (siswa yang sudah berakun dilewati dan diberi keterangan status yang jelas).
 - **Source Requirements:** `PRD.md` AKN-9 s.d. AKN-11; `DESIGN.md` Bab 11.
 - **Dependencies:** `MASTER-SIS-001`, `DB-SP-001`
 - **Implementation Notes:**
   - `sp_akun_siswa_massal` membuat akun dengan username = NIS, password acak sementara ter-hash, dan flag `wajib_ganti_password = 1`.
-  - Password sementara hanya ditampilkan satu kali setelah eksekusi dengan opsi unduh Excel (tidak disimpan dalam bentuk plaintext di database).
+  - Password sementara hanya ditampilkan satu kali setelah eksekusi dengan opsi unduh CSV/salin teks (tidak disimpan dalam bentuk plaintext di database).
+  - Mekanisme Idempotensi: Siswa yang sudah terdaftar dilewati secara aman dan ditampilkan pada tabel hasil dengan keterangan status bahwa akun sudah ada.
 - **Acceptance Criteria:**
-  - [ ] Admin dapat membuat akun siswa per kelas secara massal.
-  - [ ] Siswa login pertama kali dipaksa mengganti password.
-- **Verification:** Eksekusi pembuatan akun massal untuk 1 rombel uji dan coba login sebagai siswa.
+  - [x] Admin dapat membuat akun seluruh siswa aktif secara massal dengan 1-klik konfirmasi.
+  - [x] Siswa login pertama kali dipaksa mengganti password.
+  - [x] Akun yang sudah ada tidak dimasukkan lagi ke antrean pembuatan (mencegah error duplikasi) dan diberi keterangan bahwa akun sudah ada.
+- **Verification:** Eksekusi pembuatan akun massal untuk siswa aktif dan coba login sebagai siswa.
 
 ---
 

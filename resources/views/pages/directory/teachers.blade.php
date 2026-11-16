@@ -87,7 +87,7 @@
                 </div>
 
                 {{-- Pagination Links jika menggunakan paginator --}}
-                @if(method_exists($teachers, 'hasPages') && $teachers->hasPages())
+                @if(is_object($teachers) && method_exists($teachers, 'hasPages') && $teachers->hasPages())
                     <div class="mt-10">
                         {{ $teachers->links() }}
                     </div>

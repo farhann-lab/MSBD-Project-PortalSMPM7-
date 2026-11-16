@@ -17,6 +17,10 @@
                 </p>
             </div>
             <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+                <button type="button" onclick="openGenerateModal()" class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs sm:text-sm font-bold shadow-xs flex items-center gap-2 transition-colors">
+                    <x-icon name="key" class="w-4 h-4" />
+                    <span>Generate Akun Massal</span>
+                </button>
                 <a href="{{ route('admin.master.siswa.template-impor') }}" class="px-4 py-2.5 rounded-xl border border-border-soft hover:bg-soft text-darkgreen text-xs sm:text-sm font-semibold flex items-center gap-2 transition-colors">
                     <x-icon name="document-text" class="w-4 h-4 text-forest" />
                     <span>Unduh Template Excel (.xls)</span>
@@ -29,7 +33,7 @@
         </div>
 
         <!-- Statistik Ringkas Siswa -->
-        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3.5">
+        <div class="grid grid-cols-2 sm:grid-cols-6 gap-3.5">
             <div class="p-4 rounded-2xl bg-white border border-border-soft shadow-xs">
                 <span class="text-[11px] font-semibold text-muted-text uppercase tracking-wider block">Total Siswa</span>
                 <span class="text-xl font-extrabold text-darkgreen mt-1 block">{{ $stats['total'] }}</span>
@@ -46,11 +50,128 @@
                 <span class="text-[11px] font-semibold text-amber-700 uppercase tracking-wider block">Mutasi (M)</span>
                 <span class="text-xl font-extrabold text-amber-700 mt-1 block">{{ $stats['mutasi'] }}</span>
             </div>
-            <div class="p-4 rounded-2xl bg-white border border-border-soft shadow-xs col-span-2 sm:col-span-1">
+            <div class="p-4 rounded-2xl bg-white border border-border-soft shadow-xs">
                 <span class="text-[11px] font-semibold text-blue-700 uppercase tracking-wider block">Lulus (L)</span>
                 <span class="text-xl font-extrabold text-blue-700 mt-1 block">{{ $stats['lulus'] }}</span>
             </div>
+            <div class="p-4 rounded-2xl bg-linear-to-br from-amber-50 to-orange-50 border border-amber-200 shadow-xs col-span-2 sm:col-span-1">
+                <span class="text-[11px] font-bold text-amber-900 uppercase tracking-wider block">Belum Berakun</span>
+                <span class="text-xl font-extrabold text-amber-900 mt-1 block">{{ $stats['belum_berakun'] ?? 0 }}</span>
+            </div>
         </div>
+
+        <!-- Hasil Generate Kredensial Sementara Massal (Jika Baru Saja Dijalankan) -->
+        @if(session('batch_credentials') || session('batch_skipped'))
+            <div id="batchCredentialsCard" class="p-6 rounded-3xl bg-linear-to-br from-amber-500/10 via-white to-amber-50 border-2 border-amber-400 shadow-md space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0">
+                            <x-icon name="key" class="w-5 h-5" />
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-amber-950">
+                                Hasil Pembuatan Akun Siswa Massal 
+                                @if(session('batch_credentials'))
+                                    <span class="text-emerald-700">({{ count(session('batch_credentials')) }} Baru Dibuat)</span>
+                                @endif
+                                @if(session('batch_skipped'))
+                                    <span class="text-amber-700 text-xs font-normal">({{ count(session('batch_skipped')) }} Dilewati - Sudah Ada Akun)</span>
+                                @endif
+                            </h3>
+                            <p class="text-xs text-amber-800 font-medium">
+                                ⚠️ <strong>PENTING:</strong> Password sementara ini hanya ditampilkan satu kali demi keamanan! Harap unduh atau salin sebelum menutup halaman.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        @if(session('batch_credentials'))
+                            <button type="button" onclick="downloadCsvCredentials()" class="px-3.5 py-2 rounded-xl bg-forest hover:bg-forest/90 text-white text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors">
+                                <x-icon name="arrow-down-tray" class="w-4 h-4" />
+                                <span>Unduh Kredensial (.CSV)</span>
+                            </button>
+                            <button type="button" onclick="copyAllCredentials()" class="px-3.5 py-2 rounded-xl border border-amber-300 bg-white hover:bg-amber-100/60 text-amber-950 text-xs font-bold flex items-center gap-1.5 transition-colors">
+                                <x-icon name="clipboard" class="w-4 h-4 text-amber-700" />
+                                <span>Salin Teks</span>
+                            </button>
+                        @endif
+                    </div>
+                </div>
+
+                @if(session('batch_credentials'))
+                    <div class="overflow-x-auto max-h-64 overflow-y-auto rounded-2xl border border-amber-200 bg-white">
+                        <table class="w-full text-left text-xs divide-y divide-amber-100" id="tableBatchCredentials">
+                            <thead class="bg-amber-100/60 text-amber-950 font-bold sticky top-0">
+                                <tr>
+                                    <th class="py-2.5 px-3">No</th>
+                                    <th class="py-2.5 px-3">NIS (Username)</th>
+                                    <th class="py-2.5 px-3">Nama Siswa</th>
+                                    <th class="py-2.5 px-3">Kelas</th>
+                                    <th class="py-2.5 px-3">Password Sementara</th>
+                                    <th class="py-2.5 px-3">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-amber-50 font-medium text-darkgreen">
+                                @foreach(session('batch_credentials') as $idx => $cred)
+                                    <tr class="hover:bg-amber-50/50">
+                                        <td class="py-2 px-3 text-muted-text">{{ $idx + 1 }}</td>
+                                        <td class="py-2 px-3 font-mono font-bold text-forest">{{ $cred['nis'] }}</td>
+                                        <td class="py-2 px-3">{{ $cred['nama'] }}</td>
+                                        <td class="py-2 px-3 text-muted-text">{{ $cred['kelas'] }}</td>
+                                        <td class="py-2 px-3 font-mono font-bold text-amber-900 bg-amber-50/60">{{ $cred['password_sementara'] }}</td>
+                                        <td class="py-2 px-3">
+                                            <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700">
+                                                <x-icon name="check-circle" class="w-3.5 h-3.5 text-emerald-600" />
+                                                {{ $cred['keterangan'] ?? 'Akun baru' }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+
+                @if(session('batch_skipped') && count(session('batch_skipped')) > 0)
+                    <div class="mt-3 pt-3 border-t border-amber-200/80">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-amber-900">
+                                Daftar Siswa yang Dilewati ({{ count(session('batch_skipped')) }} Akun Sudah Terdaftar):
+                            </span>
+                            <span class="text-[11px] text-muted-text italic">Tidak dibuat ulang demi keamanan kredensial siswa eksisting</span>
+                        </div>
+                        <div class="overflow-x-auto max-h-40 overflow-y-auto rounded-xl border border-gray-200 bg-gray-50/50">
+                            <table class="w-full text-left text-xs divide-y divide-gray-200">
+                                <thead class="bg-gray-100 text-gray-700 font-bold sticky top-0">
+                                    <tr>
+                                        <th class="py-1.5 px-3">No</th>
+                                        <th class="py-1.5 px-3">NIS</th>
+                                        <th class="py-1.5 px-3">Nama Siswa</th>
+                                        <th class="py-1.5 px-3">Kelas</th>
+                                        <th class="py-1.5 px-3">Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 font-normal text-muted-text">
+                                    @foreach(session('batch_skipped') as $sIdx => $skipped)
+                                        <tr>
+                                            <td class="py-1.5 px-3">{{ $sIdx + 1 }}</td>
+                                            <td class="py-1.5 px-3 font-mono font-semibold">{{ $skipped['nis'] }}</td>
+                                            <td class="py-1.5 px-3">{{ $skipped['nama'] }}</td>
+                                            <td class="py-1.5 px-3">{{ $skipped['kelas'] }}</td>
+                                            <td class="py-1.5 px-3">
+                                                <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700">
+                                                    <x-icon name="information-circle" class="w-3.5 h-3.5 text-amber-600" />
+                                                    {{ $skipped['keterangan'] }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        @endif
 
         <!-- Excel Staging Import Section (DESIGN.md 11.2: Unduh Template, Unggah File, Hasil Validasi, Konfirmasi) -->
         <div class="p-6 rounded-3xl bg-linear-to-br from-white to-emerald-50/40 border border-emerald-200/80 shadow-xs space-y-4">
@@ -196,6 +317,15 @@
                                 </td>
                                 <td class="py-3.5 px-4 sm:px-6 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
+                                        <button 
+                                            type="button" 
+                                            onclick="openResetModal({{ $student->id }}, '{{ addslashes($student->nama) }}', '{{ $student->nis }}', '{{ $student->user->username ?? '' }}')"
+                                            class="p-1.5 rounded-lg text-muted-text hover:text-amber-600 hover:bg-amber-50 transition-colors" 
+                                            title="{{ $student->user ? 'Reset Password Siswa' : 'Buat Akun Siswa Ini' }}"
+                                        >
+                                            <x-icon name="key" class="w-4 h-4" />
+                                        </button>
+
                                         <a 
                                             href="{{ route('admin.master.siswa.edit', $student) }}" 
                                             class="p-1.5 rounded-lg text-muted-text hover:text-forest hover:bg-soft transition-colors" 
@@ -251,5 +381,200 @@
             </div>
         </div>
 
+    <!-- Modal Konfirmasi Generate Akun Siswa Massal -->
+    <div id="modalGenerateMassal" class="fixed inset-0 z-50 hidden bg-darkgreen/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-border-soft relative animate-in fade-in duration-150">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                    <x-icon name="key" class="w-5 h-5" />
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-darkgreen">Generate Akun Siswa Massal</h3>
+                    <p class="text-xs text-muted-text mt-0.5">Buat akun login siswa secara otomatis untuk seluruh siswa aktif yang belum memiliki akun.</p>
+                </div>
+            </div>
+
+            <form action="{{ route('admin.master.siswa.generate-akun-massal') }}" method="POST" class="mt-5 space-y-4">
+                @csrf
+                
+                <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 leading-relaxed">
+                    <div class="font-bold flex items-center gap-1.5 mb-1.5">
+                        <x-icon name="exclamation-circle" class="w-4 h-4 text-amber-700 shrink-0" />
+                        <span>Ketentuan Pembuatan Akun:</span>
+                    </div>
+                    <ul class="list-disc list-inside space-y-1 pl-1 text-[11px] text-amber-800">
+                        <li>Total Siswa Aktif Belum Berakun: <strong>{{ $stats['belum_berakun'] ?? 0 }} siswa</strong></li>
+                        <li>Username akan otomatis menggunakan <strong>NIS Siswa</strong> (PRD AKN-9).</li>
+                        <li>Siswa yang sudah memiliki akun akan otomatis <strong>dilewati</strong> sehingga tidak terjadi tabrakan/duplikasi data.</li>
+                        <li>Password awal digenerate acak sementara dan ter-hash bcrypt.</li>
+                        <li>Setiap siswa diwajibkan mengganti kata sandi saat pertama kali login.</li>
+                    </ul>
+                </div>
+
+                <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-border-soft">
+                    <button type="button" onclick="closeGenerateModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-muted-text hover:bg-soft transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-2">
+                        <x-icon name="check" class="w-4 h-4" />
+                        <span>Eksekusi Generate Massal</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Reset Password / Buat Akun Satuan Siswa -->
+    <div id="modalResetPasswordSiswa" class="fixed inset-0 z-50 hidden bg-darkgreen/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-border-soft relative animate-in fade-in duration-150">
+            <h3 class="text-base font-bold text-darkgreen" id="modalResetTitle">Atur Kata Sandi Siswa</h3>
+            <p class="text-xs text-muted-text mt-1" id="modalResetSubtitle">
+                Masukkan password baru untuk akun siswa ini.
+            </p>
+
+            <form id="formResetPasswordSiswa" onsubmit="submitResetPasswordSiswa(event)" class="mt-4 space-y-4">
+                @csrf
+                <input type="hidden" id="resetSiswaId" value="">
+
+                <div>
+                    <label class="block text-xs font-bold text-darkgreen uppercase tracking-wider mb-1">
+                        Password Baru
+                    </label>
+                    <input 
+                        type="text" 
+                        id="newPasswordSiswaInput" 
+                        placeholder="Kosongkan untuk password otomatis..." 
+                        minlength="6"
+                        class="w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-soft border border-border-soft focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-forest font-mono"
+                    >
+                    <span class="text-[11px] text-muted-text block mt-1">Jika dikosongkan, sistem akan meng-generate password acak otomatis.</span>
+                </div>
+
+                <div class="flex items-center justify-end gap-2.5 pt-2">
+                    <button type="button" onclick="closeResetModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-muted-text hover:bg-soft transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" id="btnSubmitResetSiswa" class="px-4 py-2 rounded-xl bg-forest hover:bg-forest/90 text-white text-xs font-bold shadow-xs transition-colors">
+                        Simpan Password
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts untuk Modal & Ekspor Kredensial -->
+    <script>
+        const csrfToken = '{{ csrf_token() }}';
+
+        function openGenerateModal() {
+            document.getElementById('modalGenerateMassal').classList.remove('hidden');
+        }
+
+        function closeGenerateModal() {
+            document.getElementById('modalGenerateMassal').classList.add('hidden');
+        }
+
+        function openResetModal(siswaId, nama, nis, username) {
+            document.getElementById('resetSiswaId').value = siswaId;
+            document.getElementById('modalResetTitle').textContent = `Kata Sandi: ${nama}`;
+            document.getElementById('modalResetSubtitle').textContent = username 
+                ? `Username: ${username} (NIS: ${nis}). Mengatur ulang password baru.`
+                : `Siswa ini belum memiliki akun. Sistem akan membuatkan akun baru dengan username NIS ${nis}.`;
+            document.getElementById('newPasswordSiswaInput').value = '';
+            document.getElementById('modalResetPasswordSiswa').classList.remove('hidden');
+            document.getElementById('newPasswordSiswaInput').focus();
+        }
+
+        function closeResetModal() {
+            document.getElementById('modalResetPasswordSiswa').classList.add('hidden');
+        }
+
+        async function submitResetPasswordSiswa(e) {
+            e.preventDefault();
+            const siswaId = document.getElementById('resetSiswaId').value;
+            const password = document.getElementById('newPasswordSiswaInput').value;
+            const btn = document.getElementById('btnSubmitResetSiswa');
+
+            btn.disabled = true;
+            btn.textContent = 'Menyimpan...';
+
+            try {
+                const response = await fetch(`/admin/master/siswa/${siswaId}/reset-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ password_baru: password })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert(`SUKSES!\nUsername: ${data.username}\nPassword Baru: ${data.password_baru}\n\nCatatan: Siswa wajib mengganti kata sandi saat login.`);
+                    closeResetModal();
+                    location.reload();
+                } else {
+                    alert(data.message || 'Gagal mengatur ulang kata sandi.');
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan koneksi.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Simpan Password';
+            }
+        }
+
+        function downloadCsvCredentials() {
+            const table = document.getElementById('tableBatchCredentials');
+            if (!table) return;
+
+            let csv = [];
+            const rows = table.querySelectorAll('tr');
+            for (let i = 0; i < rows.length; i++) {
+                const row = [], cols = rows[i].querySelectorAll('td, th');
+                for (let j = 0; j < cols.length; j++) {
+                    let text = cols[j].innerText.replace(/"/g, '""').trim();
+                    row.push('"' + text + '"');
+                }
+                csv.push(row.join(','));
+            }
+
+            const csvFile = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const downloadLink = document.createElement('a');
+            downloadLink.download = 'kredensial-sementara-siswa-' + new Date().toISOString().slice(0, 10) + '.csv';
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = 'none';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+
+        function copyAllCredentials() {
+            const table = document.getElementById('tableBatchCredentials');
+            if (!table) return;
+
+            let text = 'DAFTAR KREDENSIAL SEMENTARA SISWA SMP MUHAMMADIYAH 7 MEDAN\n';
+            text += 'Catatan: Siswa wajib ganti password saat login pertama.\n\n';
+            
+            const rows = table.querySelectorAll('tbody tr');
+            rows.forEach((r, idx) => {
+                const cols = r.querySelectorAll('td');
+                if (cols.length >= 5) {
+                    const nis = cols[1].innerText.trim();
+                    const nama = cols[2].innerText.trim();
+                    const kelas = cols[3].innerText.trim();
+                    const pass = cols[4].innerText.trim();
+                    text += `${idx + 1}. NIS: ${nis} | Nama: ${nama} (${kelas}) | Password: ${pass}\n`;
+                }
+            });
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Seluruh data kredensial berhasil disalin ke clipboard!');
+            }).catch(err => {
+                alert('Gagal menyalin: ' + err);
+            });
+        }
+    </script>
     </div>
 </x-layouts.admin>

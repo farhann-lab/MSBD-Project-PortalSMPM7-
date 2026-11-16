@@ -394,12 +394,14 @@ Route::middleware(['auth'])->group(function () {
             Route::post('guru/{guru}/reset-password', [AdminGuruController::class, 'resetPassword'])->name('guru.reset-password');
             Route::resource('guru', AdminGuruController::class)->except(['show']);
 
-            // [MASTER-SIS-001] Manajemen Data Siswa Lengkap (~30 Kolom Berkelompok)
+            // [MASTER-SIS-001] & [MASTER-AKN-001] Manajemen Data Siswa Lengkap & Akun Siswa Massal
             Route::get('siswa/template-impor', [AdminImporSiswaController::class, 'downloadTemplate'])->name('siswa.template-impor');
             Route::post('siswa/impor/upload', [AdminImporSiswaController::class, 'upload'])->name('siswa.impor.upload');
             Route::get('siswa/impor/{impor}/preview', [AdminImporSiswaController::class, 'preview'])->name('siswa.impor.preview');
             Route::post('siswa/impor/{impor}/commit', [AdminImporSiswaController::class, 'commit'])->name('siswa.impor.commit');
             Route::delete('siswa/impor/{impor}/cancel', [AdminImporSiswaController::class, 'cancel'])->name('siswa.impor.cancel');
+            Route::post('siswa/generate-akun-massal', [AdminSiswaController::class, 'generateAkunMassal'])->name('siswa.generate-akun-massal');
+            Route::post('siswa/{siswa}/reset-password', [AdminSiswaController::class, 'resetPassword'])->name('siswa.reset-password');
             Route::resource('siswa', AdminSiswaController::class)->parameters(['siswa' => 'siswa'])->except(['show']);
 
             Route::get('/kelas', function () {

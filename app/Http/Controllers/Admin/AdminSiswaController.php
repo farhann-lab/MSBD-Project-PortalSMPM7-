@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Siswa;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -36,11 +38,12 @@ class AdminSiswaController extends Controller
         $students = $query->orderBy('nama')->paginate(20)->withQueryString();
 
         $stats = [
-            'total'   => Siswa::count(),
-            'aktif'   => Siswa::where('stat_data', 'A')->count(),
-            'keluar'  => Siswa::where('stat_data', 'K')->count(),
-            'mutasi'  => Siswa::where('stat_data', 'M')->count(),
-            'lulus'   => Siswa::where('stat_data', 'L')->count(),
+            'total'          => Siswa::count(),
+            'aktif'          => Siswa::where('stat_data', 'A')->count(),
+            'keluar'         => Siswa::where('stat_data', 'K')->count(),
+            'mutasi'         => Siswa::where('stat_data', 'M')->count(),
+            'lulus'          => Siswa::where('stat_data', 'L')->count(),
+            'belum_berakun'  => Siswa::where('stat_data', 'A')->whereDoesntHave('user')->count(),
         ];
 
         return view('pages.admin.master.siswa.index', compact('students', 'stats'));
@@ -289,5 +292,178 @@ class AdminSiswaController extends Controller
         } catch (\Throwable $e) {
             return back()->with('error', 'Gagal mengubah status siswa: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * [MASTER-AKN-001] Pembuatan Akun Siswa Massal.
+     * Membuat akun user di siakad_users dengan username = NIS, password acak sementara,
+     * dan wajib_ganti_password = 1. Password sementara hanya dikembalikan sekali di response/session.
+     * Siswa yang sudah memiliki akun dilewati (idempotent) dan diberikan keterangan status yang jelas.
+     */
+    public function generateAkunMassal(Request $request)
+    {
+        // Ambil seluruh data siswa aktif beserta relasi akun user
+        $allSiswaInScope = Siswa::with('user')->where('stat_data', 'A')->get();
+
+        if ($allSiswaInScope->isEmpty()) {
+            $pesan = 'Tidak ada siswa aktif yang terdaftar di sistem.';
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $pesan,
+                    'data'    => [],
+                ], 422);
+            }
+
+            return back()->with('error', $pesan);
+        }
+
+        // Ambil seluruh username yang sudah terdaftar di siakad_users untuk pencegahan tabrakan
+        $existingUsernames = User::pluck('username')->flip()->toArray();
+
+        $kredensialList = [];
+        $dilewatiList   = [];
+
+        DB::transaction(function () use ($allSiswaInScope, &$existingUsernames, &$kredensialList, &$dilewatiList) {
+            foreach ($allSiswaInScope as $siswa) {
+                // 1. Pengecekan apakah siswa sudah memiliki akun terkait (via relasi user)
+                if ($siswa->user) {
+                    $dilewatiList[] = [
+                        'id_siswa'   => $siswa->id,
+                        'nis'        => $siswa->nis,
+                        'nama'       => $siswa->nama,
+                        'kelas'      => $siswa->diterima_kelas ?: '-',
+                        'keterangan' => 'Akun sudah ada (Username: ' . $siswa->user->username . ')',
+                    ];
+                    continue;
+                }
+
+                // 2. Pengecekan apakah username (NIS) sudah digunakan di siakad_users oleh akun lain
+                if (isset($existingUsernames[$siswa->nis])) {
+                    $dilewatiList[] = [
+                        'id_siswa'   => $siswa->id,
+                        'nis'        => $siswa->nis,
+                        'nama'       => $siswa->nama,
+                        'kelas'      => $siswa->diterima_kelas ?: '-',
+                        'keterangan' => 'Akun sudah ada (NIS sudah terdaftar sebagai username)',
+                    ];
+                    continue;
+                }
+
+                // 3. Generate password sementara acak 8 karakter (kombinasi huruf & angka)
+                $tempPassword = 'Smp7' . Str::upper(Str::random(4));
+
+                User::create([
+                    'username'             => $siswa->nis,
+                    'password'             => Hash::make($tempPassword),
+                    'role'                 => 'siswa',
+                    'id_siswa'             => $siswa->id,
+                    'is_active'            => true,
+                    'wajib_ganti_password' => true,
+                    'is_admin_utama'       => false,
+                ]);
+
+                // Tandai username sebagai terdaftar di memory
+                $existingUsernames[$siswa->nis] = true;
+
+                $kredensialList[] = [
+                    'id_siswa'           => $siswa->id,
+                    'nis'                => $siswa->nis,
+                    'nama'               => $siswa->nama,
+                    'kelas'              => $siswa->diterima_kelas ?: '-',
+                    'password_sementara' => $tempPassword,
+                    'keterangan'         => 'Akun baru berhasil dibuat',
+                ];
+            }
+        });
+
+        $totalDibuat   = count($kredensialList);
+        $totalDilewati = count($dilewatiList);
+
+        if ($totalDibuat === 0) {
+            $pesan = "Semua siswa aktif ({$totalDilewati} siswa) sudah memiliki akun login aktif. Tidak ada akun baru yang digenerate.";
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success'        => true,
+                    'message'        => $pesan,
+                    'total_dibuat'   => 0,
+                    'total_dilewati' => $totalDilewati,
+                    'data'           => [],
+                    'dilewati'       => $dilewatiList,
+                ]);
+            }
+
+            return back()->with('info', $pesan);
+        }
+
+        $infoPesan = "Berhasil membuat {$totalDibuat} akun siswa baru.";
+        if ($totalDilewati > 0) {
+            $infoPesan .= " ({$totalDilewati} siswa dilewati karena akun sudah ada).";
+        }
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success'        => true,
+                'message'        => $infoPesan,
+                'total'          => $totalDibuat,
+                'total_dilewati' => $totalDilewati,
+                'data'           => $kredensialList,
+                'dilewati'       => $dilewatiList,
+            ]);
+        }
+
+        return redirect()->route('admin.master.siswa.index')
+            ->with('batch_credentials', $kredensialList)
+            ->with('batch_skipped', $dilewatiList)
+            ->with('success', $infoPesan . ' Simpan kredensial sementara berikut sebelum menutup halaman!');
+    }
+
+    /**
+     * [MASTER-AKN-001] Reset Password Siswa Satuan (atau Buat Akun Baru jika Belum Punya).
+     */
+    public function resetPassword(Request $request, Siswa $siswa)
+    {
+        $validated = $request->validate([
+            'password_baru' => ['nullable', 'string', 'min:6'],
+        ], [
+            'password_baru.min' => 'Password baru minimal 6 karakter.',
+        ]);
+
+        $passwordBaru = !empty($validated['password_baru'])
+            ? $validated['password_baru']
+            : 'Smp7' . Str::upper(Str::random(4));
+
+        $user = $siswa->user;
+
+        if ($user) {
+            $user->password = Hash::make($passwordBaru);
+            $user->wajib_ganti_password = true;
+            $user->save();
+        } else {
+            // Jika belum punya akun, buatkan otomatis dengan username = NIS
+            $user = User::create([
+                'username'             => $siswa->nis,
+                'password'             => Hash::make($passwordBaru),
+                'role'                 => 'siswa',
+                'id_siswa'             => $siswa->id,
+                'is_active'            => ($siswa->stat_data === 'A'),
+                'wajib_ganti_password' => true,
+                'is_admin_utama'       => false,
+            ]);
+        }
+
+        $message = "Password akun siswa '{$siswa->nama}' (username: {$user->username}) berhasil diatur ulang menjadi: {$passwordBaru}";
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success'       => true,
+                'username'      => $user->username,
+                'password_baru' => $passwordBaru,
+                'message'       => $message,
+            ]);
+        }
+
+        return redirect()->back()
+            ->with('success', $message);
     }
 }

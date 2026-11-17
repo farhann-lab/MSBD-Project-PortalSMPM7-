@@ -222,32 +222,39 @@
         </div>
 
         <!-- Filter & Search Toolbar -->
-        <form method="GET" action="{{ route('admin.master.siswa.index') }}" class="p-4 sm:p-5 rounded-2xl bg-white border border-border-soft shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div class="w-full sm:w-80 relative">
+        <form method="GET" action="{{ route('admin.master.siswa.index') }}" class="p-4 sm:p-5 rounded-2xl bg-white border border-border-soft shadow-xs flex flex-col lg:flex-row items-center justify-between gap-3">
+            <div class="w-full lg:w-80 relative">
                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-text">
                     <x-icon name="search" class="w-4 h-4 text-sage" />
                 </span>
-                <input 
-                    type="text" 
+                <input
+                    type="text"
                     name="q"
                     value="{{ request('q') }}"
-                    placeholder="Cari nama, NIS, atau NISN siswa..." 
+                    placeholder="Cari nama, NIS, atau NISN siswa..."
                     class="w-full pl-10 pr-4 py-2 rounded-xl text-xs sm:text-sm bg-soft border border-border-soft focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-forest transition-all"
                 >
             </div>
 
-            <div class="w-full sm:w-auto flex items-center gap-2">
-                <select name="status" onchange="this.form.submit()" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm bg-soft border border-border-soft focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-forest text-darkgreen">
-                    <option value="" {{ request('status') === '' ? 'selected' : '' }}>Semua Status</option>
-                    <option value="A" {{ request('status', 'A') === 'A' ? 'selected' : '' }}>Aktif (A)</option>
-                    <option value="K" {{ request('status') === 'K' ? 'selected' : '' }}>Keluar (K)</option>
-                    <option value="M" {{ request('status') === 'M' ? 'selected' : '' }}>Mutasi (M)</option>
-                    <option value="L" {{ request('status') === 'L' ? 'selected' : '' }}>Lulus (L)</option>
+            <div class="w-full lg:w-auto flex flex-wrap items-center gap-2">
+                <select name="ta" onchange="this.form.submit()" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm bg-soft border border-border-soft focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-forest text-darkgreen">
+                    <option value="all" {{ $taInput === 'all' ? 'selected' : '' }}>Semua Data Siswa</option>
+                    @foreach($daftarTa as $ta)
+                        <option value="{{ $ta }}" {{ (string) $taInput === (string) $ta ? 'selected' : '' }}>Periode {{ $ta }}</option>
+                    @endforeach
                 </select>
+
+                <select name="kelas" onchange="this.form.submit()" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm bg-soft border border-border-soft focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-forest text-darkgreen">
+                    <option value="">Semua Kelas</option>
+                    @foreach($daftarKelas as $k)
+                        <option value="{{ $k->id }}" {{ (string) request('kelas') === (string) $k->id ? 'selected' : '' }}>{{ $k->nama }}</option>
+                    @endforeach
+                </select>
+
                 <button type="submit" class="px-4 py-2 rounded-xl bg-soft hover:bg-border-soft text-darkgreen text-xs font-semibold">
                     Cari
                 </button>
-                @if(request()->filled('q') || request()->filled('status'))
+                @if(request()->filled('q') || request()->filled('kelas') || request()->filled('ta'))
                     <a href="{{ route('admin.master.siswa.index') }}" class="px-3 py-2 rounded-xl border border-border-soft hover:bg-soft text-rose-600 text-xs font-semibold">
                         Reset
                     </a>
@@ -264,8 +271,9 @@
                             <th class="py-3.5 px-4 sm:px-6">No</th>
                             <th class="py-3.5 px-4 sm:px-6">NIS / NISN</th>
                             <th class="py-3.5 px-4 sm:px-6">Nama Lengkap Siswa</th>
+                            <th class="py-3.5 px-4 sm:px-6">Kelas</th>
                             <th class="py-3.5 px-4 sm:px-6 text-center">JK</th>
-                            <th class="py-3.5 px-4 sm:px-6 text-center">Status</th>
+
                             <th class="py-3.5 px-4 sm:px-6 text-center">Akun SIAKAD</th>
                             <th class="py-3.5 px-4 sm:px-6 text-right">Aksi</th>
                         </tr>
@@ -286,23 +294,24 @@
                                         {{ $student->tmp_lahir ?: '-' }}, {{ $student->getFormattedDate('tgl_lahir') ?: '-' }}
                                     </span>
                                 </td>
+                                <td class="py-3.5 px-4 sm:px-6">
+                                    @php
+                                        $pen = $filterTa
+                                            ? $student->penempatanKelas->firstWhere('ta', $filterTa)
+                                            : $student->penempatanKelas->sortByDesc('ta')->first();
+                                    @endphp
+                                    @if($pen && $pen->kelas)
+                                        <span class="font-bold text-darkgreen block">{{ $pen->kelas->nama }}</span>
+                                        @if(!$filterTa)
+                                            <span class="text-[11px] text-muted-text">TA {{ $pen->ta }}</span>
+                                        @endif
+                                    @else
+                                        <span class="text-xs text-muted-text italic">Belum ada kelas</span>
+                                    @endif
+                                </td>
                                 <td class="py-3.5 px-4 sm:px-6 text-center">
                                     <span class="inline-flex px-2 py-0.5 rounded-lg text-xs font-bold {{ $student->jk === 'L' ? 'bg-blue-50 text-blue-700' : 'bg-rose-50 text-rose-700' }}">
                                         {{ $student->jk === 'L' ? 'L' : 'P' }}
-                                    </span>
-                                </td>
-                                <td class="py-3.5 px-4 sm:px-6 text-center">
-                                    @php
-                                        $statusBadges = [
-                                            'A' => ['bg' => 'bg-emerald-100 text-emerald-800', 'label' => 'Aktif (A)'],
-                                            'K' => ['bg' => 'bg-rose-100 text-rose-800', 'label' => 'Keluar (K)'],
-                                            'M' => ['bg' => 'bg-amber-100 text-amber-800', 'label' => 'Mutasi (M)'],
-                                            'L' => ['bg' => 'bg-blue-100 text-blue-800', 'label' => 'Lulus (L)'],
-                                        ];
-                                        $badge = $statusBadges[$student->stat_data] ?? ['bg' => 'bg-gray-100 text-gray-800', 'label' => $student->stat_data];
-                                    @endphp
-                                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold {{ $badge['bg'] }}">
-                                        {{ $badge['label'] }}
                                     </span>
                                 </td>
                                 <td class="py-3.5 px-4 sm:px-6 text-center">

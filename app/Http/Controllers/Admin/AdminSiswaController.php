@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Siswa;
+use App\Models\Kelas;
+use App\Models\KelasSiswa;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -20,34 +22,40 @@ class AdminSiswaController extends Controller
      * Tampilkan daftar siswa dengan pagination, pencarian, dan filter status/kelas.
      */
     public function index(Request $request): View
-    {
-        $query = Siswa::query()->with('user');
+{
+    // 'all' = tampilkan semua data siswa tanpa filter periode
+    $taInput  = $request->input('ta', '2026');
+    $filterTa = $taInput === 'all' ? null : $taInput;
+    $idKelas  = $request->input('kelas');
 
-        // Filter status: A (Aktif), K (Keluar), M (Mutasi), L (Lulus)
-        if ($request->filled('status')) {
-            $query->status($request->status);
-        } else {
-            $query->status('A');
-        }
+    $query = Siswa::query()
+        ->with(['user', 'penempatanKelas.kelas'])
+        ->penempatan($filterTa, $idKelas);
 
-        // Filter pencarian nama, NIS, atau NISN
-        if ($request->filled('q')) {
-            $query->search(trim($request->q));
-        }
-
-        $students = $query->orderBy('nama')->paginate(20)->withQueryString();
-
-        $stats = [
-            'total'          => Siswa::count(),
-            'aktif'          => Siswa::where('stat_data', 'A')->count(),
-            'keluar'         => Siswa::where('stat_data', 'K')->count(),
-            'mutasi'         => Siswa::where('stat_data', 'M')->count(),
-            'lulus'          => Siswa::where('stat_data', 'L')->count(),
-            'belum_berakun'  => Siswa::where('stat_data', 'A')->whereDoesntHave('user')->count(),
-        ];
-
-        return view('pages.admin.master.siswa.index', compact('students', 'stats'));
+    if ($request->filled('q')) {
+        $query->search(trim($request->q));
     }
+
+    $students = $query->orderBy('nama')->paginate(20)->withQueryString();
+
+    // Statistik mengikuti filter periode/kelas yang sedang aktif
+    $base = fn () => Siswa::penempatan($filterTa, $idKelas);
+
+    $stats = [
+        'total'  => $base()->count(),
+        'aktif'  => $base()->where('stat_data', 'A')->count(),
+        'keluar' => $base()->where('stat_data', 'K')->count(),
+        'mutasi' => $base()->where('stat_data', 'M')->count(),
+        'lulus'  => $base()->where('stat_data', 'L')->count(),
+    ];
+
+    $daftarTa    = KelasSiswa::select('ta')->distinct()->orderByDesc('ta')->pluck('ta');
+    $daftarKelas = Kelas::orderBy('nama')->get();
+
+    return view('pages.admin.master.siswa.index', compact(
+        'students', 'stats', 'daftarTa', 'daftarKelas', 'taInput', 'filterTa'
+    ));
+}
 
     /**
      * Tampilkan formulir penambahan data siswa baru (3 Tab).

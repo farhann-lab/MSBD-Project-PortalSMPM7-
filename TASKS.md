@@ -496,7 +496,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [MASTER-AKD-002] Manajemen Mata Pelajaran & Penugasan Mengajar Guru
 - **Phase:** Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Academic Management
 - **Description:** Mengelola kurikulum mapel (`m_mapel`), penugasan guru per kelas dan semester (`t_guru_mapel`), modal salin penugasan antar-semester, dan pengecekan dependensi nilai sebelum penonaktifan.
@@ -504,12 +504,13 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 - **Dependencies:** `MASTER-GRU-001`, `MASTER-AKD-001`
 - **Implementation Notes:**
   - Penugasan guru berlaku per periode semester (`tasm`).
-  - Fitur salin penugasan memanggil `sp_salin_penugasan_guru` dengan modal konfirmasi jumlah baris.
-  - PGS-7: Penugasan yang sudah memiliki nilai di RKM (`t_nilai*`) dilarang dihapus (hanya dinonaktifkan).
+  - Fitur salin penugasan memanggil `sp_salin_penugasan_guru` dengan modal konfirmasi dan fallback transaksi Eloquent.
+  - PGS-7: Penugasan yang sudah memiliki rekaman nilai di RKM (`t_nilai*`) dilarang dihapus (hasNilaiDependencies checking).
+  - MPL-4: Mapel yang masih memiliki penugasan guru dilindungi dari penghapusan.
 - **Acceptance Criteria:**
-  - [ ] Penugasan guru dapat disalin antar-semester dengan 1 klik konfirmasi.
-  - [ ] Penugasan yang telah terkait rekaman nilai terlindungi dari penghapusan.
-- **Verification:** Uji salin penugasan dari periode 20241 ke 20242.
+  - [x] Penugasan guru dapat disalin antar-semester dengan 1 klik konfirmasi.
+  - [x] Penugasan yang telah terkait rekaman nilai terlindungi dari penghapusan.
+- **Verification:** `tests/Feature/AdminAkademikMapelPenugasanTest.php` (7 test cases lulus 100%).
 
 ---
 

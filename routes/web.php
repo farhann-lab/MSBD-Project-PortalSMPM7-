@@ -6,7 +6,9 @@ use App\Http\Controllers\Admin\AdminGaleriController;
 use App\Http\Controllers\Admin\AdminGuruController;
 use App\Http\Controllers\Admin\AdminImporSiswaController;
 use App\Http\Controllers\Admin\AdminKelasController;
+use App\Http\Controllers\Admin\AdminMapelController;
 use App\Http\Controllers\Admin\AdminPengumumanController;
+use App\Http\Controllers\Admin\AdminPenugasanGuruController;
 use App\Http\Controllers\Admin\AdminPrestasiPublikController;
 use App\Http\Controllers\Admin\AdminSiswaController;
 use App\Http\Controllers\AdminDashboardController;
@@ -426,12 +428,17 @@ Route::middleware(['auth'])->group(function () {
                 return redirect()->route('admin.master.kelas.index');
             })->name('kelas');
 
-            Route::get('/mapel', function () {
-                return view('pages.admin.master.mapel');
-            })->name('mapel');
+            // [MASTER-AKD-002] Manajemen Mata Pelajaran & Penugasan Mengajar Guru
+            Route::resource('mapel', AdminMapelController::class)->parameters(['mapel' => 'mapel'])->except(['show', 'create', 'edit']);
 
-            Route::get('/penugasan', function () {
-                return view('pages.admin.master.penugasan');
+            Route::get('penugasan', [AdminPenugasanGuruController::class, 'index'])->name('penugasan.index');
+            Route::post('penugasan', [AdminPenugasanGuruController::class, 'store'])->name('penugasan.store');
+            Route::delete('penugasan/{penugasan}', [AdminPenugasanGuruController::class, 'destroy'])->name('penugasan.destroy');
+            Route::post('penugasan/salin', [AdminPenugasanGuruController::class, 'salinPenugasan'])->name('penugasan.salin');
+
+            // Route alias legacy
+            Route::get('master/penugasan-legacy', function () {
+                return redirect()->route('admin.master.penugasan.index');
             })->name('penugasan');
 
             Route::get('/tahun-ajaran', function () {

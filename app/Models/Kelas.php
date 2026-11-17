@@ -31,6 +31,11 @@ class Kelas extends Model
         return $this->hasMany(Walikelas::class, 'id_kelas', 'id');
     }
 
+    public function guruMapel(): HasMany
+    {
+        return $this->hasMany(GuruMapel::class, 'id_kelas', 'id');
+    }
+
     public function scopeTingkat($query, $tingkat)
     {
         if (!empty($tingkat)) {

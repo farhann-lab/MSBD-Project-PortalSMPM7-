@@ -85,14 +85,14 @@
                     'id' => 'master-mapel',
                     'label' => 'Mata Pelajaran',
                     'icon' => 'book-open',
-                    'route' => route('admin.master.mapel'),
-                    'badge' => '14 Mapel',
+                    'route' => route('admin.master.mapel.index'),
+                    'badge' => null,
                 ],
                 [
                     'id' => 'master-penugasan',
                     'label' => 'Penugasan Guru',
                     'icon' => 'clipboard-check',
-                    'route' => route('admin.master.penugasan'),
+                    'route' => route('admin.master.penugasan.index'),
                     'badge' => null,
                 ],
                 [

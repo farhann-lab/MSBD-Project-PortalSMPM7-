@@ -53,6 +53,15 @@ class User extends Authenticatable
         return $this->role === 'guru';
     }
 
+    public function isWaliKelas(?string $tasm = null): bool
+    {
+        if (!$this->isGuru() || !$this->id_guru) {
+            return false;
+        }
+
+        return $this->guru ? $this->guru->isWaliKelas($tasm) : false;
+    }
+
     public function isSiswa(): bool
     {
         return $this->role === 'siswa';

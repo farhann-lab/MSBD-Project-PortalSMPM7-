@@ -71,6 +71,17 @@ class Siswa extends Model
         return $this->hasOne(User::class, 'id_siswa', 'id');
     }
 
+    public function penempatanKelas(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(KelasSiswa::class, 'id_siswa', 'id');
+    }
+
+    public function kelasAktif(?string $ta = null)
+    {
+        $ta = $ta ?: Tahun::getTaAktif();
+        return $this->penempatanKelas()->where('ta', $ta)->with('kelas')->first();
+    }
+
     /**
      * Scope pencarian nama, NIS, atau NISN.
      */

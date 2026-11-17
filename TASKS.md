@@ -472,7 +472,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [MASTER-AKD-001] Manajemen Kelas, Penempatan Siswa, & Penetapan Wali Kelas
 - **Phase:** Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Academic Management
 - **Description:** Mengelola data rombel (`m_kelas`), penempatan siswa per tahun ajaran (`t_kelas_siswa`), penetapan wali kelas per periode (`t_walikelas`), serta modal salin wali kelas antar-periode.
@@ -481,11 +481,15 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 - **Implementation Notes:**
   - Penempatan siswa disimpan per tahun ajaran (`ta` 4-digit).
   - Wali kelas disimpan per semester (`tasm` 5-digit).
-  - Terdapat modal "Salin Wali Kelas dari Periode Sebelumnya" yang memanggil `sp_salin_walikelas`.
+  - Terdapat modal "Salin Wali Kelas dari Periode Sebelumnya" yang memanggil `sp_salin_walikelas` dengan fallback Eloquent transaksi.
+  - Model `Kelas`, `KelasSiswa`, `Walikelas`, `Tahun` dibuat tanpa mengubah skema DDL RKM.
+  - Proteksi dependensi: kelas tidak dapat dihapus jika masih terkait data siswa atau wali kelas (KLS-4).
+  - Proteksi duplikasi penempatan siswa di TA yang sama (PNS-5).
+  - Proteksi 1 kelas 1 wali & 1 guru 1 wali per semester (PWK-2, PWK-3).
 - **Acceptance Criteria:**
-  - [ ] Admin dapat memindahkan siswa ke rombel kelas.
-  - [ ] Guru yang ditugaskan sebagai wali kelas otomatis memperoleh hak akses menu wali kelas saat login.
-- **Verification:** Tetapkan seorang guru sebagai wali kelas 7A, login dengan akun guru tersebut, dan verifikasi munculnya menu wali kelas.
+  - [x] Admin dapat memindahkan siswa ke rombel kelas.
+  - [x] Guru yang ditugaskan sebagai wali kelas otomatis memperoleh hak akses menu wali kelas saat login.
+- **Verification:** `tests/Feature/AdminAkademikKelasTest.php` (8 test cases lulus 100%).
 
 ---
 

@@ -78,8 +78,8 @@
                     'id' => 'master-kelas',
                     'label' => 'Manajemen Kelas',
                     'icon' => 'building-office',
-                    'route' => route('admin.master.kelas'),
-                    'badge' => '10 Rombel',
+                    'route' => route('admin.master.kelas.index'),
+                    'badge' => null,
                 ],
                 [
                     'id' => 'master-mapel',

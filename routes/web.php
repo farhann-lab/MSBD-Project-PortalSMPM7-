@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AdminFasilitasController;
 use App\Http\Controllers\Admin\AdminGaleriController;
 use App\Http\Controllers\Admin\AdminGuruController;
 use App\Http\Controllers\Admin\AdminImporSiswaController;
+use App\Http\Controllers\Admin\AdminKelasController;
 use App\Http\Controllers\Admin\AdminPengumumanController;
 use App\Http\Controllers\Admin\AdminPrestasiPublikController;
 use App\Http\Controllers\Admin\AdminSiswaController;
@@ -404,8 +405,25 @@ Route::middleware(['auth'])->group(function () {
             Route::post('siswa/{siswa}/reset-password', [AdminSiswaController::class, 'resetPassword'])->name('siswa.reset-password');
             Route::resource('siswa', AdminSiswaController::class)->parameters(['siswa' => 'siswa'])->except(['show']);
 
-            Route::get('/kelas', function () {
-                return view('pages.admin.master.kelas');
+            // [MASTER-AKD-001] Manajemen Kelas, Penempatan Siswa, & Penetapan Wali Kelas
+            Route::get('kelas', [AdminKelasController::class, 'index'])->name('kelas.index');
+            Route::post('kelas', [AdminKelasController::class, 'storeKelas'])->name('kelas.store');
+            Route::put('kelas/{kelas}', [AdminKelasController::class, 'updateKelas'])->name('kelas.update');
+            Route::delete('kelas/{kelas}', [AdminKelasController::class, 'destroyKelas'])->name('kelas.destroy');
+
+            // Penempatan Siswa
+            Route::post('penempatan-siswa', [AdminKelasController::class, 'storePenempatan'])->name('kelas.penempatan.store');
+            Route::post('penempatan-siswa/pindah', [AdminKelasController::class, 'pindahRombel'])->name('kelas.penempatan.pindah');
+            Route::delete('penempatan-siswa/{penempatan}', [AdminKelasController::class, 'destroyPenempatan'])->name('kelas.penempatan.destroy');
+
+            // Penetapan Wali Kelas
+            Route::post('wali-kelas', [AdminKelasController::class, 'storeWaliKelas'])->name('kelas.walikelas.store');
+            Route::delete('wali-kelas/{walikelas}', [AdminKelasController::class, 'destroyWaliKelas'])->name('kelas.walikelas.destroy');
+            Route::post('wali-kelas/salin', [AdminKelasController::class, 'salinWaliKelas'])->name('kelas.walikelas.salin');
+
+            // Route alias agar backward compatible
+            Route::get('master/kelas-legacy', function () {
+                return redirect()->route('admin.master.kelas.index');
             })->name('kelas');
 
             Route::get('/mapel', function () {

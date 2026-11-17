@@ -321,19 +321,38 @@
                                             <span>{{ $student->user->username }}</span>
                                         </span>
                                     @else
-                                        <span class="text-xs text-muted-text italic">Belum dibuat</span>
+                                        <button 
+                                            type="button" 
+                                            onclick="openBuatAkunSiswaModal({{ $student->id }}, '{{ addslashes($student->nama) }}', '{{ $student->nis }}')"
+                                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 hover:bg-forest hover:text-white border border-emerald-200 text-[11px] font-bold transition-colors"
+                                            title="Buat Akun Satuan Siswa (Username: NIS)"
+                                        >
+                                            <x-icon name="plus" class="w-3 h-3" />
+                                            <span>Buat Akun</span>
+                                        </button>
                                     @endif
                                 </td>
                                 <td class="py-3.5 px-4 sm:px-6 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <button 
-                                            type="button" 
-                                            onclick="openResetModal({{ $student->id }}, '{{ addslashes($student->nama) }}', '{{ $student->nis }}', '{{ $student->user->username ?? '' }}')"
-                                            class="p-1.5 rounded-lg text-muted-text hover:text-amber-600 hover:bg-amber-50 transition-colors" 
-                                            title="{{ $student->user ? 'Reset Password Siswa' : 'Buat Akun Siswa Ini' }}"
-                                        >
-                                            <x-icon name="key" class="w-4 h-4" />
-                                        </button>
+                                        @if($student->user)
+                                            <button 
+                                                type="button" 
+                                                onclick="openResetModal({{ $student->id }}, '{{ addslashes($student->nama) }}', '{{ $student->nis }}', '{{ $student->user->username ?? '' }}')"
+                                                class="p-1.5 rounded-lg text-muted-text hover:text-amber-600 hover:bg-amber-50 transition-colors" 
+                                                title="Reset Password Siswa"
+                                            >
+                                                <x-icon name="key" class="w-4 h-4" />
+                                            </button>
+                                        @else
+                                            <button 
+                                                type="button" 
+                                                onclick="openBuatAkunSiswaModal({{ $student->id }}, '{{ addslashes($student->nama) }}', '{{ $student->nis }}')"
+                                                class="p-1.5 rounded-lg text-muted-text hover:text-forest hover:bg-forest/10 transition-colors" 
+                                                title="Buat Akun Siswa Ini (NIS)"
+                                            >
+                                                <x-icon name="user-plus" class="w-4 h-4" />
+                                            </button>
+                                        @endif
 
                                         <a 
                                             href="{{ route('admin.master.siswa.edit', $student) }}" 
@@ -433,6 +452,93 @@
         </div>
     </div>
 
+    <!-- Modal Buat Akun Satuan Siswa (AKN-2) -->
+    <div id="modalBuatAkunSiswa" class="fixed inset-0 z-50 hidden bg-darkgreen/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-border-soft relative animate-in fade-in duration-150 space-y-4">
+            <h3 class="text-base font-bold text-darkgreen" id="modalBuatAkunSiswaTitle">Buat Akun Satuan Siswa</h3>
+            <p class="text-xs text-muted-text">
+                Username akun siswa otomatis menggunakan <strong>NIS (Nomor Induk Siswa)</strong>.
+            </p>
+
+            <form id="formBuatAkunSiswa" onsubmit="submitBuatAkunSiswa(event)" class="space-y-4">
+                @csrf
+                <input type="hidden" id="buatAkunSiswaId" value="">
+
+                <div>
+                    <label class="block text-xs font-bold text-darkgreen uppercase tracking-wider mb-1">
+                        Username Login (NIS)
+                    </label>
+                    <input 
+                        type="text" 
+                        id="buatAkunSiswaNisInput" 
+                        readonly
+                        class="w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-soft border border-border-soft text-muted-text font-mono font-bold"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-darkgreen uppercase tracking-wider mb-1">
+                        Password Awal (Sementara)
+                    </label>
+                    <div class="flex gap-2">
+                        <input 
+                            type="text" 
+                            id="buatAkunSiswaPasswordInput" 
+                            placeholder="Biarkan kosong untuk password acak..." 
+                            class="flex-1 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-soft border border-border-soft focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-forest font-mono"
+                        >
+                        <button type="button" onclick="generateRandomSiswaPassword()" class="px-3 py-2.5 rounded-xl border border-border-soft hover:bg-soft text-xs font-bold text-darkgreen transition-colors">
+                            Acak
+                        </button>
+                    </div>
+                    <span class="text-[11px] text-muted-text block mt-1">Siswa diwajibkan mengganti kata sandi ini saat pertama login.</span>
+                </div>
+
+                <div class="flex items-center justify-end gap-2.5 pt-2">
+                    <button type="button" onclick="closeBuatAkunSiswaModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-muted-text hover:bg-soft transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" id="btnSubmitBuatAkunSiswa" class="px-4 py-2 rounded-xl bg-forest hover:bg-forest/90 text-white text-xs font-bold shadow-xs transition-colors">
+                        Buat Akun Siswa
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Kredensial Siswa Berhasil Dibuat -->
+    <div id="modalKredensialSiswa" class="fixed inset-0 z-50 hidden bg-darkgreen/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-border-soft relative animate-in fade-in duration-150 space-y-4">
+            <div class="flex items-center gap-2.5 text-emerald-700">
+                <x-icon name="check-circle" class="w-6 h-6 shrink-0" />
+                <h3 class="text-base font-bold text-darkgreen">Akun Siswa Berhasil Dibuat</h3>
+            </div>
+            <p class="text-xs text-muted-text">
+                Kredensial login siswa siap diberikan ke wali kelas atau siswa terkait:
+            </p>
+
+            <div class="p-4 rounded-2xl bg-soft border border-border-soft space-y-2.5 text-xs font-mono">
+                <div class="flex justify-between items-center">
+                    <span class="text-muted-text font-sans">Username (NIS):</span>
+                    <strong class="text-darkgreen text-sm" id="resultSiswaUsername">-</strong>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-muted-text font-sans">Password Sementara:</span>
+                    <strong class="text-forest text-sm font-bold" id="resultSiswaPassword">-</strong>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-2.5 pt-2">
+                <button type="button" onclick="copySiswaCredentials()" class="px-4 py-2 rounded-xl bg-soft border border-border-soft hover:bg-forest/10 text-xs font-bold text-darkgreen transition-colors">
+                    Salin Teks
+                </button>
+                <button type="button" onclick="closeKredensialSiswaModal()" class="px-4 py-2 rounded-xl bg-forest hover:bg-forest/90 text-white text-xs font-bold shadow-xs transition-colors">
+                    Selesai
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Reset Password / Buat Akun Satuan Siswa -->
     <div id="modalResetPasswordSiswa" class="fixed inset-0 z-50 hidden bg-darkgreen/60 backdrop-blur-xs flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-border-soft relative animate-in fade-in duration-150">
@@ -481,6 +587,74 @@
 
         function closeGenerateModal() {
             document.getElementById('modalGenerateMassal').classList.add('hidden');
+        }
+
+        function openBuatAkunSiswaModal(siswaId, nama, nis) {
+            document.getElementById('buatAkunSiswaId').value = siswaId;
+            document.getElementById('modalBuatAkunSiswaTitle').textContent = `Buat Akun Siswa: ${nama}`;
+            document.getElementById('buatAkunSiswaNisInput').value = nis;
+            document.getElementById('buatAkunSiswaPasswordInput').value = '';
+            document.getElementById('modalBuatAkunSiswa').classList.remove('hidden');
+        }
+
+        function closeBuatAkunSiswaModal() {
+            document.getElementById('modalBuatAkunSiswa').classList.add('hidden');
+        }
+
+        function generateRandomSiswaPassword() {
+            const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+            document.getElementById('buatAkunSiswaPasswordInput').value = `Smp7${randomStr}`;
+        }
+
+        async function submitBuatAkunSiswa(e) {
+            e.preventDefault();
+            const siswaId = document.getElementById('buatAkunSiswaId').value;
+            const password = document.getElementById('buatAkunSiswaPasswordInput').value;
+            const btn = document.getElementById('btnSubmitBuatAkunSiswa');
+
+            btn.disabled = true;
+            btn.textContent = 'Membuat Akun...';
+
+            try {
+                const response = await fetch(`/admin/master/siswa/${siswaId}/buat-akun`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        password: password ? password : null
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    closeBuatAkunSiswaModal();
+                    document.getElementById('resultSiswaUsername').textContent = data.username;
+                    document.getElementById('resultSiswaPassword').textContent = data.password_baru;
+                    document.getElementById('modalKredensialSiswa').classList.remove('hidden');
+                } else {
+                    alert(data.message || 'Gagal membuat akun siswa.');
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan jaringan.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Buat Akun Siswa';
+            }
+        }
+
+        function copySiswaCredentials() {
+            const u = document.getElementById('resultSiswaUsername').textContent;
+            const p = document.getElementById('resultSiswaPassword').textContent;
+            navigator.clipboard.writeText(`NIS: ${u}\nPassword: ${p}`);
+            alert('Kredensial berhasil disalin ke clipboard!');
+        }
+
+        function closeKredensialSiswaModal() {
+            document.getElementById('modalKredensialSiswa').classList.add('hidden');
+            location.reload();
         }
 
         function openResetModal(siswaId, nama, nis, username) {

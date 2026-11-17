@@ -224,6 +224,81 @@ class AdminGuruController extends Controller
     }
 
     /**
+     * [MASTER-AKN-002] Buat Akun Satuan Guru.
+     */
+    public function buatAkun(Request $request, Guru $guru)
+    {
+        if ($guru->user) {
+            $msg = "Guru '{$guru->nama}' sudah memiliki akun login (username: {$guru->user->username}).";
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success'  => false,
+                    'message'  => $msg,
+                    'username' => $guru->user->username,
+                ], 422);
+            }
+            return redirect()->back()->with('error', $msg);
+        }
+
+        $validated = $request->validate([
+            'username' => ['nullable', 'string', 'max:50', 'unique:siakad_users,username'],
+            'password' => ['nullable', 'string', 'min:6'],
+        ], [
+            'username.unique' => 'Username sudah digunakan, silakan pilih username lain.',
+            'password.min'    => 'Password minimal 6 karakter.',
+        ]);
+
+        // Tentukan username
+        if (!empty($validated['username'])) {
+            $username = strtolower(trim($validated['username']));
+        } elseif (!empty($guru->nip)) {
+            $username = trim($guru->nip);
+            if (User::where('username', $username)->exists()) {
+                $username = Str::slug(explode(' ', trim($guru->nama))[0] ?? 'guru', '') . $guru->id;
+            }
+        } else {
+            $cleanName = Str::slug(explode(' ', trim($guru->nama))[0] ?? 'guru', '');
+            $username = $cleanName . $guru->id;
+        }
+
+        // Pastikan username unik jika dari fallback
+        $counter = 1;
+        $baseUser = $username;
+        while (User::where('username', $username)->exists()) {
+            $username = $baseUser . $counter;
+            $counter++;
+        }
+
+        // Tentukan password acak jika tidak diisi manual
+        $plainPassword = !empty($validated['password'])
+            ? $validated['password']
+            : 'Guru7-' . Str::upper(Str::random(5));
+
+        $user = User::create([
+            'username'             => $username,
+            'password'             => Hash::make($plainPassword),
+            'role'                 => 'guru',
+            'id_guru'              => $guru->id,
+            'is_active'            => ($guru->stat_data === 'A'),
+            'wajib_ganti_password' => true,
+            'is_admin_utama'       => false,
+        ]);
+
+        $message = "Akun guru '{$guru->nama}' berhasil dibuat dengan username: {$username} dan password sementara: {$plainPassword}";
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success'        => true,
+                'username'       => $username,
+                'password_baru'  => $plainPassword,
+                'message'        => $message,
+            ]);
+        }
+
+        return redirect()->back()->with('success', $message);
+    }
+
+    /**
      * Reset password akun login guru (atau buat akun baru jika belum ada).
      */
     public function resetPassword(Request $request, Guru $guru)

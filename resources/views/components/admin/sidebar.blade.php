@@ -99,7 +99,7 @@
                     'id' => 'master-tahun-ajaran',
                     'label' => 'Tahun Ajaran',
                     'icon' => 'calendar',
-                    'route' => route('admin.master.tahun-ajaran'),
+                    'route' => route('admin.master.tahun-ajaran.index'),
                     'badge' => 'Aktif',
                 ],
                 [

@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminPengumumanController;
 use App\Http\Controllers\Admin\AdminPenugasanGuruController;
 use App\Http\Controllers\Admin\AdminPrestasiPublikController;
 use App\Http\Controllers\Admin\AdminSiswaController;
+use App\Http\Controllers\Admin\AdminTahunAjaranController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminManagementController;
 use App\Http\Controllers\AuthController;
@@ -392,18 +393,20 @@ Route::middleware(['auth'])->group(function () {
 
         // Modul Data Master Admin (DESIGN.md 10.1 & 11)
         Route::prefix('admin/master')->name('admin.master.')->group(function () {
-            // [MASTER-GRU-001] Manajemen Data Guru & Status Keaktifan
+            // [MASTER-GRU-001] & [MASTER-AKN-002] Manajemen Data Guru & Status Keaktifan / Akun Satuan Guru
             Route::patch('guru/{guru}/toggle-status', [AdminGuruController::class, 'toggleStatus'])->name('guru.toggle-status');
+            Route::post('guru/{guru}/buat-akun', [AdminGuruController::class, 'buatAkun'])->name('guru.buat-akun');
             Route::post('guru/{guru}/reset-password', [AdminGuruController::class, 'resetPassword'])->name('guru.reset-password');
             Route::resource('guru', AdminGuruController::class)->except(['show']);
 
-            // [MASTER-SIS-001] & [MASTER-AKN-001] Manajemen Data Siswa Lengkap & Akun Siswa Massal
+            // [MASTER-SIS-001], [MASTER-AKN-001], & [MASTER-AKN-002] Manajemen Data Siswa Lengkap, Akun Massal & Satuan
             Route::get('siswa/template-impor', [AdminImporSiswaController::class, 'downloadTemplate'])->name('siswa.template-impor');
             Route::post('siswa/impor/upload', [AdminImporSiswaController::class, 'upload'])->name('siswa.impor.upload');
             Route::get('siswa/impor/{impor}/preview', [AdminImporSiswaController::class, 'preview'])->name('siswa.impor.preview');
             Route::post('siswa/impor/{impor}/commit', [AdminImporSiswaController::class, 'commit'])->name('siswa.impor.commit');
             Route::delete('siswa/impor/{impor}/cancel', [AdminImporSiswaController::class, 'cancel'])->name('siswa.impor.cancel');
             Route::post('siswa/generate-akun-massal', [AdminSiswaController::class, 'generateAkunMassal'])->name('siswa.generate-akun-massal');
+            Route::post('siswa/{siswa}/buat-akun', [AdminSiswaController::class, 'buatAkun'])->name('siswa.buat-akun');
             Route::post('siswa/{siswa}/reset-password', [AdminSiswaController::class, 'resetPassword'])->name('siswa.reset-password');
             Route::resource('siswa', AdminSiswaController::class)->parameters(['siswa' => 'siswa'])->except(['show']);
 
@@ -441,8 +444,15 @@ Route::middleware(['auth'])->group(function () {
                 return redirect()->route('admin.master.penugasan.index');
             })->name('penugasan');
 
-            Route::get('/tahun-ajaran', function () {
-                return view('pages.admin.master.tahun-ajaran');
+            // [MASTER-TAJ-001] Manajemen Periode Tahun Ajaran & Semester
+            Route::get('tahun-ajaran', [AdminTahunAjaranController::class, 'index'])->name('tahun-ajaran.index');
+            Route::post('tahun-ajaran', [AdminTahunAjaranController::class, 'store'])->name('tahun-ajaran.store');
+            Route::put('tahun-ajaran/{tahun}', [AdminTahunAjaranController::class, 'update'])->name('tahun-ajaran.update');
+            Route::post('tahun-ajaran/{tahun}/aktifkan', [AdminTahunAjaranController::class, 'setAktif'])->name('tahun-ajaran.aktifkan');
+
+            // Route alias legacy
+            Route::get('master/tahun-ajaran-legacy', function () {
+                return redirect()->route('admin.master.tahun-ajaran.index');
             })->name('tahun-ajaran');
 
             Route::get('/ekskul', function () {

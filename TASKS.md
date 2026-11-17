@@ -517,7 +517,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [MASTER-TAJ-001] Manajemen Periode Tahun Ajaran & Semester
 - **Phase:** Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Academic Management
 - **Description:** Membangun antarmuka pengelolaan data periode tahun ajaran pada tabel `tahun` (tasm 5-karakter), pergantian periode aktif via `sp_set_periode_aktif(tasm)`, serta penetapan tanggal tanda tangan rapor kepsek sesuai TAJ-1 s.d. TAJ-5.
@@ -525,31 +525,33 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 - **Dependencies:** `DASH-001`, `DB-SP-001`
 - **Implementation Notes:**
   - Menampilkan daftar periode dengan penanda jelas mana yang sedang aktif (`aktif = 'Y'`).
-  - Form tambah tahun ajaran baru: kode periode `tasm`, nama kepsek, NIP, tanggal cetak rapor kelas 7/8 dan kelas 9.
-  - Aksi aktivasi memanggil stored procedure `sp_set_periode_aktif(tasm)` yang menonaktifkan periode lama dan mengaktifkan yang baru dalam 1 transaksi.
+  - Form tambah tahun ajaran baru: kode periode `tasm` (5-digit regex), nama kepsek, NIP, tanggal cetak rapor kelas 7/8 dan kelas 9.
+  - Aksi aktivasi memanggil stored procedure `sp_set_periode_aktif(tasm)` dengan fallback transaksi atomik Eloquent.
+  - Model `Tahun` diperkaya dengan accessor semester, nama_lengkap, dan helper `Tahun::getAktif()`, `getTasmAktif()`, `getTaAktif()`.
 - **Acceptance Criteria:**
-  - [ ] Admin dapat melihat dan menambah periode tahun ajaran baru.
-  - [ ] Aktivasi periode mengubah indikator periode aktif di seluruh sistem seketika.
-- **Verification:** Buat periode baru dan aktifkan, verifikasi topbar menampilkan periode baru tersebut.
+  - [x] Admin dapat melihat dan menambah periode tahun ajaran baru.
+  - [x] Aktivasi periode mengubah indikator periode aktif di seluruh sistem seketika.
+- **Verification:** `tests/Feature/AdminTahunAjaranTest.php` (5 test cases lulus 100%).
 
 ---
 
 #### [MASTER-AKN-002] Pembuatan Akun Satuan Guru & Siswa oleh Admin
 - **Phase:** Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Master Data & Auth
 - **Description:** Memfasilitasi pembuatan akun login secara individual untuk guru atau siswa baru yang belum berakun langsung dari daftar master masing-masing (AKN-1 & AKN-2).
 - **Source Requirements:** `PRD.md` AKN-1, AKN-2; `DESIGN.md` Bab 11.
 - **Dependencies:** `MASTER-GRU-001`, `MASTER-SIS-001`
 - **Implementation Notes:**
-  - Pada baris guru yang belum punya akun di menu Data Guru, sediakan tombol "Buat Akun" (tentukan username, generate password awal acak).
-  - Pada baris siswa yang belum punya akun di menu Data Siswa, sediakan tombol "Buat Akun" (username otomatis = NIS, password acak, flag wajib_ganti_password=1).
+  - Pada baris guru yang belum punya akun di menu Data Guru, disediakan tombol "Buat Akun" (tentukan username, generate password awal acak).
+  - Pada baris siswa yang belum punya akun di menu Data Siswa, disediakan tombol "Buat Akun" (username otomatis = NIS, password acak, flag wajib_ganti_password=1).
+  - Modal hasil kredensial sementara satu kali tampil dengan tombol salin teks.
 - **Acceptance Criteria:**
-  - [ ] Admin dapat mengaktifkan akun untuk seorang guru tertentu yang belum memiliki akun.
-  - [ ] Admin dapat mengaktifkan akun untuk seorang siswa tertentu dengan username NIS.
-- **Verification:** Buat akun untuk 1 siswa secara manual dan uji coba login dengan kredensial tersebut.
+  - [x] Admin dapat mengaktifkan akun untuk seorang guru tertentu yang belum memiliki akun.
+  - [x] Admin dapat mengaktifkan akun untuk seorang siswa tertentu dengan username NIS.
+- **Verification:** `tests/Feature/AdminAkunSatuanTest.php` (3 test cases lulus 100%).
 
 ---
 

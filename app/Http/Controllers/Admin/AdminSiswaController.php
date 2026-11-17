@@ -427,6 +427,74 @@ class AdminSiswaController extends Controller
     }
 
     /**
+     * [MASTER-AKN-002] Buat Akun Satuan Siswa (Username = NIS).
+     */
+    public function buatAkun(Request $request, Siswa $siswa)
+    {
+        if ($siswa->user) {
+            $msg = "Siswa '{$siswa->nama}' sudah memiliki akun login (username: {$siswa->user->username}).";
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success'  => false,
+                    'message'  => $msg,
+                    'username' => $siswa->user->username,
+                ], 422);
+            }
+            return redirect()->back()->with('error', $msg);
+        }
+
+        $validated = $request->validate([
+            'password' => ['nullable', 'string', 'min:6'],
+        ], [
+            'password.min' => 'Password minimal 6 karakter.',
+        ]);
+
+        $username = trim($siswa->nis);
+        if (empty($username)) {
+            $msg = "Siswa '{$siswa->nama}' belum memiliki NIS valid untuk dijadikan username.";
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => $msg], 422);
+            }
+            return redirect()->back()->with('error', $msg);
+        }
+
+        if (User::where('username', $username)->exists()) {
+            $msg = "Username {$username} (NIS) sudah terdaftar pada pengguna lain.";
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => $msg], 422);
+            }
+            return redirect()->back()->with('error', $msg);
+        }
+
+        $plainPassword = !empty($validated['password'])
+            ? $validated['password']
+            : 'Smp7' . Str::upper(Str::random(4));
+
+        $user = User::create([
+            'username'             => $username,
+            'password'             => Hash::make($plainPassword),
+            'role'                 => 'siswa',
+            'id_siswa'             => $siswa->id,
+            'is_active'            => ($siswa->stat_data === 'A'),
+            'wajib_ganti_password' => true,
+            'is_admin_utama'       => false,
+        ]);
+
+        $message = "Akun siswa '{$siswa->nama}' berhasil dibuat dengan username: {$username} dan password sementara: {$plainPassword}";
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success'       => true,
+                'username'      => $username,
+                'password_baru' => $plainPassword,
+                'message'       => $message,
+            ]);
+        }
+
+        return redirect()->back()->with('success', $message);
+    }
+
+    /**
      * [MASTER-AKN-001] Reset Password Siswa Satuan (atau Buat Akun Baru jika Belum Punya).
      */
     public function resetPassword(Request $request, Siswa $siswa)

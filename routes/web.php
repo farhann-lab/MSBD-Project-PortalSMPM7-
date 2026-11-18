@@ -463,9 +463,12 @@ Route::middleware(['auth'])->group(function () {
 
         // Modul Akademik Admin
         Route::prefix('admin/akademik')->name('admin.akademik.')->group(function () {
-            Route::get('/jadwal', function () {
-                return view('pages.admin.akademik.jadwal');
-            })->name('jadwal');
+            Route::get('/jadwal', [\App\Http\Controllers\Admin\AdminJadwalController::class, 'index'])->name('jadwal');
+            Route::post('/jadwal', [\App\Http\Controllers\Admin\AdminJadwalController::class, 'store'])->name('jadwal.store');
+            Route::put('/jadwal/{id}', [\App\Http\Controllers\Admin\AdminJadwalController::class, 'update'])->name('jadwal.update');
+            Route::delete('/jadwal/{id}', [\App\Http\Controllers\Admin\AdminJadwalController::class, 'destroy'])->name('jadwal.destroy');
+            Route::post('/jadwal/salin', [\App\Http\Controllers\Admin\AdminJadwalController::class, 'salin'])->name('jadwal.salin');
+            Route::get('/jadwal/penugasan-ajax', [\App\Http\Controllers\Admin\AdminJadwalController::class, 'getPenugasanByKelas'])->name('jadwal.penugasan-ajax');
 
             Route::get('/kenaikan', function () {
                 $students = require database_path('dummy/students_dummy.php');

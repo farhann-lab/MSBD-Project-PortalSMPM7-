@@ -562,7 +562,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [OPS-JDW-001] Manajemen Jadwal Pelajaran & Deteksi Bentrok
 - **Phase:** Phase 5
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Learning Operations
 - **Description:** Membangun antarmuka pembuatan jadwal pelajaran per rombel (hari, jam mulai, jam selesai, penugasan mapel) dengan validasi pencegahan bentrok guru dan kelas.
@@ -573,9 +573,9 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Dilengkapi fitur salin jadwal antar-periode via `sp_salin_jadwal`.
   - Validasi bentrok dicek di aplikasi dan dijaga ketat oleh trigger database `trg_cegah_bentrok_jadwal_*`.
 - **Acceptance Criteria:**
-  - [ ] Jadwal mingguan per kelas tampil dalam format grid yang mudah dibaca.
-  - [ ] Pendaftaran jadwal bentrok ditolak dengan notifikasi kesalahan yang jelas.
-- **Verification:** Coba input jadwal guru A di kelas 7A dan 7B pada hari Senin jam 08.00–09.20.
+  - [x] Jadwal mingguan per kelas tampil dalam format grid yang mudah dibaca.
+  - [x] Pendaftaran jadwal bentrok ditolak dengan notifikasi kesalahan yang jelas.
+- **Verification:** `tests/Feature/AdminJadwalPelajaranTest.php` (3 test cases lulus 100%).
 
 ---
 

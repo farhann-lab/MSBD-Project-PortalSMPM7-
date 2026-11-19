@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ImporSiswaBaris extends Model
 {
+    use \App\Models\Concerns\UsesAdminConnection;
+
     protected $table = 'siakad_impor_siswa_baris';
 
     public $timestamps = false;

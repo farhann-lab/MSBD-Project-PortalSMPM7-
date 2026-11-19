@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Support\RoleDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -64,7 +65,7 @@ class AdminSiswaController extends Controller
     {
         // PRD & DESIGN.md: Hanya NIS dan Nama yang berstatus wajib
         $validated = $request->validate([
-            'nis'             => ['required', 'string', 'max:10', 'unique:m_siswa,nis'],
+            'nis'             => ['required', 'string', 'max:10', \Illuminate\Validation\Rule::unique((RoleDatabase::admin() ? 'mysql_admin.' : '').'m_siswa', 'nis')],
             'nama'            => ['required', 'string', 'max:100'],
             'nisn'            => ['nullable', 'string', 'max:10'],
             'jk'              => ['nullable', Rule::in(['L', 'P'])],
@@ -100,7 +101,7 @@ class AdminSiswaController extends Controller
             'buat_akun'       => ['nullable', 'boolean'],
         ]);
 
-        DB::beginTransaction();
+        DB::connection(RoleDatabase::admin())->beginTransaction();
         try {
             // Persiapkan data kompatibel RKM (NOT NULL string kosong / default)
             $data = [
@@ -143,7 +144,7 @@ class AdminSiswaController extends Controller
 
             // Jika opsi buat akun dipilih (username = NIS per PRD AKN-2)
             if ($request->boolean('buat_akun')) {
-                User::create([
+                User::on(RoleDatabase::admin())->create([
                     'username'             => $siswa->nis,
                     'password'             => Hash::make('Siswa@' . $siswa->nis),
                     'role'                 => 'siswa',
@@ -153,13 +154,13 @@ class AdminSiswaController extends Controller
                 ]);
             }
 
-            DB::commit();
+            DB::connection(RoleDatabase::admin())->commit();
 
             return redirect()
                 ->route('admin.master.siswa.index')
                 ->with('success', "Data siswa {$siswa->nama} (NIS: {$siswa->nis}) berhasil ditambahkan.");
         } catch (\Throwable $e) {
-            DB::rollBack();
+            DB::connection(RoleDatabase::admin())->rollBack();
 
             return back()
                 ->withInput()
@@ -181,7 +182,7 @@ class AdminSiswaController extends Controller
     public function update(Request $request, Siswa $siswa): RedirectResponse
     {
         $validated = $request->validate([
-            'nis'             => ['required', 'string', 'max:10', Rule::unique('m_siswa', 'nis')->ignore($siswa->id)],
+            'nis'             => ['required', 'string', 'max:10', Rule::unique((RoleDatabase::admin() ? 'mysql_admin.' : '').'m_siswa', 'nis')->ignore($siswa->id)],
             'nama'            => ['required', 'string', 'max:100'],
             'nisn'            => ['nullable', 'string', 'max:10'],
             'jk'              => ['nullable', Rule::in(['L', 'P'])],
@@ -217,7 +218,7 @@ class AdminSiswaController extends Controller
             'stat_data'       => ['nullable', Rule::in(['A', 'K', 'M', 'L'])],
         ]);
 
-        DB::beginTransaction();
+        DB::connection(RoleDatabase::admin())->beginTransaction();
         try {
             $data = [
                 'nis'             => $validated['nis'],
@@ -257,16 +258,16 @@ class AdminSiswaController extends Controller
 
             // Sinkronkan username jika NIS berubah dan akun sudah ada
             if ($siswa->user && $siswa->user->username !== $siswa->nis) {
-                $siswa->user->update(['username' => $siswa->nis]);
+                $siswa->user->setConnection(RoleDatabase::admin())->update(['username' => $siswa->nis]);
             }
 
-            DB::commit();
+            DB::connection(RoleDatabase::admin())->commit();
 
             return redirect()
                 ->route('admin.master.siswa.index')
                 ->with('success', "Data siswa {$siswa->nama} berhasil diperbarui.");
         } catch (\Throwable $e) {
-            DB::rollBack();
+            DB::connection(RoleDatabase::admin())->rollBack();
 
             return back()
                 ->withInput()
@@ -280,11 +281,12 @@ class AdminSiswaController extends Controller
     public function destroy(Siswa $siswa): RedirectResponse
     {
         try {
-            $siswa->update(['stat_data' => 'K']);
-
-            if ($siswa->user) {
-                $siswa->user->update(['is_active' => false]);
-            }
+            DB::connection(RoleDatabase::admin())->transaction(function () use ($siswa) {
+                $siswa->update(['stat_data' => 'K']);
+                if ($siswa->user) {
+                    $siswa->user->setConnection(RoleDatabase::admin())->update(['is_active' => false]);
+                }
+            });
 
             return redirect()
                 ->route('admin.master.siswa.index')

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Siswa extends Model
 {
+    use \App\Models\Concerns\UsesAdminConnection;
+
     /**
      * Nama tabel MySQL bersama bawaan sistem RKM.
      */

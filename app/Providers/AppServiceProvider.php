@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\DB;
+use App\Support\RoleDatabase;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -35,10 +36,10 @@ class AppServiceProvider extends ServiceProvider
             ];
 
             try {
-                if (Schema::hasTable('tahun')) {
-                    $row = DB::table('tahun')->where('aktif', 'Y')->orderByDesc('id')->first();
+                if (Schema::connection(RoleDatabase::admin())->hasTable('tahun')) {
+                    $row = DB::connection(RoleDatabase::admin())->table('tahun')->where('aktif', 'Y')->orderByDesc('id')->first();
                     if (!$row) {
-                        $row = DB::table('tahun')->orderByDesc('id')->first();
+                        $row = DB::connection(RoleDatabase::admin())->table('tahun')->orderByDesc('id')->first();
                     }
 
                     if ($row) {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Support\RoleDatabase;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -15,7 +16,7 @@ class AdminManagementController extends Controller
      */
     public function index(): View
     {
-        $admins = User::where('role', 'admin')
+        $admins = User::on(RoleDatabase::admin())->select('id', 'username', 'role', 'is_active', 'is_admin_utama', 'wajib_ganti_password', 'created_at')->where('role', 'admin')
             ->orderByDesc('is_admin_utama')
             ->orderBy('username')
             ->get();
@@ -36,7 +37,7 @@ class AdminManagementController extends Controller
                 'min:3',
                 'max:50',
                 'alpha_dash',
-                'unique:siakad_users,username',
+                \Illuminate\Validation\Rule::unique((RoleDatabase::admin() ? 'mysql_admin.' : '').'siakad_users', 'username'),
             ],
             'password' => [
                 'required',
@@ -52,7 +53,7 @@ class AdminManagementController extends Controller
             'password.min'        => 'Password awal minimal 8 karakter.',
         ]);
 
-        User::create([
+        User::on(RoleDatabase::admin())->create([
             'username'             => strtolower(trim($validated['username'])),
             'password'             => Hash::make($validated['password']),
             'role'                 => 'admin',
@@ -81,7 +82,7 @@ class AdminManagementController extends Controller
         }
 
         $admin->is_active = !$admin->is_active;
-        $admin->save();
+        $admin->setConnection(RoleDatabase::admin())->save();
 
         $statusLabel = $admin->is_active ? 'diaktifkan' : 'dinonaktifkan';
 
@@ -112,7 +113,7 @@ class AdminManagementController extends Controller
 
         $admin->password = Hash::make($validated['password_baru']);
         $admin->wajib_ganti_password = true;
-        $admin->save();
+        $admin->setConnection(RoleDatabase::admin())->save();
 
         return redirect()->route('admin.manajemen-admin.index')
             ->with('success', "Password akun '{$admin->username}' berhasil direset. User wajib mengganti password saat login.");

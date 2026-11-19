@@ -8,6 +8,38 @@
     :isWaliKelas="true"
     kelasPerwalian="VIII-B"
 >
+    @if($jadwalMengajar !== null)
+    <section class="space-y-4">
+        <div class="p-6 rounded-3xl bg-white border border-border-soft shadow-xs">
+            <h1 class="text-xl font-bold text-darkgreen">Jadwal Mengajar Saya</h1>
+            <p class="text-sm text-muted-text">Ditampilkan sesuai penugasan guru yang sedang login pada periode aktif.</p>
+        </div>
+        @if($jadwalMengajar->isEmpty())
+            <div class="p-6 rounded-xl bg-white border border-border-soft text-muted-text">
+                Belum ada jadwal mengajar untuk guru ini pada periode aktif.
+            </div>
+        @else
+            <div class="overflow-x-auto rounded-xl bg-white border border-border-soft">
+                <table class="min-w-full text-sm text-left">
+                    <thead class="bg-soft"><tr>
+                        <th class="p-3">Hari</th><th class="p-3">Jam</th><th class="p-3">Mata Pelajaran</th><th class="p-3">Kelas</th><th class="p-3">Periode</th>
+                    </tr></thead>
+                    <tbody>
+                        @foreach($jadwalMengajar as $jadwal)
+                            <tr class="border-t border-border-soft">
+                                <td class="p-3">{{ $jadwal->hari }}</td>
+                                <td class="p-3">{{ substr($jadwal->jam_mulai, 0, 5) }}–{{ substr($jadwal->jam_selesai, 0, 5) }}</td>
+                                <td class="p-3">{{ $jadwal->nama_mapel }}</td>
+                                <td class="p-3">{{ $jadwal->nama_kelas }}</td>
+                                <td class="p-3">{{ $jadwal->tasm }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </section>
+    @else
     <div class="space-y-6">
 
         <!-- Header Card -->
@@ -186,4 +218,5 @@
         </div>
 
     </div>
+    @endif
 </x-layouts.guru>

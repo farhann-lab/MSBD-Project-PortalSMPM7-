@@ -475,9 +475,7 @@ Route::middleware(['auth'])->group(function () {
                 return view('pages.admin.akademik.kenaikan', compact('students'));
             })->name('kenaikan');
 
-            Route::get('/absensi', function () {
-                return view('pages.admin.akademik.absensi');
-            })->name('absensi');
+            Route::get('/absensi', [\App\Http\Controllers\Admin\AdminPemantauanAbsensiController::class, 'index'])->name('absensi');
         });
 
         // Modul Akun & Sistem Admin
@@ -500,6 +498,9 @@ Route::middleware(['auth'])->group(function () {
         // ─── Dashboard Guru & Wali Kelas ──────────────────────────────────
         Route::prefix('guru')->name('guru.')->group(function () {
             // Akademik & Pembelajaran
+            Route::get('/profil', [\App\Http\Controllers\UserProfileController::class, 'profileGuru'])->name('profil');
+            Route::post('/profil/password', [\App\Http\Controllers\UserProfileController::class, 'updatePassword'])->name('profil.password');
+
             Route::get('/jadwal', function () {
                 return view('pages.guru.jadwal');
             })->name('jadwal');
@@ -508,13 +509,14 @@ Route::middleware(['auth'])->group(function () {
                 return view('pages.guru.kelas-mapel');
             })->name('kelas-mapel');
 
-            Route::get('/absensi', function () {
-                return view('pages.guru.absensi');
-            })->name('absensi');
+            Route::get('/absensi', [\App\Http\Controllers\GuruAbsensiController::class, 'index'])->name('absensi');
+            Route::post('/absensi/buka-sesi', [\App\Http\Controllers\GuruAbsensiController::class, 'bukaSesi'])->name('absensi.buka-sesi');
+            Route::post('/absensi/pertemuan/{pertemuanId}', [\App\Http\Controllers\GuruAbsensiController::class, 'simpanAbsensi'])->name('absensi.simpan');
 
-            Route::get('/materi', function () {
-                return view('pages.guru.materi');
-            })->name('materi');
+            Route::get('/materi', [\App\Http\Controllers\GuruMateriController::class, 'index'])->name('materi');
+            Route::post('/materi', [\App\Http\Controllers\GuruMateriController::class, 'store'])->name('materi.store');
+            Route::put('/materi/{id}', [\App\Http\Controllers\GuruMateriController::class, 'update'])->name('materi.update');
+            Route::delete('/materi/{id}', [\App\Http\Controllers\GuruMateriController::class, 'destroy'])->name('materi.destroy');
 
             // Perwalian (Wali Kelas Aktif)
             Route::prefix('perwalian')->name('perwalian.')->group(function () {
@@ -532,9 +534,7 @@ Route::middleware(['auth'])->group(function () {
             });
         });
 
-        Route::get('/guru-panel', function () {
-            return view('pages.guru.dashboard');
-        })->name('dashboard.guru');
+        Route::get('/guru-panel', [\App\Http\Controllers\GuruDashboardController::class, 'index'])->name('dashboard.guru');
 
         // ─── Dashboard Siswa ────────────────────────────────────────────────
         Route::prefix('siswa')->name('siswa.')->group(function () {
@@ -542,21 +542,17 @@ Route::middleware(['auth'])->group(function () {
                 return view('pages.siswa.jadwal');
             })->name('jadwal');
 
-            Route::get('/materi', function () {
-                return view('pages.siswa.materi');
-            })->name('materi');
+            Route::get('/materi', [\App\Http\Controllers\SiswaMateriController::class, 'index'])->name('materi');
 
-            Route::get('/absensi', function () {
-                return view('pages.siswa.absensi');
-            })->name('absensi');
+            Route::get('/absensi', [\App\Http\Controllers\SiswaAbsensiController::class, 'index'])->name('absensi');
 
-            Route::get('/profil', function () {
-                return view('pages.siswa.profil');
-            })->name('profil');
+            Route::get('/profil', [\App\Http\Controllers\UserProfileController::class, 'profileSiswa'])->name('profil');
+            Route::post('/profil/password', [\App\Http\Controllers\UserProfileController::class, 'updatePassword'])->name('profil.password');
         });
 
-        Route::get('/siswa-panel', function () {
-            return view('pages.siswa.dashboard');
-        })->name('dashboard.siswa');
+        Route::get('/siswa-panel', [\App\Http\Controllers\SiswaDashboardController::class, 'index'])->name('dashboard.siswa');
+
+        // Route Unduh Materi Terproteksi (Otorisasi Guru Pemilik & Siswa Kelas Target)
+        Route::get('/materi/{id}/download', [\App\Http\Controllers\SiswaMateriController::class, 'download'])->name('materi.download');
     });
 });

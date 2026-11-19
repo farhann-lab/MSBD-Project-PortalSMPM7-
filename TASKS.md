@@ -231,7 +231,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [AUTH-003] Halaman Profil Pengguna (Guru & Siswa)
 - **Phase:** Phase 2 / Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🔧 Infrastruktur (semua role)
 - **Category:** Authentication & Profile
 - **Description:** Membangun halaman profil yang menampilkan informasi pengguna yang diizinkan, diambil dari data master berdasarkan ID yang terhubung ke akun. Guru melihat profil dari `m_guru`, siswa dari `m_siswa`.
@@ -242,10 +242,10 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Siswa melihat: nama, NIS, kelas aktif — data dari `m_siswa` dan `t_kelas_siswa`. Tidak menampilkan tanggal lahir, alamat, atau data orang tua.
   - Halaman profil hanya menampilkan data yang diizinkan (DIR-8 berlaku).
 - **Acceptance Criteria:**
-  - [ ] Guru dapat melihat profil dasar dari data master.
-  - [ ] Siswa dapat melihat profil dasar dan kelas aktifnya.
-  - [ ] Data sensitif tidak tampil (NIP tersembunyi jika tidak diperlukan; NIK, alamat, tanggal lahir tidak ditampilkan ke siswa lain).
-- **Verification:** Login sebagai guru dan siswa, buka menu profil, verifikasi data yang tampil sesuai aturan.
+  - [x] Guru dapat melihat profil dasar dari data master.
+  - [x] Siswa dapat melihat profil dasar dan kelas aktifnya.
+  - [x] Data sensitif tidak tampil (NIP tersembunyi jika tidak diperlukan; NIK, alamat, tanggal lahir tidak ditampilkan ke siswa lain).
+- **Verification:** `tests/Feature/UserProfileTest.php` (3 test cases lulus 100%).
 
 ---
 
@@ -368,7 +368,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [CMS-LOG-001] Pencatatan Log Aktivitas Pengelolaan Konten Publik
 - **Phase:** Phase 3
 - **Priority:** P2
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** CMS & Audit
 - **Description:** Mengimplementasikan pencatatan riwayat aktivitas aksi admin pada modul berita, pengumuman, fasilitas, galeri, dan prestasi ke tabel `siakad_log_aktivitas` (siapa, jenis konten, aksi: tambah/ubah/hapus/terbit, waktu) sesuai ADM-11.
@@ -378,8 +378,8 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Dapat dipicu via Model Observer / Event Listener Eloquent saat konten dibuat, diubah, atau dihapus.
   - Data log ini menjadi sumber data yang ditampilkan di feed aktivitas Dashboard Admin (`DSH-4`).
 - **Acceptance Criteria:**
-  - [ ] Setiap aksi CRUD konten publik otomatis mencatat baris baru di `siakad_log_aktivitas`.
-- **Verification:** Buat atau edit 1 artikel berita, lalu periksa tabel `siakad_log_aktivitas`.
+  - [x] Setiap aksi CRUD konten publik otomatis mencatat baris baru di `siakad_log_aktivitas`.
+- **Verification:** `tests/Feature/AdminCmsLogAktivitasTest.php` (4 test cases lulus 100%).
 
 ---
 
@@ -582,7 +582,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [ADMIN-PAS-001] Pemantauan Absensi Siswa oleh Admin
 - **Phase:** Phase 5
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Learning Operations & Monitoring
 - **Description:** Membangun antarmuka khusus admin untuk memantau absensi siswa seluruh kelas dengan filter rombel, guru pengampu, mapel, dan rentang tanggal. Menampilkan daftar pertemuan yang sudah dan belum diabsen (`v_pertemuan_tanpa_absensi`), serta rekap ketidakhadiran (PAS-1 s.d. PAS-5).
@@ -592,16 +592,16 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Admin HANYA membaca dan memantau, tidak mengubah data absensi guru (PAS-5).
   - Terdapat indikator visual kelas/mapel yang belum menginput absensi pada hari ini/minggu ini.
 - **Acceptance Criteria:**
-  - [ ] Admin dapat memfilter dan melihat status pengisian absensi seluruh kelas.
-  - [ ] Muncul peringatan jelas untuk sesi pertemuan yang terlewat tanpa absensi.
-- **Verification:** Buka menu `/admin/pemantauan-absensi` dan periksa kelengkapan data sesi tanpa absensi.
+  - [x] Admin dapat memfilter dan melihat status pengisian absensi seluruh kelas.
+  - [x] Muncul peringatan jelas untuk sesi pertemuan yang terlewat tanpa absensi.
+- **Verification:** `tests/Feature/AdminPemantauanAbsensiTest.php` (3 test cases lulus 100%).
 
 ---
 
 #### [OPS-ABS-001] Sesi Pertemuan & Pencatatan Presensi Siswa per Pertemuan
 - **Phase:** Phase 5
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 👨‍🏫 Panel Guru
 - **Category:** Learning Operations
 - **Description:** Membangun modul presensi bagi guru untuk membuka sesi pertemuan (`siakad_pertemuan`) berdasarkan jadwal dan menginput status kehadiran siswa (Hadir, Sakit, Izin, Alpa) ke `siakad_absensi_siswa`.
@@ -611,16 +611,16 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Menggunakan `INSERT ... ON DUPLICATE KEY UPDATE` untuk mencegah baris ganda saat guru menyimpan ulang absensi.
   - Rekap persentase kehadiran otomatis terhitung untuk setiap siswa.
 - **Acceptance Criteria:**
-  - [ ] Guru dapat mengisi dan memperbarui status kehadiran rombel dengan cepat.
-  - [ ] Siswa hanya dapat melihat rekaman kehadirannya sendiri di dashboard siswa.
-- **Verification:** Login sebagai guru, pilih jadwal hari ini, buka sesi pertemuan 1, isi absensi, lalu cek rekap di akun siswa terkait.
+  - [x] Guru dapat mengisi dan memperbarui status kehadiran rombel dengan cepat.
+  - [x] Siswa hanya dapat melihat rekaman kehadirannya sendiri di dashboard siswa.
+- **Verification:** `tests/Feature/GuruAbsensiSiswaTest.php` (4 test cases lulus 100%).
 
 ---
 
 #### [OPS-MTR-001] Manajemen Materi Pembelajaran & Pengunduhan Terproteksi
 - **Phase:** Phase 5
 - **Priority:** P2
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 👨‍🏫 Panel Guru & 👩‍🎓 Siswa
 - **Category:** Learning Operations
 - **Description:** Membangun modul unggah materi (dokumen PDF/Word atau tautan eksternal) oleh guru per penugasan kelas (`siakad_materi`, `siakad_materi_kelas`) dengan controller unduh berotorisasi.
@@ -630,16 +630,16 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Berkas materi disimpan di disk privat Laravel (`storage/app/private/materi/`).
   - Pengunduhan melalui route berizin (hanya guru pengampu dan siswa di kelas target yang boleh mengunduh).
 - **Acceptance Criteria:**
-  - [ ] Berkas materi tidak dapat diakses langsung via URL publik tanpa login.
-  - [ ] Siswa di kelas yang ditentukan dapat mengunduh materi pelajaran.
-- **Verification:** Coba akses tautan file materi langsung di browser tanpa sesi login (harus redirect/403).
+  - [x] Berkas materi tidak dapat diakses langsung via URL publik tanpa login.
+  - [x] Siswa di kelas yang ditentukan dapat mengunduh materi pelajaran.
+- **Verification:** `tests/Feature/MateriPembelajaranTest.php` (6 test cases lulus 100%). Coba akses tautan file materi langsung di browser tanpa sesi login (harus redirect/403).
 
 ---
 
 #### [GURU-PANEL-001] Dashboard Interaktif Guru & Monitoring Wali Kelas
 - **Phase:** Phase 5
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 👨‍🏫 Panel Guru (Device Guru)
 - **Category:** Panels
 - **Description:** Membangun dashboard dan panel navigasi khusus peran Guru Mata Pelajaran (jadwal mengajar hari ini, daftar kelas aktif, notifikasi absensi yang belum diisi) serta penambahan menu Wali Kelas jika guru aktif sebagai wali kelas (rekap absensi rombel binaan via `v_rekap_absensi_kelas`, daftar siswa alpa tinggi, tombol pintasan ke RKM).
@@ -649,16 +649,16 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Satu akun guru dapat otomatis memuat menu wali kelas jika terdaftar di `t_walikelas` pada `tasm` aktif.
   - Tautan langsung menuju aplikasi RKM eksternal pada sidebar.
 - **Acceptance Criteria:**
-  - [ ] Guru melihat jadwal mengajar hari ini saat pertama kali login ke `/guru-panel`.
-  - [ ] Jika bertindak sebagai wali kelas, muncul submenu Rekap Kelas Binaan dan pintasan RKM.
-- **Verification:** Login dengan akun guru biasa dan akun guru wali kelas, bandingkan hak akses dan visual dashboard.
+  - [x] Guru melihat jadwal mengajar hari ini saat pertama kali login ke `/guru-panel`.
+  - [x] Jika bertindak sebagai wali kelas, muncul submenu Rekap Kelas Binaan dan pintasan RKM.
+- **Verification:** `tests/Feature/GuruDashboardPanelTest.php` (3 test cases lulus 100%). Login dengan akun guru biasa dan akun guru wali kelas, bandingkan hak akses dan visual dashboard.
 
 ---
 
 #### [SISWA-PANEL-001] Dashboard & Portal Akademik Siswa
 - **Phase:** Phase 5
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 👩‍🎓 Panel Siswa (Device Siswa)
 - **Category:** Panels
 - **Description:** Membangun antarmuka portal siswa (`/siswa-panel`) yang responsif untuk perangkat ponsel: informasi kelas & tahun ajaran aktif, kartu jadwal pelajaran mingguan per hari, repositori unduh materi belajar kelasnya, dan rekap akumulasi absensi pribadi (hadir/sakit/izin/alpa).
@@ -668,10 +668,10 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Siswa HANYA dapat membaca data miliknya sendiri (Strict Authorization Check).
   - UI dioptimalkan untuk akses layar ponsel/smartphone siswa.
 - **Acceptance Criteria:**
-  - [ ] Siswa melihat jadwal kelasnya sendiri yang dikelompokkan per hari.
-  - [ ] Siswa dapat mengunduh materi yang ditujukan untuk kelasnya.
-  - [ ] Siswa dapat melihat persentase kehadirannya tanpa bisa mengedit.
-- **Verification:** Login dengan akun NIS siswa (mis. `3901`), pastikan hanya data kelas siswa terkait yang dapat diakses.
+  - [x] Siswa melihat jadwal kelasnya sendiri yang dikelompokkan per hari.
+  - [x] Siswa dapat mengunduh materi yang ditujukan untuk kelasnya.
+  - [x] Siswa dapat melihat persentase kehadirannya tanpa bisa mengedit.
+- **Verification:** `tests/Feature/SiswaDashboardPanelTest.php` (3 test cases lulus 100%). Login dengan akun NIS siswa (mis. `3901`), pastikan hanya data kelas siswa terkait yang dapat diakses.
 
 ---
 

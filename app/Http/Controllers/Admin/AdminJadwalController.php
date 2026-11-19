@@ -152,8 +152,11 @@ class AdminJadwalController extends Controller
             return back()->with('success', 'Jadwal pelajaran berhasil ditambahkan.');
         } catch (Throwable $e) {
             $errorMessage = $this->parseDatabaseError($e->getMessage());
-            return back()->withInput()->with('error', 'Gagal menyimpan jadwal: ' . $errorMessage);
-        }
+            return back()
+            ->withInput()
+            ->with('error', 'Gagal menyalin jadwal: ' . $errorMessage)
+            ->with('buka_modal_salin', true);
+            }
     }
 
     /**

@@ -66,5 +66,13 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('globalPeriodeAktif', $default);
         });
+
+        // Daftarkan Observer untuk pencatatan log aktivitas CMS (CMS-LOG-001)
+        \App\Models\Berita::observe(\App\Observers\CmsActivityObserver::class);
+        \App\Models\Pengumuman::observe(\App\Observers\CmsActivityObserver::class);
+        \App\Models\Fasilitas::observe(\App\Observers\CmsActivityObserver::class);
+        \App\Models\Galeri::observe(\App\Observers\CmsActivityObserver::class);
+        \App\Models\GaleriFoto::observe(\App\Observers\CmsActivityObserver::class);
+        \App\Models\PrestasiPublik::observe(\App\Observers\CmsActivityObserver::class);
     }
 }

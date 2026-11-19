@@ -162,6 +162,11 @@
                         @endif
                     </div>
 
+                    <a href="{{ route('guru.profil') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-darkgreen hover:bg-soft hover:text-forest transition-colors">
+                        <x-icon name="user" class="w-4 h-4 text-forest" />
+                        <span>Profil Saya</span>
+                    </a>
+
                     <a href="{{ route('password.change') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-darkgreen hover:bg-soft hover:text-forest transition-colors">
                         <x-icon name="key" class="w-4 h-4 text-forest" />
                         <span>Ubah Password</span>

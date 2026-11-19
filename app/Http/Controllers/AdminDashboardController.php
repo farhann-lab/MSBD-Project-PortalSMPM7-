@@ -19,7 +19,16 @@ class AdminDashboardController extends Controller
         // 2. Data Statistik Utama
         $stats = $this->getDashboardStats($periodeAktif['tahun_kode'] ?? null);
 
-        return view('pages.admin.dashboard', compact('stats', 'periodeAktif'));
+        // 3. Log Aktivitas Terkini (DSH-4, CMS-LOG-001)
+        $aktivitasTerkini = collect();
+        if (Schema::hasTable('siakad_log_aktivitas')) {
+            $aktivitasTerkini = \App\Models\LogAktivitas::with('user')
+                ->orderByDesc('id')
+                ->limit(6)
+                ->get();
+        }
+
+        return view('pages.admin.dashboard', compact('stats', 'periodeAktif', 'aktivitasTerkini'));
     }
 
     /**

@@ -72,6 +72,11 @@ class User extends Authenticatable
         return $this->belongsTo(Guru::class, 'id_guru', 'id');
     }
 
+    public function siswa(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Siswa::class, 'id_siswa', 'id');
+    }
+
     public function dashboardUrl(): string
     {
         return match ($this->role) {

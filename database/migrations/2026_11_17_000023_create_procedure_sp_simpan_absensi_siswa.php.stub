@@ -1,0 +1,51 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'PROCEDURE',
+            'sp_simpan_absensi_siswa',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE PROCEDURE `sp_simpan_absensi_siswa`(
+    IN p_pertemuan_id BIGINT UNSIGNED,IN p_id_siswa INT,
+    IN p_actor_user_id BIGINT UNSIGNED,IN p_status CHAR(1),IN p_keterangan VARCHAR(255))
+SQL SECURITY DEFINER MODIFIES SQL DATA
+BEGIN
+    DECLARE v_n INT DEFAULT 0;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION BEGIN ROLLBACK; RESIGNAL; END;
+    IF p_status IS NULL OR p_status NOT IN ('H','S','I','A') THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Status absensi harus H/S/I/A';
+    END IF;
+    START TRANSACTION;
+    SELECT COUNT(*) INTO v_n FROM siakad_users u
+    JOIN t_guru_mapel gm ON gm.id_guru=u.id_guru
+    JOIN siakad_jadwal j ON j.id_guru_mapel=gm.id AND j.tasm=gm.tasm
+    JOIN siakad_pertemuan p ON p.jadwal_id=j.id
+    WHERE u.id=p_actor_user_id AND u.role='guru' AND u.is_active=1
+      AND p.id=p_pertemuan_id;
+    IF v_n=0 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Pengguna bukan guru pengampu pertemuan'; END IF;
+    -- Serialisasi untuk satu (pertemuan,siswa) terutama jika masih baris kosong.
+    -- Unique key uq_absensi_pertemuan_siswa menangani balapan penyimpanan.
+    INSERT INTO siakad_absensi_siswa(pertemuan_id,id_siswa,status,keterangan,diubah_oleh)
+    VALUES(p_pertemuan_id,p_id_siswa,p_status,p_keterangan,p_actor_user_id)
+    ON DUPLICATE KEY UPDATE status=p_status,keterangan=p_keterangan,
+                            diubah_oleh=p_actor_user_id,updated_at=NOW();
+    COMMIT;
+    SELECT p_pertemuan_id AS pertemuan_id,p_id_siswa AS id_siswa,p_status AS status;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

@@ -1,0 +1,37 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'TRIGGER',
+            'trg_materi_bu',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE TRIGGER `trg_materi_bu` BEFORE UPDATE ON `siakad_materi` FOR EACH ROW BEGIN
+    IF (NEW.jenis='file' AND (NEW.file_path IS NULL OR TRIM(NEW.file_path)='' OR NEW.tautan_url IS NOT NULL))
+       OR (NEW.jenis='tautan' AND (NEW.tautan_url IS NULL OR TRIM(NEW.tautan_url)='' OR NEW.file_path IS NOT NULL)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Materi file memerlukan file_path; materi tautan memerlukan tautan_url';
+    END IF;
+    -- Pastikan perubahan guru/mapel pada materi tidak merusak pivot materi-kelas.
+    IF (NEW.id_guru<>OLD.id_guru OR NEW.id_mapel<>OLD.id_mapel) AND
+       EXISTS (SELECT 1 FROM siakad_materi_kelas mk
+               JOIN t_guru_mapel gm ON gm.id=mk.id_guru_mapel
+               WHERE mk.materi_id=OLD.id AND (gm.id_guru<>NEW.id_guru OR gm.id_mapel<>NEW.id_mapel)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Perubahan guru/mapel akan merusak relasi kelas materi';
+    END IF;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

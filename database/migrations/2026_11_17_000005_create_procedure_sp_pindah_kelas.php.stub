@@ -1,0 +1,55 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'PROCEDURE',
+            'sp_pindah_kelas',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE PROCEDURE `sp_pindah_kelas`(IN p_id_siswa INT,IN p_ta SMALLINT UNSIGNED,IN p_id_kelas_baru INT)
+SQL SECURITY DEFINER MODIFIES SQL DATA
+BEGIN
+    DECLARE v_lock INT DEFAULT 0;
+    DECLARE v_nama_lock VARCHAR(64);
+    DECLARE v_n INT DEFAULT 0;
+    DECLARE v_id INT DEFAULT NULL;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        IF v_lock=1 THEN DO RELEASE_LOCK(v_nama_lock); END IF;
+        RESIGNAL;
+    END;
+    IF p_id_siswa IS NULL OR p_ta IS NULL OR p_ta<2000 OR p_ta>2100 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Parameter pindah kelas tidak valid';
+    END IF;
+    SET v_nama_lock=CONCAT('siakad:penempatan:',p_ta);
+    SELECT GET_LOCK(v_nama_lock,5) INTO v_lock;
+    IF v_lock IS NULL OR v_lock<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Lock penempatan sibuk'; END IF;
+    START TRANSACTION;
+    IF NOT EXISTS(SELECT 1 FROM m_kelas WHERE id=p_id_kelas_baru) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Kelas baru tidak ditemukan';
+    END IF;
+    SELECT COUNT(*),MAX(id) INTO v_n,v_id FROM t_kelas_siswa
+     WHERE id_siswa=p_id_siswa AND ta=p_ta;
+    IF v_n<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Penempatan tidak tunggal atau siswa belum ditempatkan'; END IF;
+    UPDATE t_kelas_siswa SET id_kelas=p_id_kelas_baru WHERE id=v_id;
+    COMMIT;
+    DO RELEASE_LOCK(v_nama_lock);
+    SELECT v_id AS id_penempatan,p_id_kelas_baru AS id_kelas_baru;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

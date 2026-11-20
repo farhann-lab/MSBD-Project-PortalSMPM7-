@@ -1,0 +1,38 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// Exact table DDL from the provided MySQL 8.0.30 schema-only dump.
+// Existing tables are preserved; no destructive rollback.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::table(
+            'siakad_fingerprint_log',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE TABLE `siakad_fingerprint_log` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `perangkat_id` bigint unsigned NOT NULL,
+  `user_mesin` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `waktu_scan` datetime NOT NULL,
+  `kode_status` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `raw_payload` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `diterima_at` timestamp NOT NULL,
+  `status_parse` enum('baru','berhasil','gagal') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'baru',
+  PRIMARY KEY (`id`),
+  KEY `fk_siakad_fingerprint_log_perangkat_id` (`perangkat_id`),
+  CONSTRAINT `fk_siakad_fingerprint_log_perangkat_id` FOREIGN KEY (`perangkat_id`) REFERENCES `siakad_fingerprint_perangkat` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+SIAKAD_SQL_TEXT,
+            ['id', 'perangkat_id', 'user_mesin', 'waktu_scan', 'kode_status', 'raw_payload', 'diterima_at', 'status_parse'],
+            ['siakad_fingerprint_perangkat']
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop a school table that may contain pre-existing data.
+    }
+};

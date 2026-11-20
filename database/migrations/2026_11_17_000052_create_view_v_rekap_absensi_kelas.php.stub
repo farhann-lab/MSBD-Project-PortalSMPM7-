@@ -1,0 +1,25 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'VIEW',
+            'v_rekap_absensi_kelas',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `v_rekap_absensi_kelas` AS select `gm`.`id_kelas` AS `id_kelas`,`j`.`tasm` AS `tasm`,`p`.`tanggal` AS `tanggal`,`a`.`id_siswa` AS `id_siswa`,sum((`a`.`status` = 'H')) AS `hadir`,sum((`a`.`status` = 'S')) AS `sakit`,sum((`a`.`status` = 'I')) AS `izin`,sum((`a`.`status` = 'A')) AS `tanpa_keterangan` from (((`siakad_absensi_siswa` `a` join `siakad_pertemuan` `p` on((`p`.`id` = `a`.`pertemuan_id`))) join `siakad_jadwal` `j` on((`j`.`id` = `p`.`jadwal_id`))) join `t_guru_mapel` `gm` on((`gm`.`id` = `j`.`id_guru_mapel`))) group by `gm`.`id_kelas`,`j`.`tasm`,`p`.`tanggal`,`a`.`id_siswa`
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

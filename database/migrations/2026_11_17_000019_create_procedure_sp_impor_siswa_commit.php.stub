@@ -1,0 +1,30 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'PROCEDURE',
+            'sp_impor_siswa_commit',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE PROCEDURE `sp_impor_siswa_commit`(IN p_impor_id BIGINT UNSIGNED, IN p_mode VARCHAR(20))
+SQL SECURITY DEFINER MODIFIES SQL DATA
+BEGIN
+    SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT='DIBLOKIR: validasi staging dan kebijakan impor (TBD-25/45) belum selesai';
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

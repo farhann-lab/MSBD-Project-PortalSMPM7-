@@ -1,0 +1,59 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'PROCEDURE',
+            'sp_salin_penugasan',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE PROCEDURE `sp_salin_penugasan`(IN p_asal VARCHAR(5),IN p_tujuan VARCHAR(5))
+SQL SECURITY DEFINER MODIFIES SQL DATA
+BEGIN
+    DECLARE v_lock INT DEFAULT 0;
+    DECLARE v_nama_lock VARCHAR(64);
+    DECLARE v_n INT DEFAULT 0;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        IF v_lock=1 THEN DO RELEASE_LOCK(v_nama_lock); END IF;
+        RESIGNAL;
+    END;
+    IF p_asal IS NULL OR p_tujuan IS NULL OR p_asal=p_tujuan OR
+       p_asal NOT REGEXP '^[0-9]{4}[12]$' OR p_tujuan NOT REGEXP '^[0-9]{4}[12]$' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Periode asal/tujuan penugasan salah';
+    END IF;
+    SET v_nama_lock=CONCAT('siakad:penugasan:',p_tujuan);
+    SELECT GET_LOCK(v_nama_lock,5) INTO v_lock;
+    IF v_lock IS NULL OR v_lock<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Lock penugasan tujuan sibuk'; END IF;
+    START TRANSACTION;
+    INSERT INTO t_guru_mapel(tasm,id_guru,id_kelas,id_mapel)
+    SELECT DISTINCT p_tujuan,gm.id_guru,gm.id_kelas,gm.id_mapel
+    FROM t_guru_mapel gm
+    JOIN m_guru g ON g.id=gm.id_guru AND g.stat_data='A'
+    JOIN m_kelas k ON k.id=gm.id_kelas
+    JOIN m_mapel mp ON mp.id=gm.id_mapel
+    WHERE gm.tasm=p_asal
+      AND NOT EXISTS (SELECT 1 FROM t_guru_mapel target
+                      WHERE target.tasm=p_tujuan AND target.id_guru=gm.id_guru
+                        AND target.id_kelas=gm.id_kelas AND target.id_mapel=gm.id_mapel);
+    SET v_n=ROW_COUNT();
+    COMMIT;
+    DO RELEASE_LOCK(v_nama_lock);
+    SELECT v_n AS penugasan_disalin,p_asal AS periode_asal,p_tujuan AS periode_tujuan;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

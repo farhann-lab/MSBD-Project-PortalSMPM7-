@@ -1,0 +1,88 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'PROCEDURE',
+            'sp_salin_jadwal',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE PROCEDURE `sp_salin_jadwal`(IN p_asal VARCHAR(5), IN p_tujuan VARCHAR(5))
+SQL SECURITY DEFINER MODIFIES SQL DATA
+BEGIN
+    DECLARE v_selesai INT DEFAULT 0;
+    DECLARE v_lock INT DEFAULT 0;
+    DECLARE v_nama_lock VARCHAR(64);
+    DECLARE v_guru INT;
+    DECLARE v_kelas INT;
+    DECLARE v_mapel INT;
+    DECLARE v_gm_tujuan INT;
+    DECLARE v_hari VARCHAR(10);
+    DECLARE v_mulai TIME;
+    DECLARE v_akhir TIME;
+    DECLARE v_berhasil INT DEFAULT 0;
+    DECLARE v_tanpa_penugasan INT DEFAULT 0;
+    DECLARE v_bentrok INT DEFAULT 0;
+    DECLARE c_jadwal CURSOR FOR
+        SELECT gm.id_guru,gm.id_kelas,gm.id_mapel,j.hari,j.jam_mulai,j.jam_selesai
+          FROM siakad_jadwal j
+          JOIN t_guru_mapel gm ON gm.id=j.id_guru_mapel
+         WHERE j.tasm=p_asal AND j.aktif=1 ORDER BY j.id;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_selesai=1;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        IF v_lock=1 THEN DO RELEASE_LOCK(v_nama_lock); END IF;
+        RESIGNAL;
+    END;
+    IF p_asal IS NULL OR p_tujuan IS NULL OR p_asal=p_tujuan OR
+       p_asal NOT REGEXP '^[0-9]{4}[12]$' OR p_tujuan NOT REGEXP '^[0-9]{4}[12]$' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Periode salin jadwal tidak valid';
+    END IF;
+    SET v_nama_lock=CONCAT('siakad:jadwal:',p_tujuan);
+    SELECT GET_LOCK(v_nama_lock,5) INTO v_lock;
+    IF v_lock IS NULL OR v_lock<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Lock jadwal tujuan sibuk'; END IF;
+    START TRANSACTION;
+    OPEN c_jadwal;
+    jadwal_loop: LOOP
+        FETCH c_jadwal INTO v_guru,v_kelas,v_mapel,v_hari,v_mulai,v_akhir;
+        IF v_selesai=1 THEN LEAVE jadwal_loop; END IF;
+        SELECT MIN(id) INTO v_gm_tujuan FROM t_guru_mapel
+         WHERE tasm=p_tujuan AND id_guru=v_guru AND id_kelas=v_kelas AND id_mapel=v_mapel;
+        IF v_gm_tujuan IS NULL THEN
+            SET v_tanpa_penugasan=v_tanpa_penugasan+1;
+        ELSEIF EXISTS (
+            SELECT 1 FROM siakad_jadwal j
+            JOIN t_guru_mapel gm ON gm.id=j.id_guru_mapel
+            WHERE j.tasm=p_tujuan AND j.aktif=1 AND j.hari=v_hari
+              AND j.jam_mulai<v_akhir AND v_mulai<j.jam_selesai
+              AND (gm.id_guru=v_guru OR gm.id_kelas=v_kelas)
+        ) THEN
+            SET v_bentrok=v_bentrok+1;
+        ELSE
+            INSERT INTO siakad_jadwal(id_guru_mapel,tasm,hari,jam_mulai,jam_selesai,aktif,created_at,updated_at)
+            VALUES(v_gm_tujuan,p_tujuan,v_hari,v_mulai,v_akhir,1,NOW(),NOW());
+            SET v_berhasil=v_berhasil+1;
+        END IF;
+    END LOOP;
+    CLOSE c_jadwal;
+    COMMIT;
+    DO RELEASE_LOCK(v_nama_lock);
+    SELECT v_berhasil AS disalin,v_tanpa_penugasan AS tanpa_penugasan_tujuan,
+           v_bentrok AS dilewati_karena_bentrok;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

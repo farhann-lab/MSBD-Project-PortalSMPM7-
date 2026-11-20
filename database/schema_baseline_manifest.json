@@ -1,0 +1,911 @@
+{
+  "source": "mysqldump siakad_rkm.txt (schema-only; server 8.0.30)",
+  "target_mysql": "8.0",
+  "table_counts": {
+    "total": 56,
+    "siakad": 26,
+    "legacy_rkm": 21,
+    "laravel_including_migrations": 9
+  },
+  "tables": {
+    "cache": {
+      "group": "laravel",
+      "columns": [
+        "key",
+        "value",
+        "expiration"
+      ],
+      "depends_on": []
+    },
+    "cache_locks": {
+      "group": "laravel",
+      "columns": [
+        "key",
+        "owner",
+        "expiration"
+      ],
+      "depends_on": []
+    },
+    "failed_jobs": {
+      "group": "laravel",
+      "columns": [
+        "id",
+        "uuid",
+        "connection",
+        "queue",
+        "payload",
+        "exception",
+        "failed_at"
+      ],
+      "depends_on": []
+    },
+    "job_batches": {
+      "group": "laravel",
+      "columns": [
+        "id",
+        "name",
+        "total_jobs",
+        "pending_jobs",
+        "failed_jobs",
+        "failed_job_ids",
+        "options",
+        "cancelled_at",
+        "created_at",
+        "finished_at"
+      ],
+      "depends_on": []
+    },
+    "jobs": {
+      "group": "laravel",
+      "columns": [
+        "id",
+        "queue",
+        "payload",
+        "attempts",
+        "reserved_at",
+        "available_at",
+        "created_at"
+      ],
+      "depends_on": []
+    },
+    "m_admin": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "username",
+        "password",
+        "level",
+        "konid",
+        "aktif"
+      ],
+      "depends_on": []
+    },
+    "m_ekstra": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "nama"
+      ],
+      "depends_on": []
+    },
+    "m_guru": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "nama",
+        "nip",
+        "jk",
+        "is_bk",
+        "stat_data"
+      ],
+      "depends_on": []
+    },
+    "m_kelas": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "tingkat",
+        "nama"
+      ],
+      "depends_on": []
+    },
+    "m_mapel": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "kelompok",
+        "tambahan_sub",
+        "kd_singkat",
+        "nama",
+        "is_sikap"
+      ],
+      "depends_on": []
+    },
+    "m_sekolah": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "nama_sekolah",
+        "alamat",
+        "desa",
+        "kec",
+        "kab",
+        "prov",
+        "telp",
+        "email",
+        "web",
+        "kodepos",
+        "sebutan_kepala",
+        "nss",
+        "npsn",
+        "kop_1",
+        "kop_2",
+        "logo"
+      ],
+      "depends_on": []
+    },
+    "m_siswa": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "nis",
+        "nisn",
+        "nama",
+        "jk",
+        "tmp_lahir",
+        "tgl_lahir",
+        "agama",
+        "status",
+        "anakke",
+        "alamat",
+        "notelp",
+        "sek_asal",
+        "sek_asal_alamat",
+        "diterima_kelas",
+        "diterima_tgl",
+        "diterima_smt",
+        "ijazah_no",
+        "ijazah_thn",
+        "skhun_no",
+        "skhun_thn",
+        "ortu_ayah",
+        "ortu_ibu",
+        "ortu_alamat",
+        "ortu_notelp",
+        "ortu_ayah_pkj",
+        "ortu_ibu_pkj",
+        "wali",
+        "wali_alamat",
+        "notelp_rumah",
+        "wali_pkj",
+        "inputID",
+        "tgl_input",
+        "tgl_update",
+        "stat_data",
+        "foto"
+      ],
+      "depends_on": []
+    },
+    "migrations": {
+      "group": "laravel",
+      "columns": [
+        "id",
+        "migration",
+        "batch"
+      ],
+      "depends_on": []
+    },
+    "password_reset_tokens": {
+      "group": "laravel",
+      "columns": [
+        "email",
+        "token",
+        "created_at"
+      ],
+      "depends_on": []
+    },
+    "sessions": {
+      "group": "laravel",
+      "columns": [
+        "id",
+        "user_id",
+        "ip_address",
+        "user_agent",
+        "payload",
+        "last_activity"
+      ],
+      "depends_on": []
+    },
+    "siakad_absensi_siswa": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "pertemuan_id",
+        "id_siswa",
+        "status",
+        "keterangan",
+        "diubah_oleh",
+        "updated_at"
+      ],
+      "depends_on": [
+        "m_siswa",
+        "siakad_pertemuan",
+        "siakad_users"
+      ]
+    },
+    "siakad_aturan_bonus": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "nama",
+        "berlaku_mulai",
+        "berlaku_sampai",
+        "min_durasi_menit",
+        "ambang_durasi_menit",
+        "bonus_durasi_awal",
+        "bonus_durasi_lebih",
+        "bonus_terlambat"
+      ],
+      "depends_on": []
+    },
+    "siakad_audit_presensi": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "presensi_id",
+        "diubah_oleh",
+        "sebelum_json",
+        "sesudah_json",
+        "alasan",
+        "created_at"
+      ],
+      "depends_on": [
+        "siakad_presensi_harian",
+        "siakad_users"
+      ]
+    },
+    "siakad_berita": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "judul",
+        "slug",
+        "isi",
+        "gambar_path",
+        "status",
+        "published_at",
+        "penulis_user_id",
+        "created_at",
+        "updated_at"
+      ],
+      "depends_on": [
+        "siakad_users"
+      ]
+    },
+    "siakad_ekstra_publik": {
+      "group": "siakad",
+      "columns": [
+        "id_ekstra",
+        "deskripsi",
+        "gambar_path",
+        "status",
+        "updated_at"
+      ],
+      "depends_on": [
+        "m_ekstra"
+      ]
+    },
+    "siakad_fasilitas": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "nama",
+        "deskripsi",
+        "gambar_path",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "depends_on": []
+    },
+    "siakad_fingerprint_identitas": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "perangkat_id",
+        "user_mesin",
+        "personel_id",
+        "aktif"
+      ],
+      "depends_on": [
+        "siakad_fingerprint_perangkat",
+        "siakad_personel"
+      ]
+    },
+    "siakad_fingerprint_log": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "perangkat_id",
+        "user_mesin",
+        "waktu_scan",
+        "kode_status",
+        "raw_payload",
+        "diterima_at",
+        "status_parse"
+      ],
+      "depends_on": [
+        "siakad_fingerprint_perangkat"
+      ]
+    },
+    "siakad_fingerprint_perangkat": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "serial_number",
+        "nama",
+        "lokasi",
+        "aktif"
+      ],
+      "depends_on": []
+    },
+    "siakad_galeri": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "judul",
+        "deskripsi",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "depends_on": []
+    },
+    "siakad_galeri_foto": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "galeri_id",
+        "gambar_path",
+        "keterangan",
+        "urutan",
+        "status",
+        "created_at"
+      ],
+      "depends_on": [
+        "siakad_galeri"
+      ]
+    },
+    "siakad_hari_libur": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "tanggal",
+        "keterangan",
+        "created_at"
+      ],
+      "depends_on": []
+    },
+    "siakad_impor_siswa": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "admin_user_id",
+        "nama_file",
+        "jumlah_baris",
+        "jumlah_berhasil",
+        "jumlah_gagal",
+        "status",
+        "created_at"
+      ],
+      "depends_on": [
+        "siakad_users"
+      ]
+    },
+    "siakad_impor_siswa_baris": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "impor_id",
+        "nomor_baris",
+        "nis",
+        "nisn",
+        "nama",
+        "jk",
+        "tmp_lahir",
+        "tgl_lahir",
+        "agama",
+        "status",
+        "anakke",
+        "alamat",
+        "notelp",
+        "sek_asal",
+        "sek_asal_alamat",
+        "diterima_kelas",
+        "diterima_tgl",
+        "diterima_smt",
+        "ijazah_no",
+        "ijazah_thn",
+        "skhun_no",
+        "skhun_thn",
+        "ortu_ayah",
+        "ortu_ibu",
+        "ortu_alamat",
+        "ortu_notelp",
+        "ortu_ayah_pkj",
+        "ortu_ibu_pkj",
+        "wali",
+        "wali_alamat",
+        "notelp_rumah",
+        "wali_pkj",
+        "status_validasi",
+        "pesan_error"
+      ],
+      "depends_on": [
+        "siakad_impor_siswa"
+      ]
+    },
+    "siakad_jadwal": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "id_guru_mapel",
+        "tasm",
+        "hari",
+        "jam_mulai",
+        "jam_selesai",
+        "aktif",
+        "created_at",
+        "updated_at"
+      ],
+      "depends_on": [
+        "t_guru_mapel"
+      ]
+    },
+    "siakad_jam_kerja": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "personel_id",
+        "hari",
+        "berlaku_mulai",
+        "berlaku_sampai",
+        "jam_masuk",
+        "jam_pulang",
+        "toleransi_menit"
+      ],
+      "depends_on": [
+        "siakad_personel"
+      ]
+    },
+    "siakad_log_aktivitas": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "user_id",
+        "aksi",
+        "entity_type",
+        "entity_id",
+        "ringkasan",
+        "created_at"
+      ],
+      "depends_on": [
+        "siakad_users"
+      ]
+    },
+    "siakad_materi": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "id_guru",
+        "id_mapel",
+        "judul",
+        "deskripsi",
+        "jenis",
+        "file_path",
+        "tautan_url",
+        "ukuran_byte",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "depends_on": [
+        "m_guru",
+        "m_mapel"
+      ]
+    },
+    "siakad_materi_kelas": {
+      "group": "siakad",
+      "columns": [
+        "materi_id",
+        "id_guru_mapel",
+        "created_at"
+      ],
+      "depends_on": [
+        "siakad_materi",
+        "t_guru_mapel"
+      ]
+    },
+    "siakad_pengumuman": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "judul",
+        "isi",
+        "tanggal",
+        "status",
+        "pembuat_user_id",
+        "created_at",
+        "updated_at"
+      ],
+      "depends_on": [
+        "siakad_users"
+      ]
+    },
+    "siakad_personel": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "id_guru",
+        "id_staf",
+        "aktif"
+      ],
+      "depends_on": [
+        "m_guru",
+        "siakad_staf"
+      ]
+    },
+    "siakad_pertemuan": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "jadwal_id",
+        "tanggal",
+        "sesi_ke",
+        "catatan",
+        "dibuat_oleh",
+        "created_at",
+        "updated_at"
+      ],
+      "depends_on": [
+        "siakad_jadwal",
+        "siakad_users"
+      ]
+    },
+    "siakad_presensi_harian": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "personel_id",
+        "tanggal",
+        "jam_masuk",
+        "jam_pulang",
+        "status",
+        "terlambat_menit",
+        "durasi_menit",
+        "aturan_bonus_id",
+        "nominal_bonus",
+        "diproses_at"
+      ],
+      "depends_on": [
+        "siakad_aturan_bonus",
+        "siakad_personel"
+      ]
+    },
+    "siakad_prestasi_publik": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "id_siswa",
+        "id_prestasi_rkm",
+        "judul",
+        "tingkat",
+        "tanggal",
+        "deskripsi",
+        "gambar_path",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "depends_on": [
+        "m_siswa",
+        "t_prestasi"
+      ]
+    },
+    "siakad_staf": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "kode_staf",
+        "nama",
+        "jabatan",
+        "aktif"
+      ],
+      "depends_on": []
+    },
+    "siakad_users": {
+      "group": "siakad",
+      "columns": [
+        "id",
+        "username",
+        "password",
+        "role",
+        "id_guru",
+        "id_siswa",
+        "is_active",
+        "wajib_ganti_password",
+        "is_admin_utama",
+        "created_at",
+        "updated_at"
+      ],
+      "depends_on": [
+        "m_guru",
+        "m_siswa"
+      ]
+    },
+    "t_guru_mapel": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "tasm",
+        "id_guru",
+        "id_kelas",
+        "id_mapel"
+      ],
+      "depends_on": [
+        "m_guru",
+        "m_kelas",
+        "m_mapel"
+      ]
+    },
+    "t_kelas_siswa": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "id_kelas",
+        "id_siswa",
+        "ta"
+      ],
+      "depends_on": [
+        "m_kelas",
+        "m_siswa"
+      ]
+    },
+    "t_kkm": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "ta",
+        "jenis",
+        "kelas",
+        "kkm"
+      ],
+      "depends_on": []
+    },
+    "t_mapel_kd": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "id_guru",
+        "id_mapel",
+        "tingkat",
+        "semester",
+        "no_kd",
+        "jenis",
+        "bobot",
+        "nama_kd"
+      ],
+      "depends_on": []
+    },
+    "t_naikkelas": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "id_siswa",
+        "ta",
+        "naik",
+        "catatan_wali"
+      ],
+      "depends_on": []
+    },
+    "t_nilai": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "tasm",
+        "jenis",
+        "id_guru_mapel",
+        "id_mapel_kd",
+        "id_siswa",
+        "nilai"
+      ],
+      "depends_on": []
+    },
+    "t_nilai_absensi": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "tasm",
+        "id_siswa",
+        "s",
+        "i",
+        "a"
+      ],
+      "depends_on": []
+    },
+    "t_nilai_ekstra": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "tasm",
+        "id_ekstra",
+        "id_siswa",
+        "nilai",
+        "desk"
+      ],
+      "depends_on": [
+        "m_ekstra",
+        "m_siswa"
+      ]
+    },
+    "t_nilai_ket": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "tasm",
+        "id_guru_mapel",
+        "id_mapel_kd",
+        "id_siswa",
+        "nilai"
+      ],
+      "depends_on": []
+    },
+    "t_nilai_sikap_so": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "tasm",
+        "id_guru_mapel",
+        "id_siswa",
+        "is_wali",
+        "selalu",
+        "mulai_meningkat"
+      ],
+      "depends_on": [
+        "m_siswa"
+      ]
+    },
+    "t_nilai_sikap_sp": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "tasm",
+        "id_guru_mapel",
+        "id_siswa",
+        "is_wali",
+        "selalu",
+        "mulai_meningkat"
+      ],
+      "depends_on": [
+        "m_siswa"
+      ]
+    },
+    "t_prestasi": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "id_siswa",
+        "ta",
+        "jenis",
+        "keterangan"
+      ],
+      "depends_on": []
+    },
+    "t_walikelas": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "tasm",
+        "id_guru",
+        "id_kelas"
+      ],
+      "depends_on": [
+        "m_guru",
+        "m_kelas"
+      ]
+    },
+    "tahun": {
+      "group": "legacy_rkm",
+      "columns": [
+        "id",
+        "tahun",
+        "aktif",
+        "nama_kepsek",
+        "nip_kepsek",
+        "tgl_raport",
+        "tgl_raport_kelas3"
+      ],
+      "depends_on": []
+    },
+    "users": {
+      "group": "laravel",
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "email_verified_at",
+        "password",
+        "remember_token",
+        "created_at",
+        "updated_at"
+      ],
+      "depends_on": []
+    }
+  },
+  "views": [
+    "v_guru_tanpa_akun",
+    "v_periode_aktif",
+    "v_pertemuan_tanpa_absensi",
+    "v_publik_berita",
+    "v_publik_ekstra",
+    "v_publik_fasilitas",
+    "v_publik_galeri",
+    "v_publik_pengumuman",
+    "v_publik_prestasi",
+    "v_rekap_absensi_kelas",
+    "v_siswa_tanpa_akun",
+    "v_penugasan_aktif",
+    "v_publik_guru",
+    "v_publik_siswa",
+    "v_jadwal_lengkap",
+    "v_publik_statistik"
+  ],
+  "triggers": [
+    "trg_absensi_bi",
+    "trg_absensi_bu",
+    "trg_absensi_au",
+    "trg_berita_bi",
+    "trg_berita_bu",
+    "trg_jadwal_bi",
+    "trg_jadwal_bu",
+    "trg_materi_bi",
+    "trg_materi_bu",
+    "trg_materi_kelas_bi",
+    "trg_materi_kelas_bu",
+    "trg_pengumuman_bi",
+    "trg_pengumuman_bu",
+    "trg_users_bu",
+    "trg_users_bd"
+  ],
+  "functions": [
+    "fn_ta_dari_tasm",
+    "fn_kelas_siswa"
+  ],
+  "procedures": [
+    "sp_set_periode_aktif",
+    "sp_tempatkan_siswa",
+    "sp_pindah_kelas",
+    "sp_set_walikelas",
+    "sp_salin_walikelas",
+    "sp_simpan_penugasan",
+    "sp_salin_penugasan",
+    "sp_hapus_penugasan",
+    "sp_simpan_jadwal",
+    "sp_ubah_jadwal",
+    "sp_salin_jadwal",
+    "sp_nonaktifkan_siswa",
+    "sp_nonaktifkan_guru",
+    "sp_tinjau_nonaktif_guru",
+    "sp_tinjau_nonaktif_siswa",
+    "sp_impor_siswa_validasi",
+    "sp_impor_siswa_commit",
+    "sp_akun_siswa_massal",
+    "sp_reset_password",
+    "sp_atur_akun",
+    "sp_simpan_absensi_siswa",
+    "sp_rekap_absensi_kelas",
+    "sp_kenaikan_kelas_pratinjau",
+    "sp_kenaikan_kelas_commit",
+    "sp_nonaktifkan_jadwal"
+  ]
+}

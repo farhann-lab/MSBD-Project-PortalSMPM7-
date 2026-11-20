@@ -1,0 +1,34 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'PROCEDURE',
+            'sp_tinjau_nonaktif_guru',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE PROCEDURE `sp_tinjau_nonaktif_guru`(IN p_id_guru INT)
+SQL SECURITY DEFINER READS SQL DATA
+BEGIN
+    SELECT g.id,g.nama,g.stat_data,
+       (SELECT COUNT(*) FROM t_guru_mapel WHERE id_guru=g.id) AS jumlah_penugasan,
+       (SELECT COUNT(*) FROM t_walikelas WHERE id_guru=g.id) AS jumlah_wali,
+       (SELECT COUNT(*) FROM siakad_users WHERE id_guru=g.id) AS jumlah_akun,
+       (SELECT COUNT(*) FROM siakad_materi WHERE id_guru=g.id) AS jumlah_materi
+    FROM m_guru g WHERE g.id=p_id_guru;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

@@ -1,0 +1,37 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// Exact table DDL from the provided MySQL 8.0.30 schema-only dump.
+// Existing tables are preserved; no destructive rollback.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::table(
+            'siakad_aturan_bonus',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE TABLE `siakad_aturan_bonus` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `nama` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `berlaku_mulai` date NOT NULL,
+  `berlaku_sampai` date DEFAULT NULL,
+  `min_durasi_menit` int unsigned NOT NULL,
+  `ambang_durasi_menit` int unsigned NOT NULL,
+  `bonus_durasi_awal` decimal(12,2) NOT NULL,
+  `bonus_durasi_lebih` decimal(12,2) NOT NULL,
+  `bonus_terlambat` decimal(12,2) NOT NULL DEFAULT '0.00',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+SIAKAD_SQL_TEXT,
+            ['id', 'nama', 'berlaku_mulai', 'berlaku_sampai', 'min_durasi_menit', 'ambang_durasi_menit', 'bonus_durasi_awal', 'bonus_durasi_lebih', 'bonus_terlambat'],
+            []
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop a school table that may contain pre-existing data.
+    }
+};

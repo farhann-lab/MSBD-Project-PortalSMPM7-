@@ -1,0 +1,40 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'TRIGGER',
+            'trg_absensi_bu',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE TRIGGER `trg_absensi_bu` BEFORE UPDATE ON `siakad_absensi_siswa` FOR EACH ROW BEGIN
+    DECLARE v_kelas INT DEFAULT NULL;
+    DECLARE v_ta SMALLINT UNSIGNED DEFAULT NULL;
+    DECLARE v_kelas_siswa INT DEFAULT NULL;
+    IF NEW.id_siswa <> OLD.id_siswa OR NEW.pertemuan_id <> OLD.pertemuan_id THEN
+        SELECT gm.id_kelas, fn_ta_dari_tasm(j.tasm) INTO v_kelas,v_ta
+          FROM siakad_pertemuan p
+          JOIN siakad_jadwal j ON j.id=p.jadwal_id
+          JOIN t_guru_mapel gm ON gm.id=j.id_guru_mapel
+         WHERE p.id=NEW.pertemuan_id LIMIT 1;
+        IF v_ta IS NOT NULL THEN SET v_kelas_siswa=fn_kelas_siswa(NEW.id_siswa,v_ta); END IF;
+        IF v_kelas IS NULL OR v_kelas_siswa IS NULL OR v_kelas <> v_kelas_siswa THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Siswa tidak terdaftar pada kelas pertemuan';
+        END IF;
+    END IF;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

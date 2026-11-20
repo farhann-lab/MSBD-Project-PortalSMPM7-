@@ -1,0 +1,27 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'TRIGGER',
+            'trg_berita_bi',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE TRIGGER `trg_berita_bi` BEFORE INSERT ON `siakad_berita` FOR EACH ROW BEGIN
+    IF NEW.status='published' AND NEW.published_at IS NULL THEN SET NEW.published_at=NOW(); END IF;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

@@ -1,0 +1,64 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// Exact table DDL from the provided MySQL 8.0.30 schema-only dump.
+// Existing tables are preserved; no destructive rollback.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::legacyTable(
+            'm_siswa',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE TABLE `m_siswa` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nis` varchar(10) NOT NULL DEFAULT '0',
+  `nisn` varchar(10) NOT NULL DEFAULT '0',
+  `nama` varchar(100) NOT NULL,
+  `jk` enum('L','P') NOT NULL,
+  `tmp_lahir` varchar(50) NOT NULL,
+  `tgl_lahir` date NOT NULL,
+  `agama` varchar(10) NOT NULL,
+  `status` varchar(2) NOT NULL,
+  `anakke` int NOT NULL,
+  `alamat` varchar(50) NOT NULL,
+  `notelp` varchar(13) NOT NULL,
+  `sek_asal` varchar(30) NOT NULL,
+  `sek_asal_alamat` varchar(50) NOT NULL,
+  `diterima_kelas` varchar(5) NOT NULL,
+  `diterima_tgl` date NOT NULL,
+  `diterima_smt` varchar(2) NOT NULL,
+  `ijazah_no` varchar(50) NOT NULL,
+  `ijazah_thn` varchar(4) NOT NULL,
+  `skhun_no` varchar(50) NOT NULL,
+  `skhun_thn` varchar(4) NOT NULL,
+  `ortu_ayah` varchar(50) NOT NULL,
+  `ortu_ibu` varchar(50) NOT NULL,
+  `ortu_alamat` varchar(50) NOT NULL,
+  `ortu_notelp` varchar(13) NOT NULL,
+  `ortu_ayah_pkj` varchar(30) NOT NULL,
+  `ortu_ibu_pkj` varchar(30) NOT NULL,
+  `wali` varchar(20) NOT NULL,
+  `wali_alamat` varchar(50) NOT NULL,
+  `notelp_rumah` varchar(13) NOT NULL,
+  `wali_pkj` varchar(13) NOT NULL,
+  `inputID` int NOT NULL,
+  `tgl_input` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `tgl_update` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `stat_data` enum('A','K','M','L') NOT NULL,
+  `foto` varchar(100) NOT NULL,
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2680 DEFAULT CHARSET=latin1;
+SIAKAD_SQL_TEXT,
+            ['id', 'nis', 'nisn', 'nama', 'jk', 'tmp_lahir', 'tgl_lahir', 'agama', 'status', 'anakke', 'alamat', 'notelp', 'sek_asal', 'sek_asal_alamat', 'diterima_kelas', 'diterima_tgl', 'diterima_smt', 'ijazah_no', 'ijazah_thn', 'skhun_no', 'skhun_thn', 'ortu_ayah', 'ortu_ibu', 'ortu_alamat', 'ortu_notelp', 'ortu_ayah_pkj', 'ortu_ibu_pkj', 'wali', 'wali_alamat', 'notelp_rumah', 'wali_pkj', 'inputID', 'tgl_input', 'tgl_update', 'stat_data', 'foto'],
+            []
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop a school table that may contain pre-existing data.
+    }
+};

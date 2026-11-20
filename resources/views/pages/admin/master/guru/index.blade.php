@@ -167,7 +167,15 @@
                                             </span>
                                         </div>
                                     @else
-                                        <span class="text-[11px] text-muted-text italic">Belum dibuat</span>
+                                        <button 
+                                            type="button" 
+                                            onclick="openBuatAkunModal({{ $teacher->id }}, '{{ addslashes($teacher->nama) }}', '{{ $teacher->nip ?? '' }}')"
+                                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 hover:bg-forest hover:text-white border border-emerald-200 text-[11px] font-bold transition-colors"
+                                            title="Buat Akun Satuan Guru"
+                                        >
+                                            <x-icon name="plus" class="w-3 h-3" />
+                                            <span>Buat Akun</span>
+                                        </button>
                                     @endif
                                 </td>
                                 <td class="py-3.5 px-4 sm:px-6 text-right">
@@ -187,15 +195,26 @@
                                             <x-icon name="refresh" class="w-4 h-4" />
                                         </button>
 
-                                        <!-- Reset Password Modal Trigger -->
-                                        <button 
-                                            type="button" 
-                                            onclick="openResetModal({{ $teacher->id }}, '{{ addslashes($teacher->nama) }}', '{{ $teacher->user->username ?? '' }}')"
-                                            class="p-1.5 rounded-lg text-muted-text hover:text-indigo-600 hover:bg-indigo-50 transition-colors" 
-                                            title="{{ $teacher->user ? 'Reset Password Guru' : 'Buat Akun Login Guru' }}"
-                                        >
-                                            <x-icon name="key" class="w-4 h-4" />
-                                        </button>
+                                        <!-- Reset Password / Buat Akun Modal Trigger -->
+                                        @if($teacher->user)
+                                            <button 
+                                                type="button" 
+                                                onclick="openResetModal({{ $teacher->id }}, '{{ addslashes($teacher->nama) }}', '{{ $teacher->user->username ?? '' }}')"
+                                                class="p-1.5 rounded-lg text-muted-text hover:text-indigo-600 hover:bg-indigo-50 transition-colors" 
+                                                title="Reset Password Guru"
+                                            >
+                                                <x-icon name="key" class="w-4 h-4" />
+                                            </button>
+                                        @else
+                                            <button 
+                                                type="button" 
+                                                onclick="openBuatAkunModal({{ $teacher->id }}, '{{ addslashes($teacher->nama) }}', '{{ $teacher->nip ?? '' }}')"
+                                                class="p-1.5 rounded-lg text-muted-text hover:text-forest hover:bg-forest/10 transition-colors" 
+                                                title="Buat Akun Login Guru"
+                                            >
+                                                <x-icon name="user-plus" class="w-4 h-4" />
+                                            </button>
+                                        @endif
 
                                         <!-- Soft Delete (Mutasi / Nonaktif Tetap) -->
                                         <form action="{{ route('admin.master.guru.destroy', $teacher) }}" method="POST" onsubmit="return confirm('Nonaktifkan guru {{ addslashes($teacher->nama) }} (Status Mutasi/Keluar)? Akun login akan dinonaktifkan.');" class="inline">
@@ -234,6 +253,94 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- Modal Buat Akun Satuan Guru (AKN-1) -->
+    <div id="buatAkunModal" class="fixed inset-0 z-50 hidden bg-darkgreen/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-border-soft relative animate-in fade-in duration-150">
+            <h3 class="text-base font-bold text-darkgreen" id="modalBuatAkunTitle">Buat Akun Satuan Guru</h3>
+            <p class="text-xs text-muted-text mt-1">
+                Tentukan username dan password awal login untuk guru ini.
+            </p>
+
+            <form id="buatAkunForm" onsubmit="submitBuatAkun(event)" class="mt-4 space-y-4">
+                @csrf
+                <input type="hidden" id="buatAkunGuruId" value="">
+
+                <div>
+                    <label class="block text-xs font-bold text-darkgreen uppercase tracking-wider mb-1">
+                        Username Login
+                    </label>
+                    <input 
+                        type="text" 
+                        id="buatAkunUsernameInput" 
+                        placeholder="Contoh: nip_guru / nama_guru" 
+                        class="w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-soft border border-border-soft focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-forest font-mono"
+                    >
+                    <span class="text-[11px] text-muted-text block mt-1">Biarkan kosong untuk otomatis menggunakan format rekomendasi unik.</span>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-darkgreen uppercase tracking-wider mb-1">
+                        Password Awal (Sementara)
+                    </label>
+                    <div class="flex gap-2">
+                        <input 
+                            type="text" 
+                            id="buatAkunPasswordInput" 
+                            placeholder="Biarkan kosong untuk password acak..." 
+                            class="flex-1 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-soft border border-border-soft focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-forest font-mono"
+                        >
+                        <button type="button" onclick="generateRandomGuruPassword()" class="px-3 py-2.5 rounded-xl border border-border-soft hover:bg-soft text-xs font-bold text-darkgreen transition-colors">
+                            Acak
+                        </button>
+                    </div>
+                    <span class="text-[11px] text-muted-text block mt-1">Password awal ter-hash dan guru wajib ganti saat pertama login.</span>
+                </div>
+
+                <div class="flex items-center justify-end gap-2.5 pt-2">
+                    <button type="button" onclick="closeBuatAkunModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-muted-text hover:bg-soft transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" id="btnSubmitBuatAkun" class="px-4 py-2 rounded-xl bg-forest hover:bg-forest/90 text-white text-xs font-bold shadow-xs transition-colors">
+                        Buat Akun Sekarang
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Kredensial Berhasil Dibuat -->
+    <div id="modalKredensialGuru" class="fixed inset-0 z-50 hidden bg-darkgreen/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-border-soft relative animate-in fade-in duration-150 space-y-4">
+            <div class="flex items-center gap-2.5 text-emerald-700">
+                <x-icon name="check-circle" class="w-6 h-6 shrink-0" />
+                <h3 class="text-base font-bold text-darkgreen">Akun Guru Berhasil Dibuat</h3>
+            </div>
+            <p class="text-xs text-muted-text">
+                Salin dan berikan kredensial sementara ini kepada guru bersangkutan. Password hanya ditampilkan satu kali ini.
+            </p>
+
+            <div class="p-4 rounded-2xl bg-soft border border-border-soft space-y-2.5 text-xs font-mono">
+                <div class="flex justify-between items-center">
+                    <span class="text-muted-text font-sans">Username:</span>
+                    <strong class="text-darkgreen text-sm" id="resultGuruUsername">-</strong>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-muted-text font-sans">Password Sementara:</span>
+                    <strong class="text-forest text-sm font-bold" id="resultGuruPassword">-</strong>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-2.5 pt-2">
+                <button type="button" onclick="copyGuruCredentials()" class="px-4 py-2 rounded-xl bg-soft border border-border-soft hover:bg-forest/10 text-xs font-bold text-darkgreen transition-colors">
+                    Salin Teks
+                </button>
+                <button type="button" onclick="closeKredensialGuruModal()" class="px-4 py-2 rounded-xl bg-forest hover:bg-forest/90 text-white text-xs font-bold shadow-xs transition-colors">
+                    Selesai
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Modal Reset Password / Buat Akun -->
@@ -306,6 +413,76 @@
             } catch (err) {
                 alert('Terjadi kesalahan jaringan.');
             }
+        }
+
+        function openBuatAkunModal(guruId, guruNama, nip) {
+            document.getElementById('buatAkunGuruId').value = guruId;
+            document.getElementById('modalBuatAkunTitle').textContent = `Buat Akun Guru: ${guruNama}`;
+            document.getElementById('buatAkunUsernameInput').value = nip ? nip : '';
+            document.getElementById('buatAkunPasswordInput').value = '';
+            document.getElementById('buatAkunModal').classList.remove('hidden');
+        }
+
+        function closeBuatAkunModal() {
+            document.getElementById('buatAkunModal').classList.add('hidden');
+        }
+
+        function generateRandomGuruPassword() {
+            const randomStr = Math.random().toString(36).substring(2, 7).toUpperCase();
+            document.getElementById('buatAkunPasswordInput').value = `Guru7-${randomStr}`;
+        }
+
+        async function submitBuatAkun(e) {
+            e.preventDefault();
+            const guruId = document.getElementById('buatAkunGuruId').value;
+            const username = document.getElementById('buatAkunUsernameInput').value;
+            const password = document.getElementById('buatAkunPasswordInput').value;
+            const btn = document.getElementById('btnSubmitBuatAkun');
+
+            btn.disabled = true;
+            btn.textContent = 'Membuat Akun...';
+
+            try {
+                const response = await fetch(`/admin/master/guru/${guruId}/buat-akun`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username ? username : null,
+                        password: password ? password : null
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    closeBuatAkunModal();
+                    document.getElementById('resultGuruUsername').textContent = data.username;
+                    document.getElementById('resultGuruPassword').textContent = data.password_baru;
+                    document.getElementById('modalKredensialGuru').classList.remove('hidden');
+                } else {
+                    alert(data.message || 'Gagal membuat akun guru.');
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan jaringan.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Buat Akun Sekarang';
+            }
+        }
+
+        function copyGuruCredentials() {
+            const u = document.getElementById('resultGuruUsername').textContent;
+            const p = document.getElementById('resultGuruPassword').textContent;
+            navigator.clipboard.writeText(`Username: ${u}\nPassword: ${p}`);
+            alert('Kredensial berhasil disalin ke clipboard!');
+        }
+
+        function closeKredensialGuruModal() {
+            document.getElementById('modalKredensialGuru').classList.add('hidden');
+            location.reload();
         }
 
         function openResetModal(guruId, guruNama, username) {

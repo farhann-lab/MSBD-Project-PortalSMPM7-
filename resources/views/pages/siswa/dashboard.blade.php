@@ -1,17 +1,26 @@
 <x-layouts.siswa 
     title="Dashboard Siswa" 
     activeMenu="dashboard"
-    kelasSiswa="VIII-B"
+    :kelasSiswa="$kelasNama"
 >
     <!-- Welcome Banner Siswa (DESIGN.md 10.4: Identitas, kelas, dan tahun ajaran aktif) -->
     <div class="mb-8 rounded-3xl bg-linear-to-r from-darkgreen to-forest p-6 sm:p-8 text-white relative overflow-hidden shadow-sm">
         <div class="absolute -right-12 -bottom-12 w-64 h-64 rounded-full bg-white/5 pointer-events-none"></div>
-        <div class="relative z-10 max-w-2xl">   
+        <div class="relative z-10 max-w-3xl">   
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-emerald-200 text-xs font-semibold uppercase tracking-wider mb-3 border border-white/15">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span>Tahun Ajaran {{ $taAktif }} &bull; Semester {{ $tasmAktif }}</span>
+            </div>
             <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
-                Assalamu'alaikum, Ahmad Rizky Pratama!
+                Assalamu'alaikum, {{ $siswa->nama ?? auth()->user()->username }}! 👋
             </h1>
             <p class="text-white/80 text-xs sm:text-sm leading-relaxed">
-                Selamat datang di portal akademik Anda. Anda terdaftar aktif di <strong class="text-white">Kelas VIII-B</strong> di bawah bimbingan Wali Kelas <strong class="text-emerald-300">Bpk. Budi Santoso, S.Pd.</strong>
+                Selamat datang di portal akademik Anda. Anda terdaftar aktif di <strong class="text-white">Kelas {{ $kelasNama }}</strong> 
+                @if($waliKelas && $waliKelas !== '-')
+                    di bawah bimbingan Wali Kelas <strong class="text-emerald-300">{{ $waliKelas }}</strong>.
+                @else
+                    untuk semester berjalan.
+                @endif
             </p>
         </div>
     </div>
@@ -23,10 +32,14 @@
         <div class="bg-white p-5 rounded-2xl border border-border-soft shadow-xs flex items-center justify-between">
             <div>
                 <p class="text-xs font-medium text-muted-text uppercase tracking-wider">Kehadiran Saya</p>
-                <p class="text-2xl font-black text-emerald-700 mt-1">100%</p>
-                <p class="text-[11px] text-emerald-600 font-semibold mt-1">48 Pertemuan Hadir Penuh</p>
+                <p class="text-2xl font-black {{ $persentaseKehadiran >= 85 ? 'text-emerald-700' : 'text-amber-600' }} mt-1">
+                    {{ $persentaseKehadiran }}%
+                </p>
+                <p class="text-[11px] text-muted-text font-semibold mt-1">
+                    {{ $totalHadir }} Hadir / {{ $totalPertemuan }} Pertemuan
+                </p>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+            <div class="w-12 h-12 rounded-xl {{ $persentaseKehadiran >= 85 ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-600' }} flex items-center justify-center shrink-0">
                 <x-icon name="clipboard-document-check" class="w-6 h-6" />
             </div>
         </div>
@@ -35,8 +48,10 @@
         <div class="bg-white p-5 rounded-2xl border border-border-soft shadow-xs flex items-center justify-between">
             <div>
                 <p class="text-xs font-medium text-muted-text uppercase tracking-wider">Jadwal Hari Ini</p>
-                <p class="text-2xl font-black text-darkgreen mt-1">3 <span class="text-xs font-semibold text-muted-text">Mapel</span></p>
-                <p class="text-[11px] text-forest font-semibold mt-1">07.30 - 12.45 WIB</p>
+                <p class="text-2xl font-black text-darkgreen mt-1">
+                    {{ $jadwalHariIni->count() }} <span class="text-xs font-semibold text-muted-text">Mapel</span>
+                </p>
+                <p class="text-[11px] text-forest font-semibold mt-1">Hari {{ $namaHariIni }}</p>
             </div>
             <div class="w-12 h-12 rounded-xl bg-forest/10 text-forest flex items-center justify-center shrink-0">
                 <x-icon name="calendar" class="w-6 h-6" />
@@ -47,23 +62,30 @@
         <div class="bg-white p-5 rounded-2xl border border-border-soft shadow-xs flex items-center justify-between">
             <div>
                 <p class="text-xs font-medium text-muted-text uppercase tracking-wider">Materi Pelajaran</p>
-                <p class="text-2xl font-black text-darkgreen mt-1">6 <span class="text-xs font-semibold text-muted-text">Bahan Ajar</span></p>
-                <p class="text-[11px] text-forest font-semibold mt-1">Siap Dipelajari &amp; Diunduh</p>
+                <p class="text-2xl font-black text-darkgreen mt-1">
+                    {{ $countMateri }} <span class="text-xs font-semibold text-muted-text">Bahan Ajar</span>
+                </p>
+                <p class="text-[11px] text-forest font-semibold mt-1">Kelas {{ $kelasNama }}</p>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-soft text-forest flex items-center justify-center shrink-0">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
                 <x-icon name="book-open" class="w-6 h-6" />
             </div>
         </div>
 
-        <!-- Stat 4: Status Akademik -->
+        <!-- Stat 4: Rekap Absensi (S/I/A) -->
         <div class="bg-white p-5 rounded-2xl border border-border-soft shadow-xs flex items-center justify-between">
             <div>
-                <p class="text-xs font-medium text-muted-text uppercase tracking-wider">Status Pelajar</p>
-                <p class="text-2xl font-black text-forest mt-1">Aktif</p>
-                <p class="text-[11px] text-muted-text mt-1">NIS: 2401 &bull; NISN: 0098712301</p>
+                <p class="text-xs font-medium text-muted-text uppercase tracking-wider">Catatan Absensi</p>
+                <p class="text-base font-black text-darkgreen mt-2">
+                    <span class="text-emerald-700">H:{{ $totalHadir }}</span> &bull; 
+                    <span class="text-blue-700">S:{{ $totalSakit }}</span> &bull; 
+                    <span class="text-amber-700">I:{{ $totalIzin }}</span> &bull; 
+                    <span class="text-rose-700">A:{{ $totalAlpa }}</span>
+                </p>
+                <p class="text-[11px] text-muted-text font-semibold mt-1">Semester {{ $tasmAktif }}</p>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-forest/10 text-forest flex items-center justify-center shrink-0">
-                <x-icon name="academic-cap" class="w-6 h-6" />
+            <div class="w-12 h-12 rounded-xl bg-soft text-darkgreen flex items-center justify-center shrink-0">
+                <x-icon name="user" class="w-6 h-6 text-forest" />
             </div>
         </div>
 
@@ -72,187 +94,217 @@
     <!-- Main Workspace Two-Column Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         
-        <!-- Left 2 Cols: Jadwal Hari Ini & Materi Pelajaran Terbaru -->
+        <!-- Left 2 Cols: Jadwal Hari Ini & Jadwal Mingguan Siswa -->
         <div class="lg:col-span-2 space-y-6">
             
-            <!-- Card: Jadwal Pelajaran Hari Ini (Senin) -->
+            <!-- Card: Jadwal Pelajaran Hari Ini -->
             <div class="bg-white rounded-2xl border border-border-soft p-5 sm:p-6 shadow-xs">
                 <div class="flex items-center justify-between pb-4 border-b border-border-soft">
                     <div class="flex items-center gap-2.5">
                         <span class="w-8 h-8 rounded-lg bg-forest/10 text-forest flex items-center justify-center">
                             <x-icon name="clock" class="w-4 h-4" />
                         </span>
-                        <h2 class="text-base font-bold text-darkgreen">Jadwal Pelajaran Hari Ini (Senin)</h2>
+                        <h2 class="text-base font-bold text-darkgreen">Jadwal Pelajaran Hari Ini ({{ $namaHariIni }})</h2>
                     </div>
-                    <a href="{{ route('siswa.jadwal') }}" class="text-xs font-semibold text-forest hover:underline">
-                        Lihat Jadwal Mingguan &rarr;
-                    </a>
+                    <span class="text-xs font-semibold text-forest">{{ $jadwalHariIni->count() }} Sesi Terjadwal</span>
                 </div>
 
-                <div class="divide-y divide-border-soft/60 mt-2">
-                    <!-- Sesi 1 -->
-                    <div class="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div class="flex items-start gap-3">
-                            <span class="px-2.5 py-1 rounded-lg bg-soft text-darkgreen font-bold text-xs">
-                                07.30 - 09.00
-                            </span>
-                            <div>
-                                <p class="text-sm font-bold text-darkgreen">Matematika</p>
-                                <p class="text-xs text-muted-text">Nadia Fitri, S.Pd. &bull; Ruang B-2</p>
+                @if($jadwalHariIni->count() > 0)
+                    <div class="divide-y divide-border-soft/60 mt-2">
+                        @foreach($jadwalHariIni as $jdw)
+                            <div class="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div class="flex items-start gap-3">
+                                    <span class="px-2.5 py-1 rounded-lg bg-soft text-darkgreen font-bold text-xs shrink-0">
+                                        {{ substr($jdw->jam_mulai, 0, 5) }} - {{ substr($jdw->jam_selesai, 0, 5) }}
+                                    </span>
+                                    <div>
+                                        <p class="text-sm font-bold text-darkgreen">
+                                            {{ $jdw->guruMapel->mapel->nama ?? 'Mata Pelajaran' }}
+                                        </p>
+                                        <p class="text-xs text-muted-text">
+                                            Guru: {{ $jdw->guruMapel->guru->nama ?? '-' }} &bull; Kode: {{ $jdw->guruMapel->mapel->kd_singkat ?? '-' }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <span class="px-2.5 py-1 rounded-full bg-forest/10 text-forest text-[11px] font-bold self-start sm:self-center">
+                                    Tatap Muka
+                                </span>
                             </div>
-                        </div>
-                        <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-bold border border-emerald-200 self-start sm:self-auto">
-                            Telah Selesai
-                        </span>
+                        @endforeach
                     </div>
-
-                    <!-- Sesi 2 -->
-                    <div class="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div class="flex items-start gap-3">
-                            <span class="px-2.5 py-1 rounded-lg bg-soft text-darkgreen font-bold text-xs">
-                                09.30 - 11.00
-                            </span>
-                            <div>
-                                <p class="text-sm font-bold text-darkgreen">Bahasa Indonesia</p>
-                                <p class="text-xs text-muted-text">Faridah Hanum, S.Pd. &bull; Ruang B-2</p>
-                            </div>
+                @else
+                    <div class="py-10 text-center">
+                        <div class="w-12 h-12 rounded-xl bg-soft flex items-center justify-center mx-auto mb-2 text-muted-text">
+                            <x-icon name="calendar" class="w-6 h-6 text-sage" />
                         </div>
-                        <span class="px-2.5 py-1 rounded-full bg-forest text-white text-[11px] font-bold self-start sm:self-auto">
-                            Sedang Berlangsung
-                        </span>
+                        <p class="text-xs sm:text-sm font-bold text-darkgreen">Tidak Ada Jadwal Pelajaran Hari Ini</p>
+                        <p class="text-xs text-muted-text mt-1">Selamat beristirahat atau belajar mandiri di hari {{ $namaHariIni }}.</p>
                     </div>
-
-                    <!-- Sesi 3 -->
-                    <div class="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div class="flex items-start gap-3">
-                            <span class="px-2.5 py-1 rounded-lg bg-soft text-darkgreen font-bold text-xs">
-                                11.15 - 12.45
-                            </span>
-                            <div>
-                                <p class="text-sm font-bold text-darkgreen">IPA Terpadu</p>
-                                <p class="text-xs text-muted-text">Budi Santoso, S.Pd. &bull; Ruang B-2</p>
-                            </div>
-                        </div>
-                        <span class="px-2.5 py-1 rounded-full bg-soft text-muted-text text-[11px] font-semibold self-start sm:self-auto">
-                            Sesi Siang
-                        </span>
-                    </div>
-                </div>
+                @endif
             </div>
 
-            <!-- Card: Materi Pembelajaran Terbaru -->
-            <div class="bg-white rounded-2xl border border-border-soft p-5 sm:p-6 shadow-xs">
-                <div class="flex items-center justify-between pb-4 border-b border-border-soft">
+            <!-- Card: Jadwal Mingguan Lengkap Kelas (Mobile Tab / Accordion Friendly) -->
+            <div class="bg-white rounded-2xl border border-border-soft p-5 sm:p-6 shadow-xs" x-data="{ tabHari: '{{ $namaHariIni }}' }">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-border-soft gap-3">
                     <div class="flex items-center gap-2.5">
-                        <span class="w-8 h-8 rounded-lg bg-forest/10 text-forest flex items-center justify-center">
-                            <x-icon name="book-open" class="w-4 h-4" />
+                        <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center">
+                            <x-icon name="calendar" class="w-4 h-4" />
                         </span>
-                        <h2 class="text-base font-bold text-darkgreen">Materi Pembelajaran Baru</h2>
+                        <div>
+                            <h2 class="text-base font-bold text-darkgreen">Jadwal Pelajaran Mingguan</h2>
+                            <p class="text-xs text-muted-text">Rombel Kelas {{ $kelasNama }}</p>
+                        </div>
                     </div>
-                    <a href="{{ route('siswa.materi') }}" class="text-xs font-semibold text-forest hover:underline">
-                        Semua Materi &rarr;
-                    </a>
+
+                    <!-- Filter Hari (Pill Switcher) -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+                        @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $hari)
+                            <button 
+                                type="button" 
+                                @click="tabHari = '{{ $hari }}'"
+                                :class="tabHari === '{{ $hari }}' ? 'bg-forest text-white shadow-xs' : 'bg-soft text-muted-text hover:text-darkgreen'"
+                                class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all shrink-0 cursor-pointer"
+                            >
+                                {{ substr($hari, 0, 3) }}
+                            </button>
+                        @endforeach
+                    </div>
                 </div>
 
-                <div class="mt-4 space-y-3">
-                    <div class="p-3.5 rounded-xl bg-soft/50 border border-border-soft flex items-center justify-between gap-4">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <span class="w-10 h-10 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center shrink-0">
-                                <x-icon name="document-text" class="w-5 h-5" />
-                            </span>
-                            <div class="min-w-0">
-                                <p class="text-xs sm:text-sm font-bold text-darkgreen truncate">Sistem Gerak pada Manusia &amp; Tumbuhan</p>
-                                <p class="text-[11px] text-muted-text">IPA Terpadu &bull; PDF (2.4 MB) &bull; Bpk. Budi Santoso</p>
-                            </div>
-                        </div>
-                        <a href="{{ route('siswa.materi') }}" class="px-3 py-1.5 rounded-lg bg-forest hover:bg-forest/90 text-white text-xs font-semibold shrink-0 transition-colors">
-                            Unduh
-                        </a>
-                    </div>
+                <div class="mt-4">
+                    @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $hari)
+                        <div x-show="tabHari === '{{ $hari }}'" class="space-y-3">
+                            @php
+                                $jadwalHariGroup = $jadwalMingguan->get($hari, collect());
+                            @endphp
 
-                    <div class="p-3.5 rounded-xl bg-soft/50 border border-border-soft flex items-center justify-between gap-4">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <span class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
-                                <x-icon name="arrow-top-right-on-square" class="w-5 h-5" />
-                            </span>
-                            <div class="min-w-0">
-                                <p class="text-xs sm:text-sm font-bold text-darkgreen truncate">Video Praktikum: Uji Fotosintesis Percobaan Sachs</p>
-                                <p class="text-[11px] text-muted-text">IPA Terpadu &bull; Video YouTube &bull; Bpk. Budi Santoso</p>
-                            </div>
+                            @if($jadwalHariGroup->count() > 0)
+                                @foreach($jadwalHariGroup as $jdw)
+                                    <div class="p-3.5 rounded-xl bg-soft/50 border border-border-soft flex items-center justify-between gap-3">
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            <span class="px-2.5 py-1 rounded-lg bg-white border border-border-soft text-darkgreen font-bold text-xs shrink-0">
+                                                {{ substr($jdw->jam_mulai, 0, 5) }} - {{ substr($jdw->jam_selesai, 0, 5) }}
+                                            </span>
+                                            <div class="min-w-0">
+                                                <p class="text-xs sm:text-sm font-bold text-darkgreen truncate">
+                                                    {{ $jdw->guruMapel->mapel->nama ?? 'Mata Pelajaran' }}
+                                                </p>
+                                                <p class="text-[11px] text-muted-text truncate">
+                                                    Guru: {{ $jdw->guruMapel->guru->nama ?? '-' }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <span class="text-xs font-semibold text-muted-text shrink-0 hidden sm:inline">
+                                            Ruang Kelas
+                                        </span>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="py-6 text-center text-xs text-muted-text">
+                                    Tidak ada mata pelajaran yang terjadwal untuk hari {{ $hari }}.
+                                </div>
+                            @endif
                         </div>
-                        <a href="{{ route('siswa.materi') }}" class="px-3 py-1.5 rounded-lg bg-soft hover:bg-border-soft/60 text-darkgreen text-xs font-semibold shrink-0 transition-colors">
-                            Tonton
-                        </a>
-                    </div>
+                    @endforeach
                 </div>
             </div>
 
         </div>
 
-        <!-- Right 1 Col: Ringkasan Absensi Pribadi & Info Kelas -->
+        <!-- Right 1 Col: Repositori Materi Terkini & Akses Presensi Siswa -->
         <div class="space-y-6">
             
-            <!-- Card: Ringkasan Absensi Saya (DESIGN.md 10.4) -->
+            <!-- Card: Materi Pembelajaran Terbaru -->
             <div class="bg-white rounded-2xl border border-border-soft p-5 sm:p-6 shadow-xs">
                 <div class="flex items-center justify-between pb-3 border-b border-border-soft">
-                    <div class="flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                        <h2 class="text-sm font-bold text-darkgreen">Absensi Semester Ini</h2>
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-8 h-8 rounded-lg bg-forest/10 text-forest flex items-center justify-center">
+                            <x-icon name="book-open" class="w-4 h-4" />
+                        </span>
+                        <h2 class="text-sm font-bold text-darkgreen">Materi Belajar Terbaru</h2>
                     </div>
-                    <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">Disiplin</span>
+                    <a href="{{ route('siswa.materi') }}" class="text-xs font-bold text-forest hover:underline">
+                        Lihat Semua
+                    </a>
                 </div>
 
-                <div class="py-4 space-y-3">
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-muted-text">Hadir (H):</span>
-                        <span class="font-bold text-emerald-700">48 Kali</span>
+                @if($materiList->count() > 0)
+                    <div class="mt-4 space-y-3">
+                        @foreach($materiList as $mtr)
+                            <div class="p-3 rounded-xl bg-soft/50 border border-border-soft flex items-center justify-between gap-2.5">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <span class="w-8 h-8 rounded-lg {{ $mtr->jenis === 'file' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800' }} flex items-center justify-center shrink-0">
+                                        @if($mtr->jenis === 'file')
+                                            <x-icon name="document-text" class="w-4 h-4" />
+                                        @else
+                                            <x-icon name="arrow-top-right-on-square" class="w-4 h-4" />
+                                        @endif
+                                    </span>
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-bold text-darkgreen truncate">{{ $mtr->judul }}</p>
+                                        <p class="text-[10px] text-muted-text truncate">
+                                            {{ $mtr->mapel->nama ?? 'Mapel' }} &bull; {{ $mtr->guru->nama ?? 'Guru' }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                @if($mtr->jenis === 'file')
+                                    <a href="{{ route('materi.download', $mtr->id) }}" class="px-2.5 py-1 rounded-lg bg-forest text-white text-[11px] font-bold shrink-0 hover:bg-forest/90 transition-colors">
+                                        Unduh
+                                    </a>
+                                @else
+                                    <a href="{{ $mtr->tautan_url }}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-soft text-darkgreen text-[11px] font-bold shrink-0 hover:bg-border-soft/60 transition-colors">
+                                        Buka
+                                    </a>
+                                @endif
+                            </div>
+                        @endforeach
                     </div>
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-muted-text">Sakit (S):</span>
-                        <span class="font-bold text-blue-700">0 Kali</span>
+                @else
+                    <div class="py-8 text-center text-xs text-muted-text">
+                        Belum ada materi pembelajaran yang dibagikan untuk kelas Anda saat ini.
                     </div>
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-muted-text">Izin (I):</span>
-                        <span class="font-bold text-amber-700">0 Kali</span>
+                @endif
+            </div>
+
+            <!-- Card: Transparansi Rekap Absensi Pribadi (DIR-8: Read-Only) -->
+            <div class="bg-white rounded-2xl border border-emerald-300/80 p-5 sm:p-6 shadow-xs relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-forest/5 rounded-bl-full pointer-events-none"></div>
+                <div class="flex items-center justify-between pb-3 border-b border-border-soft">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-forest"></span>
+                        <h2 class="text-sm font-bold text-darkgreen">Rekapitulasi Kehadiran</h2>
                     </div>
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-muted-text">Tanpa Keterangan (A):</span>
-                        <span class="font-bold text-darkgreen">0 Kali</span>
+                    <span class="px-2 py-0.5 rounded-full bg-forest/10 text-forest text-[11px] font-bold">Pribadi</span>
+                </div>
+
+                <div class="py-4 space-y-2.5 text-xs">
+                    <div class="flex items-center justify-between">
+                        <span class="text-muted-text">Persentase Kehadiran:</span>
+                        <span class="font-bold {{ $persentaseKehadiran >= 85 ? 'text-emerald-700' : 'text-amber-600' }}">
+                            {{ $persentaseKehadiran }}%
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-muted-text">Hadir Tepat Waktu:</span>
+                        <span class="font-semibold text-emerald-700">{{ $totalHadir }} Pertemuan</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-muted-text">Sakit / Izin Resmi:</span>
+                        <span class="font-semibold text-blue-700">{{ $totalSakit }} Sakit / {{ $totalIzin }} Izin</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-muted-text">Tanpa Keterangan (Alpa):</span>
+                        <span class="font-bold {{ $totalAlpa > 0 ? 'text-rose-700' : 'text-muted-text' }}">
+                            {{ $totalAlpa }} Pertemuan
+                        </span>
                     </div>
                 </div>
 
                 <div class="pt-3 border-t border-border-soft">
-                    <a href="{{ route('siswa.absensi') }}" class="w-full block text-center py-2 rounded-xl bg-forest/10 hover:bg-forest/20 text-forest text-xs font-bold transition-colors">
-                        Lihat Riwayat Kehadiran Lengkap
+                    <a href="{{ route('siswa.absensi') }}" class="w-full py-2 rounded-xl bg-forest/10 hover:bg-forest/20 text-forest text-xs font-bold transition-colors block text-center">
+                        Buka Riwayat Absensi Lengkap
                     </a>
-                </div>
-            </div>
-
-            <!-- Card: Identitas Rombel & Kontak Sekolah -->
-            <div class="bg-white rounded-2xl border border-border-soft p-5 sm:p-6 shadow-xs">
-                <h3 class="text-sm font-bold text-darkgreen mb-3">Informasi Kelas &amp; Perwalian</h3>
-                
-                <div class="space-y-2.5 text-xs">
-                    <div class="flex justify-between">
-                        <span class="text-muted-text">Rombel:</span>
-                        <span class="font-bold text-darkgreen">Kelas VIII-B</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-muted-text">Wali Kelas:</span>
-                        <span class="font-bold text-forest">Budi Santoso, S.Pd.</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-muted-text">Ketua Kelas:</span>
-                        <span class="font-semibold text-darkgreen">Ahmad Rizky P. (Anda)</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-muted-text">Kurikulum:</span>
-                        <span class="font-semibold text-darkgreen">Kurikulum Merdeka</span>
-                    </div>
-                </div>
-
-                <div class="mt-4 pt-3 border-t border-border-soft text-[11px] text-muted-text leading-relaxed">
-                    Butuh bantuan kendala akademik? Silakan hubungi wali kelas atau ruang BK sekolah.
                 </div>
             </div>
 

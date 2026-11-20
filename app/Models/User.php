@@ -59,6 +59,15 @@ class User extends Authenticatable
         return $this->role === 'guru';
     }
 
+    public function isWaliKelas(?string $tasm = null): bool
+    {
+        if (!$this->isGuru() || !$this->id_guru) {
+            return false;
+        }
+
+        return $this->guru ? $this->guru->isWaliKelas($tasm) : false;
+    }
+
     public function isSiswa(): bool
     {
         return $this->role === 'siswa';
@@ -67,6 +76,11 @@ class User extends Authenticatable
     public function guru(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Guru::class, 'id_guru', 'id');
+    }
+
+    public function siswa(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Siswa::class, 'id_siswa', 'id');
     }
 
     public function dashboardUrl(): string

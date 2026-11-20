@@ -73,6 +73,17 @@ class Siswa extends Model
         return $this->hasOne(User::class, 'id_siswa', 'id');
     }
 
+    public function penempatanKelas(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(KelasSiswa::class, 'id_siswa', 'id');
+    }
+
+    public function kelasAktif(?string $ta = null)
+    {
+        $ta = $ta ?: Tahun::getTaAktif();
+        return $this->penempatanKelas()->where('ta', $ta)->with('kelas')->first();
+    }
+
     /**
      * Scope pencarian nama, NIS, atau NISN.
      */
@@ -100,6 +111,26 @@ class Siswa extends Model
 
         return $query;
     }
+
+/**
+ * Filter berdasarkan penempatan kelas (periode dan/atau kelas).
+ * Jika dua-duanya kosong, tidak ada filter (semua siswa tampil).
+ */
+public function scopePenempatan($query, ?string $ta = null, $idKelas = null)
+{
+    if (!empty($ta) || !empty($idKelas)) {
+        $query->whereHas('penempatanKelas', function ($sub) use ($ta, $idKelas) {
+            if (!empty($ta)) {
+                $sub->where('ta', $ta);
+            }
+            if (!empty($idKelas)) {
+                $sub->where('id_kelas', $idKelas);
+            }
+        });
+    }
+
+    return $query;
+}
 
     /**
      * Helper untuk format tanggal yang aman (menghindari '0000-00-00').

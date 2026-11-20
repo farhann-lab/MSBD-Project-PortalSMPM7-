@@ -172,46 +172,47 @@
                     </div>
                 </div>
 
-                <!-- Recent Content Activity / Monitoring -->
+                <!-- Recent Content Activity / Monitoring (DSH-4, CMS-LOG-001) -->
                 <div class="p-6 rounded-3xl bg-white border border-border-soft shadow-xs space-y-4">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 class="text-base font-bold text-darkgreen">Aktivitas Terkini Konten & Data</h3>
-                            <p class="text-xs text-muted-text">Status sinkronisasi data master dan publikasi</p>
+                            <h3 class="text-base font-bold text-darkgreen">Aktivitas Terkini Konten & Data (Log Aktivitas)</h3>
+                            <p class="text-xs text-muted-text">Riwayat aksi pengelolaan konten CMS dan operasional</p>
                         </div>
                     </div>
 
                     <div class="divide-y divide-border-soft text-xs">
-                        <div class="py-3 flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                                <div>
-                                    <p class="font-semibold text-darkgreen">Struktur Organisasi & Profil Diperbarui</p>
-                                    <p class="text-[11px] text-muted-text">Halaman profil sekolah siap diakses publik</p>
+                        @forelse($aktivitasTerkini ?? [] as $log)
+                            @php
+                                $dotColor = match($log->aksi) {
+                                    'tambah', 'terbit' => 'bg-emerald-500',
+                                    'ubah' => 'bg-blue-500',
+                                    'hapus' => 'bg-rose-500',
+                                    default => 'bg-amber-500',
+                                };
+                            @endphp
+                            <div class="py-3 flex items-start justify-between gap-4">
+                                <div class="flex items-start gap-3 min-w-0">
+                                    <span class="w-2 h-2 rounded-full {{ $dotColor }} shrink-0 mt-1.5"></span>
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-darkgreen truncate">
+                                            {{ $log->ringkasan ?: ucfirst($log->aksi) . ' ' . $log->entity_type }}
+                                        </p>
+                                        <p class="text-[11px] text-muted-text">
+                                            Oleh: <span class="font-medium text-darkgreen">{{ $log->user->nama ?? ($log->user->username ?? 'Sistem') }}</span>
+                                            &bull; Entitas: <span class="uppercase tracking-wider font-semibold">{{ $log->entity_type }}</span>
+                                        </p>
+                                    </div>
                                 </div>
+                                <span class="text-[11px] text-muted-text shrink-0 font-medium">
+                                    {{ $log->created_at ? $log->created_at->diffForHumans() : '-' }}
+                                </span>
                             </div>
-                            <span class="text-muted-text">Hari ini</span>
-                        </div>
-                        <div class="py-3 flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                                <div>
-                                    <p class="font-semibold text-darkgreen">Data 356 Siswa Aktif Terverifikasi</p>
-                                    <p class="text-[11px] text-muted-text">10 Rombongan Belajar terisi lengkap</p>
-                                </div>
+                        @empty
+                            <div class="py-4 text-center text-xs text-muted-text italic">
+                                Belum ada aktivitas konten tercatat di sistem.
                             </div>
-                            <span class="text-muted-text">Kemarin</span>
-                        </div>
-                        <div class="py-3 flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                                <div>
-                                    <p class="font-semibold text-darkgreen">17 Guru Pengampu Terjadwal</p>
-                                    <p class="text-[11px] text-muted-text">Penugasan jadwal semester ganjil aktif</p>
-                                </div>
-                            </div>
-                            <span class="text-muted-text">2 hari lalu</span>
-                        </div>
+                        @endforelse
                     </div>
                 </div>
 

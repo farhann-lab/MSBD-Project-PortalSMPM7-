@@ -19,7 +19,7 @@ class AdminFasilitasController extends Controller
     /**
      * Status yang boleh dipilih saat mengedit fasilitas.
      */
-    private const STATUS_EDIT = ['published', 'archived'];
+    private const STATUS_EDIT = ['draft', 'published', 'archived'];
 
     /**
      * Tampilkan daftar fasilitas dengan filter status dan pencarian.

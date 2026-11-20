@@ -38,6 +38,22 @@ class Guru extends Model
         return $this->hasOne(User::class, 'id_guru', 'id');
     }
 
+    public function waliKelas(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Walikelas::class, 'id_guru', 'id');
+    }
+
+    public function guruMapel(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(GuruMapel::class, 'id_guru', 'id');
+    }
+
+    public function isWaliKelas(?string $tasm = null): bool
+    {
+        $tasm = $tasm ?: Tahun::getTasmAktif();
+        return $this->waliKelas()->where('tasm', $tasm)->exists();
+    }
+
     /**
      * Scope untuk memfilter guru yang aktif mengajar ('A').
      */

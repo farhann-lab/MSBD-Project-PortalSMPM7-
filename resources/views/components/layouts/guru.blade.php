@@ -2,9 +2,29 @@
     'title' => 'Dashboard Guru',
     'breadcrumbs' => [],
     'activeMenu' => 'dashboard',
-    'isWaliKelas' => true,
-    'kelasPerwalian' => 'VIII-B',
+    'isWaliKelas' => null,
+    'kelasPerwalian' => null,
 ])
+
+@php
+    $currentUser = auth()->user();
+    $currentGuru = $currentUser?->guru;
+    $tasmAktif = \App\Models\Tahun::getTasmAktif();
+
+    if (is_null($isWaliKelas)) {
+        if ($currentGuru) {
+            $waliRecord = \App\Models\Walikelas::with('kelas')
+                ->where('id_guru', $currentGuru->id)
+                ->where('tasm', $tasmAktif)
+                ->first();
+            $isWaliKelas = !is_null($waliRecord);
+            $kelasPerwalian = $waliRecord ? ($waliRecord->kelas->nama ?? '-') : '';
+        } else {
+            $isWaliKelas = false;
+            $kelasPerwalian = '';
+        }
+    }
+@endphp
 
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-soft">

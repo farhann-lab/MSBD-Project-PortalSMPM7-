@@ -2,27 +2,11 @@
     title="Absensi Saya" 
     activeMenu="absensi-siswa"
     :breadcrumbs="[
+        ['label' => 'Siswa', 'url' => route('dashboard.siswa')],
         ['label' => 'Absensi Saya', 'url' => route('siswa.absensi')],
     ]"
-    kelasSiswa="VIII-B"
+    :kelasSiswa="'Kelas ' . $kelasNama"
 >
-    @php
-        // Riwayat absensi siswa pribadi (Ahmad Rizky Pratama - NIS 2401)
-        // Siswa hanya melihat riwayat miliknya (DESIGN.md Section 10.4 & 11)
-        $riwayatPresensi = [
-            ['tanggal' => '07 Nov 2026', 'hari' => 'Kamis', 'mapel' => 'Pendidikan Pancasila & Kewarganegaraan', 'jam' => '07.30 - 09.00', 'status' => 'H', 'keterangan' => 'Hadir tepat waktu'],
-            ['tanggal' => '07 Nov 2026', 'hari' => 'Kamis', 'mapel' => 'Seni Budaya & Prakarya', 'jam' => '09.30 - 11.00', 'status' => 'H', 'keterangan' => 'Hadir tepat waktu'],
-            ['tanggal' => '06 Nov 2026', 'hari' => 'Rabu', 'mapel' => 'IPA Terpadu (Praktikum)', 'jam' => '07.30 - 09.00', 'status' => 'H', 'keterangan' => 'Hadir tepat waktu'],
-            ['tanggal' => '06 Nov 2026', 'hari' => 'Rabu', 'mapel' => 'Informatika / TIK', 'jam' => '09.30 - 11.00', 'status' => 'H', 'keterangan' => 'Hadir tepat waktu'],
-            ['tanggal' => '06 Nov 2026', 'hari' => 'Rabu', 'mapel' => 'Ilmu Pengetahuan Sosial', 'jam' => '11.15 - 12.45', 'status' => 'H', 'keterangan' => 'Hadir tepat waktu'],
-            ['tanggal' => '05 Nov 2026', 'hari' => 'Selasa', 'mapel' => 'Pendidikan Agama Islam', 'jam' => '07.30 - 09.00', 'status' => 'H', 'keterangan' => 'Hadir tepat waktu'],
-            ['tanggal' => '05 Nov 2026', 'hari' => 'Selasa', 'mapel' => 'Bahasa Inggris', 'jam' => '09.30 - 11.00', 'status' => 'H', 'keterangan' => 'Hadir tepat waktu'],
-            ['tanggal' => '05 Nov 2026', 'hari' => 'Selasa', 'mapel' => 'Pendidikan Jasmani', 'jam' => '11.15 - 12.45', 'status' => 'H', 'keterangan' => 'Hadir tepat waktu'],
-            ['tanggal' => '04 Nov 2026', 'hari' => 'Senin', 'mapel' => 'Matematika', 'jam' => '07.30 - 09.00', 'status' => 'H', 'keterangan' => 'Hadir tepat waktu'],
-            ['tanggal' => '04 Nov 2026', 'hari' => 'Senin', 'mapel' => 'Bahasa Indonesia', 'jam' => '09.30 - 11.00', 'status' => 'H', 'keterangan' => 'Hadir tepat waktu'],
-        ];
-    @endphp
-
     <div class="space-y-6">
 
         <!-- Header Card -->
@@ -30,15 +14,15 @@
             <div>
                 <div class="flex items-center gap-2 mb-1">
                     <span class="px-2.5 py-0.5 rounded-full bg-forest text-white text-xs font-bold uppercase tracking-wider">
-                        Rekapitulasi Kehadiran Pribadi
+                        Rekapitulasi Kehadiran Pribadi (SSW-5, SSW-6)
                     </span>
-                    <span class="text-xs text-muted-text">&bull; Semester Ganjil 2026/2027</span>
+                    <span class="text-xs text-muted-text">&bull; Semester {{ $selectedTasm }}</span>
                 </div>
                 <h1 class="text-xl sm:text-2xl font-black text-darkgreen tracking-tight">
                     Catatan Kehadiran &amp; Presensi Saya
                 </h1>
                 <p class="text-xs sm:text-sm text-muted-text mt-1">
-                    Pantau catatan presensi harian dari seluruh guru mata pelajaran yang mengajar di kelas VIII-B.
+                    Rekaman kehadiran per sesi pertemuan dari seluruh mata pelajaran yang Anda ikuti di Kelas {{ $kelasNama }}.
                 </p>
             </div>
 
@@ -50,91 +34,125 @@
             </div>
         </div>
 
-        <!-- Metric Stat Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            
-            <div class="bg-white p-5 rounded-2xl border border-border-soft shadow-xs">
-                <p class="text-xs font-medium text-muted-text uppercase tracking-wider">Persentase Kehadiran</p>
-                <p class="text-2xl font-black text-emerald-700 mt-1">100%</p>
-                <p class="text-[11px] text-emerald-600 font-semibold mt-1">Predikat Disiplin Sempurna</p>
+        <!-- Attendance Metrics Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            <div class="p-5 rounded-2xl bg-white border border-border-soft shadow-xs col-span-2 lg:col-span-1">
+                <span class="text-xs font-semibold uppercase tracking-wider text-muted-text">Persentase Hadir</span>
+                <div class="text-2xl font-black text-darkgreen mt-1">{{ $persentaseKehadiran }}%</div>
+                <span class="text-[11px] text-muted-text mt-0.5 block">Total: {{ $totalPertemuan }} Pertemuan</span>
             </div>
 
-            <div class="bg-white p-5 rounded-2xl border border-border-soft shadow-xs">
-                <p class="text-xs font-medium text-muted-text uppercase tracking-wider">Total Hadir (H)</p>
-                <p class="text-2xl font-black text-emerald-700 mt-1">48 <span class="text-xs font-semibold text-muted-text">Pertemuan</span></p>
-                <p class="text-[11px] text-muted-text mt-1">Hadir penuh di semua sesi</p>
+            <div class="p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200 shadow-xs">
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-800">Hadir (H)</span>
+                <div class="text-2xl font-black text-emerald-700 mt-1">{{ $totalHadir }}</div>
+                <span class="text-[11px] text-emerald-700/80 mt-0.5 block">Mengikuti pelajaran</span>
             </div>
 
-            <div class="bg-white p-5 rounded-2xl border border-border-soft shadow-xs">
-                <p class="text-xs font-medium text-muted-text uppercase tracking-wider">Sakit (S) / Izin (I)</p>
-                <p class="text-2xl font-black text-darkgreen mt-1">0 <span class="text-xs font-semibold text-muted-text">Kali</span></p>
-                <p class="text-[11px] text-muted-text mt-1">Tidak ada izin/sakit</p>
+            <div class="p-5 rounded-2xl bg-blue-50/70 border border-blue-200 shadow-xs">
+                <span class="text-xs font-bold uppercase tracking-wider text-blue-800">Sakit (S)</span>
+                <div class="text-2xl font-black text-blue-700 mt-1">{{ $totalSakit }}</div>
+                <span class="text-[11px] text-blue-700/80 mt-0.5 block">Surat izin sakit</span>
             </div>
 
-            <div class="bg-white p-5 rounded-2xl border border-border-soft shadow-xs">
-                <p class="text-xs font-medium text-muted-text uppercase tracking-wider">Alpa (A)</p>
-                <p class="text-2xl font-black text-darkgreen mt-1">0 <span class="text-xs font-semibold text-muted-text">Kali</span></p>
-                <p class="text-[11px] text-muted-text mt-1">Kepatuhan kehadiran optimal</p>
+            <div class="p-5 rounded-2xl bg-amber-50/70 border border-amber-200 shadow-xs">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-800">Izin (I)</span>
+                <div class="text-2xl font-black text-amber-700 mt-1">{{ $totalIzin }}</div>
+                <span class="text-[11px] text-amber-700/80 mt-0.5 block">Izin keperluan</span>
             </div>
 
+            <div class="p-5 rounded-2xl bg-rose-50/70 border border-rose-200 shadow-xs">
+                <span class="text-xs font-bold uppercase tracking-wider text-rose-800">Alpa (A)</span>
+                <div class="text-2xl font-black text-rose-700 mt-1">{{ $totalAlpa }}</div>
+                <span class="text-[11px] text-rose-700/80 mt-0.5 block">Tanpa keterangan</span>
+            </div>
         </div>
 
-        <!-- Table Riwayat Presensi -->
+        <!-- Tabel Catatan Presensi Siswa -->
         <div class="bg-white rounded-3xl border border-border-soft shadow-xs overflow-hidden">
-            <div class="p-5 border-b border-border-soft flex items-center justify-between">
-                <h2 class="text-sm font-bold text-darkgreen">
-                    Riwayat Presensi Tatap Muka Terakhir
-                </h2>
-                <span class="text-xs text-muted-text font-medium">
-                    10 Pertemuan Terakhir
-                </span>
+            <div class="bg-soft/75 px-6 py-4 border-b border-border-soft flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-forest"></span>
+                    <h3 class="font-bold text-darkgreen text-sm sm:text-base">
+                        Riwayat Pertemuan &amp; Presensi Harian
+                    </h3>
+                </div>
+                <span class="text-xs text-muted-text font-medium">{{ $riwayatAbsensi->count() }} Pertemuan Tercatat</span>
             </div>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs sm:text-sm divide-y divide-border-soft">
-                    <thead class="bg-soft/75 text-darkgreen font-bold text-xs uppercase tracking-wider">
+                    <thead class="bg-white text-muted-text font-semibold uppercase text-[11px] tracking-wider">
                         <tr>
-                            <th class="py-3.5 px-4 sm:px-6 w-14">No</th>
-                            <th class="py-3.5 px-4 sm:px-6 w-36">Tanggal</th>
-                            <th class="py-3.5 px-4 sm:px-6">Mata Pelajaran</th>
-                            <th class="py-3.5 px-4 sm:px-6 w-32">Waktu Sesi</th>
-                            <th class="py-3.5 px-4 sm:px-6 text-center w-28">Status</th>
-                            <th class="py-3.5 px-4 sm:px-6">Keterangan</th>
+                            <th class="py-3 px-4 sm:px-6 w-16">No</th>
+                            <th class="py-3 px-4 sm:px-6 w-32">Tanggal & Sesi</th>
+                            <th class="py-3 px-4 sm:px-6">Mata Pelajaran</th>
+                            <th class="py-3 px-4 sm:px-6">Guru Pengampu</th>
+                            <th class="py-3 px-4 sm:px-6 w-32 text-center">Status</th>
+                            <th class="py-3 px-4 sm:px-6">Keterangan</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-border-soft/60">
-                        @foreach($riwayatPresensi as $index => $row)
+                    <tbody class="divide-y divide-border-soft">
+                        @forelse($riwayatAbsensi as $idx => $item)
+                            @php
+                                $pt = $item->pertemuan;
+                                $jdw = $pt->jadwal ?? null;
+                                $gm = $jdw->guruMapel ?? null;
+                                
+                                $badgeClass = match($item->status) {
+                                    'H' => 'bg-emerald-100 text-emerald-800 border-emerald-200',
+                                    'S' => 'bg-blue-100 text-blue-800 border-blue-200',
+                                    'I' => 'bg-amber-100 text-amber-800 border-amber-200',
+                                    'A' => 'bg-rose-100 text-rose-800 border-rose-200',
+                                    default => 'bg-soft text-muted-text',
+                                };
+                                
+                                $statusLabel = match($item->status) {
+                                    'H' => 'Hadir',
+                                    'S' => 'Sakit',
+                                    'I' => 'Izin',
+                                    'A' => 'Alpa',
+                                    default => '-',
+                                };
+                            @endphp
                             <tr class="hover:bg-soft/40 transition-colors">
-                                <td class="py-3.5 px-4 sm:px-6 font-medium text-muted-text">
-                                    {{ $index + 1 }}
+                                <td class="py-3.5 px-4 sm:px-6 font-bold text-forest">
+                                    {{ $idx + 1 }}
                                 </td>
-                                <td class="py-3.5 px-4 sm:px-6 font-medium text-darkgreen">
-                                    {{ $row['tanggal'] }}
-                                    <span class="block text-[11px] text-muted-text">{{ $row['hari'] }}</span>
+                                <td class="py-3.5 px-4 sm:px-6">
+                                    <div class="font-mono text-xs font-semibold text-darkgreen">
+                                        {{ \Carbon\Carbon::parse($pt->tanggal)->translatedFormat('d M Y') }}
+                                    </div>
+                                    <div class="text-[11px] text-muted-text">Pertemuan Ke-{{ $pt->sesi_ke }}</div>
                                 </td>
-                                <td class="py-3.5 px-4 sm:px-6 font-bold text-darkgreen">
-                                    {{ $row['mapel'] }}
+                                <td class="py-3.5 px-4 sm:px-6">
+                                    <div class="font-bold text-darkgreen">
+                                        {{ $gm->mapel->nama ?? '-' }}
+                                    </div>
+                                    <div class="text-[11px] text-muted-text">
+                                        {{ $jdw ? substr($jdw->jam_mulai, 0, 5) . ' - ' . substr($jdw->jam_selesai, 0, 5) : '-' }}
+                                    </div>
                                 </td>
-                                <td class="py-3.5 px-4 sm:px-6 font-mono text-xs text-muted-text">
-                                    {{ $row['jam'] }}
+                                <td class="py-3.5 px-4 sm:px-6 text-muted-text font-medium">
+                                    {{ $gm->guru->nama ?? '-' }}
                                 </td>
                                 <td class="py-3.5 px-4 sm:px-6 text-center">
-                                    <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200">
-                                        Hadir
+                                    <span class="px-2.5 py-1 rounded-full text-xs font-bold border {{ $badgeClass }}">
+                                        {{ $statusLabel }}
                                     </span>
                                 </td>
-                                <td class="py-3.5 px-4 sm:px-6 text-xs text-muted-text">
-                                    {{ $row['keterangan'] }}
+                                <td class="py-3.5 px-4 sm:px-6 text-muted-text text-xs">
+                                    {{ $item->keterangan ?: '-' }}
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="6" class="py-8 px-4 text-center text-xs text-muted-text italic">
+                                    Belum ada rekaman kehadiran presensi pada semester ini.
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
-            </div>
-
-            <div class="p-5 border-t border-border-soft flex items-center justify-between text-xs text-muted-text">
-                <span>Data tersinkronisasi langsung saat guru mata pelajaran mengisi absensi</span>
-                <span>Siswa hanya dapat melihat riwayat kehadiran pribadi (DESIGN.md 11)</span>
             </div>
         </div>
 

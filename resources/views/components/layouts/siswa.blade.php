@@ -2,8 +2,23 @@
     'title' => 'Dashboard Siswa',
     'breadcrumbs' => [],
     'activeMenu' => 'dashboard',
-    'kelasSiswa' => 'VIII-B',
+    'kelasSiswa' => null,
 ])
+
+@php
+    $currentUser = auth()->user();
+    $currentSiswa = $currentUser?->siswa;
+    $taAktif = \App\Models\Tahun::getTaAktif();
+
+    if (is_null($kelasSiswa)) {
+        if ($currentSiswa) {
+            $penempatan = $currentSiswa->kelasAktif($taAktif);
+            $kelasSiswa = $penempatan ? ($penempatan->kelas->nama ?? '-') : '-';
+        } else {
+            $kelasSiswa = '-';
+        }
+    }
+@endphp
 
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-soft">

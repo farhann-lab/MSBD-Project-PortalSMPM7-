@@ -20,9 +20,13 @@ class AdminImporSiswaController extends Controller
      */
     public function downloadTemplate(): BinaryFileResponse
     {
-        $path = storage_path('app/private/import_siswa.xls');
+        $path = database_path('templates/import_siswa.xls');
         if (!file_exists($path)) {
-            abort(404, 'File template import_siswa.xls tidak ditemukan.');
+            $path = storage_path('app/private/import_siswa.xls');
+        }
+
+        if (!file_exists($path)) {
+            abort(404, 'File template import_siswa.xls tidak ditemukan di database/templates/ maupun storage/app/private/.');
         }
 
         return response()->download($path, 'template_impor_siswa_smpm7.xls', [

@@ -231,7 +231,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [AUTH-003] Halaman Profil Pengguna (Guru & Siswa)
 - **Phase:** Phase 2 / Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🔧 Infrastruktur (semua role)
 - **Category:** Authentication & Profile
 - **Description:** Membangun halaman profil yang menampilkan informasi pengguna yang diizinkan, diambil dari data master berdasarkan ID yang terhubung ke akun. Guru melihat profil dari `m_guru`, siswa dari `m_siswa`.
@@ -242,10 +242,10 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Siswa melihat: nama, NIS, kelas aktif — data dari `m_siswa` dan `t_kelas_siswa`. Tidak menampilkan tanggal lahir, alamat, atau data orang tua.
   - Halaman profil hanya menampilkan data yang diizinkan (DIR-8 berlaku).
 - **Acceptance Criteria:**
-  - [ ] Guru dapat melihat profil dasar dari data master.
-  - [ ] Siswa dapat melihat profil dasar dan kelas aktifnya.
-  - [ ] Data sensitif tidak tampil (NIP tersembunyi jika tidak diperlukan; NIK, alamat, tanggal lahir tidak ditampilkan ke siswa lain).
-- **Verification:** Login sebagai guru dan siswa, buka menu profil, verifikasi data yang tampil sesuai aturan.
+  - [x] Guru dapat melihat profil dasar dari data master.
+  - [x] Siswa dapat melihat profil dasar dan kelas aktifnya.
+  - [x] Data sensitif tidak tampil (NIP tersembunyi jika tidak diperlukan; NIK, alamat, tanggal lahir tidak ditampilkan ke siswa lain).
+- **Verification:** `tests/Feature/UserProfileTest.php` (3 test cases lulus 100%).
 
 ---
 
@@ -368,7 +368,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [CMS-LOG-001] Pencatatan Log Aktivitas Pengelolaan Konten Publik
 - **Phase:** Phase 3
 - **Priority:** P2
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** CMS & Audit
 - **Description:** Mengimplementasikan pencatatan riwayat aktivitas aksi admin pada modul berita, pengumuman, fasilitas, galeri, dan prestasi ke tabel `siakad_log_aktivitas` (siapa, jenis konten, aksi: tambah/ubah/hapus/terbit, waktu) sesuai ADM-11.
@@ -378,8 +378,8 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Dapat dipicu via Model Observer / Event Listener Eloquent saat konten dibuat, diubah, atau dihapus.
   - Data log ini menjadi sumber data yang ditampilkan di feed aktivitas Dashboard Admin (`DSH-4`).
 - **Acceptance Criteria:**
-  - [ ] Setiap aksi CRUD konten publik otomatis mencatat baris baru di `siakad_log_aktivitas`.
-- **Verification:** Buat atau edit 1 artikel berita, lalu periksa tabel `siakad_log_aktivitas`.
+  - [x] Setiap aksi CRUD konten publik otomatis mencatat baris baru di `siakad_log_aktivitas`.
+- **Verification:** `tests/Feature/AdminCmsLogAktivitasTest.php` (4 test cases lulus 100%).
 
 ---
 
@@ -472,7 +472,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [MASTER-AKD-001] Manajemen Kelas, Penempatan Siswa, & Penetapan Wali Kelas
 - **Phase:** Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Academic Management
 - **Description:** Mengelola data rombel (`m_kelas`), penempatan siswa per tahun ajaran (`t_kelas_siswa`), penetapan wali kelas per periode (`t_walikelas`), serta modal salin wali kelas antar-periode.
@@ -481,18 +481,22 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 - **Implementation Notes:**
   - Penempatan siswa disimpan per tahun ajaran (`ta` 4-digit).
   - Wali kelas disimpan per semester (`tasm` 5-digit).
-  - Terdapat modal "Salin Wali Kelas dari Periode Sebelumnya" yang memanggil `sp_salin_walikelas`.
+  - Terdapat modal "Salin Wali Kelas dari Periode Sebelumnya" yang memanggil `sp_salin_walikelas` dengan fallback Eloquent transaksi.
+  - Model `Kelas`, `KelasSiswa`, `Walikelas`, `Tahun` dibuat tanpa mengubah skema DDL RKM.
+  - Proteksi dependensi: kelas tidak dapat dihapus jika masih terkait data siswa atau wali kelas (KLS-4).
+  - Proteksi duplikasi penempatan siswa di TA yang sama (PNS-5).
+  - Proteksi 1 kelas 1 wali & 1 guru 1 wali per semester (PWK-2, PWK-3).
 - **Acceptance Criteria:**
-  - [ ] Admin dapat memindahkan siswa ke rombel kelas.
-  - [ ] Guru yang ditugaskan sebagai wali kelas otomatis memperoleh hak akses menu wali kelas saat login.
-- **Verification:** Tetapkan seorang guru sebagai wali kelas 7A, login dengan akun guru tersebut, dan verifikasi munculnya menu wali kelas.
+  - [x] Admin dapat memindahkan siswa ke rombel kelas.
+  - [x] Guru yang ditugaskan sebagai wali kelas otomatis memperoleh hak akses menu wali kelas saat login.
+- **Verification:** `tests/Feature/AdminAkademikKelasTest.php` (8 test cases lulus 100%).
 
 ---
 
 #### [MASTER-AKD-002] Manajemen Mata Pelajaran & Penugasan Mengajar Guru
 - **Phase:** Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Academic Management
 - **Description:** Mengelola kurikulum mapel (`m_mapel`), penugasan guru per kelas dan semester (`t_guru_mapel`), modal salin penugasan antar-semester, dan pengecekan dependensi nilai sebelum penonaktifan.
@@ -500,19 +504,20 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 - **Dependencies:** `MASTER-GRU-001`, `MASTER-AKD-001`
 - **Implementation Notes:**
   - Penugasan guru berlaku per periode semester (`tasm`).
-  - Fitur salin penugasan memanggil `sp_salin_penugasan_guru` dengan modal konfirmasi jumlah baris.
-  - PGS-7: Penugasan yang sudah memiliki nilai di RKM (`t_nilai*`) dilarang dihapus (hanya dinonaktifkan).
+  - Fitur salin penugasan memanggil `sp_salin_penugasan_guru` dengan modal konfirmasi dan fallback transaksi Eloquent.
+  - PGS-7: Penugasan yang sudah memiliki rekaman nilai di RKM (`t_nilai*`) dilarang dihapus (hasNilaiDependencies checking).
+  - MPL-4: Mapel yang masih memiliki penugasan guru dilindungi dari penghapusan.
 - **Acceptance Criteria:**
-  - [ ] Penugasan guru dapat disalin antar-semester dengan 1 klik konfirmasi.
-  - [ ] Penugasan yang telah terkait rekaman nilai terlindungi dari penghapusan.
-- **Verification:** Uji salin penugasan dari periode 20241 ke 20242.
+  - [x] Penugasan guru dapat disalin antar-semester dengan 1 klik konfirmasi.
+  - [x] Penugasan yang telah terkait rekaman nilai terlindungi dari penghapusan.
+- **Verification:** `tests/Feature/AdminAkademikMapelPenugasanTest.php` (7 test cases lulus 100%).
 
 ---
 
 #### [MASTER-TAJ-001] Manajemen Periode Tahun Ajaran & Semester
 - **Phase:** Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Academic Management
 - **Description:** Membangun antarmuka pengelolaan data periode tahun ajaran pada tabel `tahun` (tasm 5-karakter), pergantian periode aktif via `sp_set_periode_aktif(tasm)`, serta penetapan tanggal tanda tangan rapor kepsek sesuai TAJ-1 s.d. TAJ-5.
@@ -520,31 +525,33 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 - **Dependencies:** `DASH-001`, `DB-SP-001`
 - **Implementation Notes:**
   - Menampilkan daftar periode dengan penanda jelas mana yang sedang aktif (`aktif = 'Y'`).
-  - Form tambah tahun ajaran baru: kode periode `tasm`, nama kepsek, NIP, tanggal cetak rapor kelas 7/8 dan kelas 9.
-  - Aksi aktivasi memanggil stored procedure `sp_set_periode_aktif(tasm)` yang menonaktifkan periode lama dan mengaktifkan yang baru dalam 1 transaksi.
+  - Form tambah tahun ajaran baru: kode periode `tasm` (5-digit regex), nama kepsek, NIP, tanggal cetak rapor kelas 7/8 dan kelas 9.
+  - Aksi aktivasi memanggil stored procedure `sp_set_periode_aktif(tasm)` dengan fallback transaksi atomik Eloquent.
+  - Model `Tahun` diperkaya dengan accessor semester, nama_lengkap, dan helper `Tahun::getAktif()`, `getTasmAktif()`, `getTaAktif()`.
 - **Acceptance Criteria:**
-  - [ ] Admin dapat melihat dan menambah periode tahun ajaran baru.
-  - [ ] Aktivasi periode mengubah indikator periode aktif di seluruh sistem seketika.
-- **Verification:** Buat periode baru dan aktifkan, verifikasi topbar menampilkan periode baru tersebut.
+  - [x] Admin dapat melihat dan menambah periode tahun ajaran baru.
+  - [x] Aktivasi periode mengubah indikator periode aktif di seluruh sistem seketika.
+- **Verification:** `tests/Feature/AdminTahunAjaranTest.php` (5 test cases lulus 100%).
 
 ---
 
 #### [MASTER-AKN-002] Pembuatan Akun Satuan Guru & Siswa oleh Admin
 - **Phase:** Phase 4
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Master Data & Auth
 - **Description:** Memfasilitasi pembuatan akun login secara individual untuk guru atau siswa baru yang belum berakun langsung dari daftar master masing-masing (AKN-1 & AKN-2).
 - **Source Requirements:** `PRD.md` AKN-1, AKN-2; `DESIGN.md` Bab 11.
 - **Dependencies:** `MASTER-GRU-001`, `MASTER-SIS-001`
 - **Implementation Notes:**
-  - Pada baris guru yang belum punya akun di menu Data Guru, sediakan tombol "Buat Akun" (tentukan username, generate password awal acak).
-  - Pada baris siswa yang belum punya akun di menu Data Siswa, sediakan tombol "Buat Akun" (username otomatis = NIS, password acak, flag wajib_ganti_password=1).
+  - Pada baris guru yang belum punya akun di menu Data Guru, disediakan tombol "Buat Akun" (tentukan username, generate password awal acak).
+  - Pada baris siswa yang belum punya akun di menu Data Siswa, disediakan tombol "Buat Akun" (username otomatis = NIS, password acak, flag wajib_ganti_password=1).
+  - Modal hasil kredensial sementara satu kali tampil dengan tombol salin teks.
 - **Acceptance Criteria:**
-  - [ ] Admin dapat mengaktifkan akun untuk seorang guru tertentu yang belum memiliki akun.
-  - [ ] Admin dapat mengaktifkan akun untuk seorang siswa tertentu dengan username NIS.
-- **Verification:** Buat akun untuk 1 siswa secara manual dan uji coba login dengan kredensial tersebut.
+  - [x] Admin dapat mengaktifkan akun untuk seorang guru tertentu yang belum memiliki akun.
+  - [x] Admin dapat mengaktifkan akun untuk seorang siswa tertentu dengan username NIS.
+- **Verification:** `tests/Feature/AdminAkunSatuanTest.php` (3 test cases lulus 100%).
 
 ---
 
@@ -555,7 +562,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [OPS-JDW-001] Manajemen Jadwal Pelajaran & Deteksi Bentrok
 - **Phase:** Phase 5
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Learning Operations
 - **Description:** Membangun antarmuka pembuatan jadwal pelajaran per rombel (hari, jam mulai, jam selesai, penugasan mapel) dengan validasi pencegahan bentrok guru dan kelas.
@@ -566,16 +573,16 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Dilengkapi fitur salin jadwal antar-periode via `sp_salin_jadwal`.
   - Validasi bentrok dicek di aplikasi dan dijaga ketat oleh trigger database `trg_cegah_bentrok_jadwal_*`.
 - **Acceptance Criteria:**
-  - [ ] Jadwal mingguan per kelas tampil dalam format grid yang mudah dibaca.
-  - [ ] Pendaftaran jadwal bentrok ditolak dengan notifikasi kesalahan yang jelas.
-- **Verification:** Coba input jadwal guru A di kelas 7A dan 7B pada hari Senin jam 08.00–09.20.
+  - [x] Jadwal mingguan per kelas tampil dalam format grid yang mudah dibaca.
+  - [x] Pendaftaran jadwal bentrok ditolak dengan notifikasi kesalahan yang jelas.
+- **Verification:** `tests/Feature/AdminJadwalPelajaranTest.php` (3 test cases lulus 100%).
 
 ---
 
 #### [ADMIN-PAS-001] Pemantauan Absensi Siswa oleh Admin
 - **Phase:** Phase 5
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Learning Operations & Monitoring
 - **Description:** Membangun antarmuka khusus admin untuk memantau absensi siswa seluruh kelas dengan filter rombel, guru pengampu, mapel, dan rentang tanggal. Menampilkan daftar pertemuan yang sudah dan belum diabsen (`v_pertemuan_tanpa_absensi`), serta rekap ketidakhadiran (PAS-1 s.d. PAS-5).
@@ -585,16 +592,16 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Admin HANYA membaca dan memantau, tidak mengubah data absensi guru (PAS-5).
   - Terdapat indikator visual kelas/mapel yang belum menginput absensi pada hari ini/minggu ini.
 - **Acceptance Criteria:**
-  - [ ] Admin dapat memfilter dan melihat status pengisian absensi seluruh kelas.
-  - [ ] Muncul peringatan jelas untuk sesi pertemuan yang terlewat tanpa absensi.
-- **Verification:** Buka menu `/admin/pemantauan-absensi` dan periksa kelengkapan data sesi tanpa absensi.
+  - [x] Admin dapat memfilter dan melihat status pengisian absensi seluruh kelas.
+  - [x] Muncul peringatan jelas untuk sesi pertemuan yang terlewat tanpa absensi.
+- **Verification:** `tests/Feature/AdminPemantauanAbsensiTest.php` (3 test cases lulus 100%).
 
 ---
 
 #### [OPS-ABS-001] Sesi Pertemuan & Pencatatan Presensi Siswa per Pertemuan
 - **Phase:** Phase 5
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 👨‍🏫 Panel Guru
 - **Category:** Learning Operations
 - **Description:** Membangun modul presensi bagi guru untuk membuka sesi pertemuan (`siakad_pertemuan`) berdasarkan jadwal dan menginput status kehadiran siswa (Hadir, Sakit, Izin, Alpa) ke `siakad_absensi_siswa`.
@@ -604,16 +611,16 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Menggunakan `INSERT ... ON DUPLICATE KEY UPDATE` untuk mencegah baris ganda saat guru menyimpan ulang absensi.
   - Rekap persentase kehadiran otomatis terhitung untuk setiap siswa.
 - **Acceptance Criteria:**
-  - [ ] Guru dapat mengisi dan memperbarui status kehadiran rombel dengan cepat.
-  - [ ] Siswa hanya dapat melihat rekaman kehadirannya sendiri di dashboard siswa.
-- **Verification:** Login sebagai guru, pilih jadwal hari ini, buka sesi pertemuan 1, isi absensi, lalu cek rekap di akun siswa terkait.
+  - [x] Guru dapat mengisi dan memperbarui status kehadiran rombel dengan cepat.
+  - [x] Siswa hanya dapat melihat rekaman kehadirannya sendiri di dashboard siswa.
+- **Verification:** `tests/Feature/GuruAbsensiSiswaTest.php` (4 test cases lulus 100%).
 
 ---
 
 #### [OPS-MTR-001] Manajemen Materi Pembelajaran & Pengunduhan Terproteksi
 - **Phase:** Phase 5
 - **Priority:** P2
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 👨‍🏫 Panel Guru & 👩‍🎓 Siswa
 - **Category:** Learning Operations
 - **Description:** Membangun modul unggah materi (dokumen PDF/Word atau tautan eksternal) oleh guru per penugasan kelas (`siakad_materi`, `siakad_materi_kelas`) dengan controller unduh berotorisasi.
@@ -623,16 +630,16 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Berkas materi disimpan di disk privat Laravel (`storage/app/private/materi/`).
   - Pengunduhan melalui route berizin (hanya guru pengampu dan siswa di kelas target yang boleh mengunduh).
 - **Acceptance Criteria:**
-  - [ ] Berkas materi tidak dapat diakses langsung via URL publik tanpa login.
-  - [ ] Siswa di kelas yang ditentukan dapat mengunduh materi pelajaran.
-- **Verification:** Coba akses tautan file materi langsung di browser tanpa sesi login (harus redirect/403).
+  - [x] Berkas materi tidak dapat diakses langsung via URL publik tanpa login.
+  - [x] Siswa di kelas yang ditentukan dapat mengunduh materi pelajaran.
+- **Verification:** `tests/Feature/MateriPembelajaranTest.php` (6 test cases lulus 100%). Coba akses tautan file materi langsung di browser tanpa sesi login (harus redirect/403).
 
 ---
 
 #### [GURU-PANEL-001] Dashboard Interaktif Guru & Monitoring Wali Kelas
 - **Phase:** Phase 5
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 👨‍🏫 Panel Guru (Device Guru)
 - **Category:** Panels
 - **Description:** Membangun dashboard dan panel navigasi khusus peran Guru Mata Pelajaran (jadwal mengajar hari ini, daftar kelas aktif, notifikasi absensi yang belum diisi) serta penambahan menu Wali Kelas jika guru aktif sebagai wali kelas (rekap absensi rombel binaan via `v_rekap_absensi_kelas`, daftar siswa alpa tinggi, tombol pintasan ke RKM).
@@ -642,16 +649,16 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Satu akun guru dapat otomatis memuat menu wali kelas jika terdaftar di `t_walikelas` pada `tasm` aktif.
   - Tautan langsung menuju aplikasi RKM eksternal pada sidebar.
 - **Acceptance Criteria:**
-  - [ ] Guru melihat jadwal mengajar hari ini saat pertama kali login ke `/guru-panel`.
-  - [ ] Jika bertindak sebagai wali kelas, muncul submenu Rekap Kelas Binaan dan pintasan RKM.
-- **Verification:** Login dengan akun guru biasa dan akun guru wali kelas, bandingkan hak akses dan visual dashboard.
+  - [x] Guru melihat jadwal mengajar hari ini saat pertama kali login ke `/guru-panel`.
+  - [x] Jika bertindak sebagai wali kelas, muncul submenu Rekap Kelas Binaan dan pintasan RKM.
+- **Verification:** `tests/Feature/GuruDashboardPanelTest.php` (3 test cases lulus 100%). Login dengan akun guru biasa dan akun guru wali kelas, bandingkan hak akses dan visual dashboard.
 
 ---
 
 #### [SISWA-PANEL-001] Dashboard & Portal Akademik Siswa
 - **Phase:** Phase 5
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 👩‍🎓 Panel Siswa (Device Siswa)
 - **Category:** Panels
 - **Description:** Membangun antarmuka portal siswa (`/siswa-panel`) yang responsif untuk perangkat ponsel: informasi kelas & tahun ajaran aktif, kartu jadwal pelajaran mingguan per hari, repositori unduh materi belajar kelasnya, dan rekap akumulasi absensi pribadi (hadir/sakit/izin/alpa).
@@ -661,10 +668,10 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Siswa HANYA dapat membaca data miliknya sendiri (Strict Authorization Check).
   - UI dioptimalkan untuk akses layar ponsel/smartphone siswa.
 - **Acceptance Criteria:**
-  - [ ] Siswa melihat jadwal kelasnya sendiri yang dikelompokkan per hari.
-  - [ ] Siswa dapat mengunduh materi yang ditujukan untuk kelasnya.
-  - [ ] Siswa dapat melihat persentase kehadirannya tanpa bisa mengedit.
-- **Verification:** Login dengan akun NIS siswa (mis. `3901`), pastikan hanya data kelas siswa terkait yang dapat diakses.
+  - [x] Siswa melihat jadwal kelasnya sendiri yang dikelompokkan per hari.
+  - [x] Siswa dapat mengunduh materi yang ditujukan untuk kelasnya.
+  - [x] Siswa dapat melihat persentase kehadirannya tanpa bisa mengedit.
+- **Verification:** `tests/Feature/SiswaDashboardPanelTest.php` (3 test cases lulus 100%). Login dengan akun NIS siswa (mis. `3901`), pastikan hanya data kelas siswa terkait yang dapat diakses.
 
 ---
 

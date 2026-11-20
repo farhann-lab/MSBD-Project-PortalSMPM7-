@@ -8,6 +8,7 @@ use App\Models\ImporSiswaBaris;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Support\RoleDatabase;
 use Illuminate\View\View;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -38,6 +39,9 @@ class AdminImporSiswaController extends Controller
      */
     public function upload(Request $request): RedirectResponse
     {
+        if (RoleDatabase::enabled() && !config('siakad_rbac.import_sp_ready')) {
+            return back()->with('error', 'Impor dinonaktifkan sementara: SP staging MySQL 8 belum diverifikasi.');
+        }
         $request->validate([
             'file_excel' => ['required', 'file', 'mimes:xls,xlsx', 'max:5120'], // Max 5MB
         ], [
@@ -68,7 +72,7 @@ class AdminImporSiswaController extends Controller
                 return back()->with('error', 'Format header file tidak sesuai. Kolom "nis" dan "nama" wajib ada.');
             }
 
-            DB::beginTransaction();
+            DB::connection(RoleDatabase::admin())->beginTransaction();
 
             // 1. Buat Header Impor
             $impor = ImporSiswa::create([
@@ -151,19 +155,19 @@ class AdminImporSiswaController extends Controller
             }
 
             if ($insertedRows === 0) {
-                DB::rollBack();
+                DB::connection(RoleDatabase::admin())->rollBack();
                 return back()->with('error', 'Tidak ada baris data siswa yang ditemukan pada file.');
             }
 
             // 3. Jalankan Stored Procedure Validasi di DB
-            DB::statement('CALL sp_impor_siswa_validasi(?)', [$impor->id]);
+            DB::connection(RoleDatabase::admin())->statement('CALL sp_impor_siswa_validasi(?)', [$impor->id]);
 
-            DB::commit();
+            DB::connection(RoleDatabase::admin())->commit();
 
             return redirect()->route('admin.master.siswa.impor.preview', $impor);
         } catch (\Throwable $e) {
-            DB::rollBack();
-            return back()->with('error', 'Gagal memproses file Excel: ' . $e->getMessage());
+            DB::connection(RoleDatabase::admin())->rollBack();
+            return back()->with('error', 'Gagal memproses file Excel. Silakan periksa log sistem.');
         }
     }
 
@@ -187,14 +191,23 @@ class AdminImporSiswaController extends Controller
      */
     public function commit(ImporSiswa $impor): RedirectResponse
     {
+        if (RoleDatabase::enabled() && !config('siakad_rbac.import_sp_ready')) {
+            return back()->with('error', 'Commit impor belum tersedia: prosedur validasi dan commit harus diuji dahulu.');
+        }
         if ($impor->status === 'selesai') {
             return redirect()->route('admin.master.siswa.index')->with('error', 'Sesi impor ini sudah pernah dieksekusi.');
         }
 
         try {
             // Jalankan Stored Procedure Commit Bertransaksi
-            DB::statement('CALL sp_impor_siswa_commit(?, @p_inserted, @p_skipped)', [$impor->id]);
-            $res = DB::select('SELECT @p_inserted as inserted, @p_skipped as skipped')[0] ?? null;
+            if (RoleDatabase::enabled()) {
+                // Kontrak baru MySQL 8: (impor_id, mode) -> result set ringkasan.
+                $res = DB::connection('mysql_admin')->select('CALL sp_impor_siswa_commit(?, ?)', [$impor->id, 'skip'])[0] ?? null;
+            } else {
+                // Perilaku lawas dipertahankan hanya saat mode RBAC belum aktif.
+                DB::statement('CALL sp_impor_siswa_commit(?, @p_inserted, @p_skipped)', [$impor->id]);
+                $res = DB::select('SELECT @p_inserted as inserted, @p_skipped as skipped')[0] ?? null;
+            }
 
             $inserted = $res->inserted ?? 0;
             $skipped = $res->skipped ?? 0;
@@ -203,7 +216,7 @@ class AdminImporSiswaController extends Controller
                 ->route('admin.master.siswa.index')
                 ->with('success', "Impor berhasil! {$inserted} siswa baru dimasukkan ke basis data m_siswa. ({$skipped} baris dilewati karena duplikat/error).");
         } catch (\Throwable $e) {
-            return back()->with('error', 'Gagal menyimpan data impor: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menyimpan data impor. Silakan periksa log sistem.');
         }
     }
 
@@ -216,7 +229,7 @@ class AdminImporSiswaController extends Controller
             $impor->delete(); // cascade delete baris
             return redirect()->route('admin.master.siswa.index')->with('success', 'Sesi impor berhasil dibatalkan.');
         } catch (\Throwable $e) {
-            return back()->with('error', 'Gagal membatalkan sesi impor: ' . $e->getMessage());
+            return back()->with('error', 'Gagal membatalkan sesi impor. Silakan periksa log sistem.');
         }
     }
 

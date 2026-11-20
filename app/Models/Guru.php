@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Guru extends Model
 {
+    use \App\Models\Concerns\UsesAdminConnection;
+
     /**
      * Nama tabel MySQL bawaan sistem RKM.
      */

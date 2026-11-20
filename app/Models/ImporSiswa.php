@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ImporSiswa extends Model
 {
+    use \App\Models\Concerns\UsesAdminConnection;
+
     protected $table = 'siakad_impor_siswa';
 
     public $timestamps = false;

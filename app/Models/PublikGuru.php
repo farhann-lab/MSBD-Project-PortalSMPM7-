@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class PublikGuru extends Model
 {
+    use \App\Models\Concerns\UsesPublicConnection;
+
     /**
      * Nama view database MySQL 8.0 (skema read-only).
      */

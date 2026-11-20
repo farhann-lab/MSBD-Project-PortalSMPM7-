@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Support\RoleDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -60,7 +61,7 @@ class AdminGuruController extends Controller
     {
         $rules = [
             'nama'      => ['required', 'string', 'max:50'],
-            'nip'       => ['nullable', 'string', 'max:20', 'unique:m_guru,nip'],
+            'nip'       => ['nullable', 'string', 'max:20', \Illuminate\Validation\Rule::unique((RoleDatabase::admin() ? 'mysql_admin.' : '').'m_guru', 'nip')],
             'jk'        => ['required', Rule::in(['L', 'P'])],
             'is_bk'     => ['required', Rule::in(['1', '2'])],
             'buat_akun' => ['nullable', 'boolean'],
@@ -74,7 +75,7 @@ class AdminGuruController extends Controller
                 'min:3',
                 'max:50',
                 'alpha_dash',
-                'unique:siakad_users,username',
+                \Illuminate\Validation\Rule::unique((RoleDatabase::admin() ? 'mysql_admin.' : '').'siakad_users', 'username'),
             ];
             $rules['password'] = ['required', 'string', 'min:6'];
         }
@@ -94,7 +95,7 @@ class AdminGuruController extends Controller
 
         $validated = $request->validate($rules, $messages);
 
-        DB::transaction(function () use ($validated, $request) {
+        DB::connection(RoleDatabase::admin())->transaction(function () use ($validated, $request) {
             $guru = Guru::create([
                 'nama'      => trim($validated['nama']),
                 'nip'       => !empty($validated['nip']) ? trim($validated['nip']) : null,
@@ -105,7 +106,7 @@ class AdminGuruController extends Controller
 
             // Jika admin meminta buat akun login sekaligus
             if ($request->boolean('buat_akun')) {
-                User::create([
+                User::on(RoleDatabase::admin())->create([
                     'username'             => strtolower(trim($validated['username'])),
                     'password'             => Hash::make($validated['password']),
                     'role'                 => 'guru',
@@ -137,7 +138,7 @@ class AdminGuruController extends Controller
     {
         $validated = $request->validate([
             'nama'      => ['required', 'string', 'max:50'],
-            'nip'       => ['nullable', 'string', 'max:20', Rule::unique('m_guru', 'nip')->ignore($guru->id)],
+            'nip'       => ['nullable', 'string', 'max:20', Rule::unique((RoleDatabase::admin() ? 'mysql_admin.' : '').'m_guru', 'nip')->ignore($guru->id)],
             'jk'        => ['required', Rule::in(['L', 'P'])],
             'is_bk'     => ['required', Rule::in(['1', '2'])],
             'stat_data' => ['required', Rule::in(['A', 'P', 'M'])],
@@ -149,7 +150,7 @@ class AdminGuruController extends Controller
             'is_bk.required' => 'Kategori peran guru wajib ditentukan.',
         ]);
 
-        DB::transaction(function () use ($guru, $validated) {
+        DB::connection(RoleDatabase::admin())->transaction(function () use ($guru, $validated) {
             $guru->update([
                 'nama'      => trim($validated['nama']),
                 'nip'       => !empty($validated['nip']) ? trim($validated['nip']) : null,
@@ -161,7 +162,7 @@ class AdminGuruController extends Controller
             // Sinkronisasi status akun jika guru memiliki akun login
             if ($guru->user) {
                 // Akun aktif hanya jika status guru 'A' (Aktif)
-                $guru->user->update([
+                $guru->user->setConnection(RoleDatabase::admin())->update([
                     'is_active' => ($validated['stat_data'] === 'A'),
                 ]);
             }
@@ -177,14 +178,14 @@ class AdminGuruController extends Controller
     public function toggleStatus(Request $request, Guru $guru)
     {
         $newStatus = ($guru->stat_data === 'A') ? 'P' : 'A';
-        $guru->stat_data = $newStatus;
-        $guru->save();
-
-        // Sinkronisasi akun login terkait di siakad_users
-        if ($guru->user) {
-            $guru->user->is_active = ($newStatus === 'A');
-            $guru->user->save();
-        }
+        DB::connection(RoleDatabase::admin())->transaction(function () use ($guru, $newStatus) {
+            $guru->stat_data = $newStatus;
+            $guru->save();
+            if ($guru->user) {
+                $guru->user->is_active = ($newStatus === 'A');
+                $guru->user->setConnection(RoleDatabase::admin())->save();
+            }
+        });
 
         $label = $guru->label_status;
 
@@ -210,14 +211,14 @@ class AdminGuruController extends Controller
     public function destroy(Guru $guru): RedirectResponse
     {
         // Ubah status guru menjadi 'M' (Mutasi / Nonaktif Tetap)
-        $guru->stat_data = 'M';
-        $guru->save();
-
-        // Nonaktifkan akses login akun guru jika ada
-        if ($guru->user) {
-            $guru->user->is_active = false;
-            $guru->user->save();
-        }
+        DB::connection(RoleDatabase::admin())->transaction(function () use ($guru) {
+            $guru->stat_data = 'M';
+            $guru->save();
+            if ($guru->user) {
+                $guru->user->is_active = false;
+                $guru->user->setConnection(RoleDatabase::admin())->save();
+            }
+        });
 
         return redirect()->route('admin.master.guru.index')
             ->with('success', "Guru '{$guru->nama}' berhasil dinonaktifkan (Status: Mutasi/Keluar). Akun login dinonaktifkan.");
@@ -315,7 +316,7 @@ class AdminGuruController extends Controller
         if ($user) {
             $user->password = Hash::make($validated['password_baru']);
             $user->wajib_ganti_password = true;
-            $user->save();
+            $user->setConnection(RoleDatabase::admin())->save();
         } else {
             // Jika guru belum punya akun, buatkan akun baru otomatis
             $cleanName = Str::slug(explode(' ', trim($guru->nama))[0] ?? 'guru', '');
@@ -328,7 +329,7 @@ class AdminGuruController extends Controller
                 $counter++;
             }
 
-            $user = User::create([
+            $user = User::on(RoleDatabase::admin())->create([
                 'username'             => $username,
                 'password'             => Hash::make($validated['password_baru']),
                 'role'                 => 'guru',

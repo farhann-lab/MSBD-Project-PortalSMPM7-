@@ -185,7 +185,7 @@
                         <label class="inline-flex items-center gap-2 cursor-pointer select-none">
                             <input
                                 type="checkbox"
-                                name="remember"
+                                name="remember" disabled
                                 value="1"
                                 class="w-4 h-4 rounded border-border-soft text-forest focus:ring-forest/30"
                             />

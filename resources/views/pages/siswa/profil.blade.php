@@ -7,6 +7,24 @@
     ]"
     :kelasSiswa="$kelasPenempatan ? 'Kelas ' . ($kelasPenempatan->kelas->nama ?? '-') : '-'"
 >
+    @if(config('siakad_rbac.enabled'))
+    <section class="space-y-4">
+        <div class="p-6 bg-white border border-border-soft rounded-2xl shadow-xs">
+            <h1 class="text-xl font-bold text-darkgreen">Profil Siswa Saya</h1>
+            <p class="text-xs text-muted-text mt-2">Data ini diambil berdasarkan akun siswa yang sedang login.</p>
+            @if($identitasSiswa)
+                <dl class="mt-4 grid gap-3 sm:grid-cols-2 text-sm">
+                    <div><dt class="text-muted-text">Nama</dt><dd class="font-semibold">{{ $identitasSiswa->nama }}</dd></div>
+                    <div><dt class="text-muted-text">Kelas</dt><dd class="font-semibold">{{ $identitasSiswa->nama_kelas }}</dd></div>
+                    <div><dt class="text-muted-text">ID Siswa</dt><dd class="font-semibold">{{ $identitasSiswa->id }}</dd></div>
+                </dl>
+            @else
+                <p class="mt-4 text-sm text-muted-text">Penempatan siswa periode aktif belum tersedia.</p>
+            @endif
+        </div>
+        <a class="inline-block text-sm text-forest underline" href="{{ route('password.change') }}">Ubah password saya</a>
+    </section>
+    @else
     <div class="space-y-6">
 
         <!-- Header Card -->
@@ -163,4 +181,5 @@
         </div>
 
     </div>
+    @endif
 </x-layouts.siswa>

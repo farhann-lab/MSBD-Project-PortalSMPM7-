@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 
 class Fasilitas extends Model
 {
+    use \App\Models\Concerns\UsesAdminConnection;
+
     use HasFactory;
 
     protected $table = 'siakad_fasilitas';

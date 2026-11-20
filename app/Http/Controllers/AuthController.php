@@ -67,7 +67,8 @@ class AuthController extends Controller
 
         // Login sukses
         RateLimiter::clear($throttleKey);
-        Auth::login($user, $request->boolean('remember'));
+        // siakad_users belum memiliki kolom remember_token; hindari UPDATE kolom yang tidak ada.
+        Auth::login($user, false);
         $request->session()->regenerate();
 
         // Mode wajib ganti password
@@ -130,8 +131,8 @@ class AuthController extends Controller
             'wajib_ganti_password' => false,
         ])->save();
 
-        // Logout perangkat lain
-        Auth::logoutOtherDevices($request->input('password'));
+        // Login perangkat lain tidak diputus otomatis: session saat ini menggunakan driver file.
+        // Tambahkan pengelolaan sesi terpusat sebelum menjanjikan logout semua perangkat.
 
         return redirect($user->dashboardUrl())
             ->with('success', 'Password Anda berhasil diperbarui.');

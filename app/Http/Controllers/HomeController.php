@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Berita;
 use App\Models\Pengumuman;
+use App\Support\RoleDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -38,7 +39,8 @@ class HomeController extends Controller
     private function getLatestNews(): array
     {
         try {
-            $dbNews = Berita::published()->latest('published_at')->take(3)->get();
+            $dbNews = (RoleDatabase::enabled() ? Berita::on('mysql_public')->from('v_publik_berita') : Berita::published())
+                ->latest('published_at')->take(3)->get();
             if ($dbNews->isNotEmpty()) {
                 return $dbNews->map(fn($item) => [
                     'id'       => $item->id,
@@ -62,7 +64,8 @@ class HomeController extends Controller
     private function getLatestAnnouncements(): array
     {
         try {
-            $dbAnnouncements = Pengumuman::published()->latest('tanggal')->take(3)->get();
+            $dbAnnouncements = (RoleDatabase::enabled() ? Pengumuman::on('mysql_public')->from('v_publik_pengumuman') : Pengumuman::published())
+                ->latest('tanggal')->take(3)->get();
             if ($dbAnnouncements->isNotEmpty()) {
                 return $dbAnnouncements->map(fn($item) => [
                     'id'        => $item->id,
@@ -101,9 +104,16 @@ class HomeController extends Controller
 
         try {
             return Cache::remember('home.statistik', self::CACHE_TTL, function () use ($fallback) {
-                $siswa = $this->hitung('m_siswa', 'stat_data', 'A');
-                $guru  = $this->hitung('m_guru', 'stat_data', 'A');
-                $kelas = $this->hitung('m_kelas');
+                if (RoleDatabase::enabled()) {
+                    $stat = DB::connection('mysql_public')->table('v_publik_statistik')->first();
+                    $siswa = $stat ? (int) $stat->jumlah_siswa : null;
+                    $guru = $stat ? (int) $stat->jumlah_guru : null;
+                    $kelas = $stat ? (int) $stat->jumlah_kelas : null;
+                } else {
+                    $siswa = $this->hitung('m_siswa', 'stat_data', 'A');
+                    $guru = $this->hitung('m_guru', 'stat_data', 'A');
+                    $kelas = $this->hitung('m_kelas');
+                }
 
                 // Ekskul masih dari config (tabel siakad_ekstra_publik masih kosong)
                 $ekskul = $fallback['ekskul'];
@@ -170,6 +180,20 @@ class HomeController extends Controller
             ];
 
             try {
+                if (RoleDatabase::enabled()) {
+                    $row = DB::connection('mysql_public')->table('v_periode_aktif')->first();
+                    if (!$row) { return $default; }
+                    $kode = (string) $row->tasm;
+                    $thAwal = (int) substr($kode, 0, 4);
+                    $isGanjil = substr($kode, 4, 1) === '1';
+                    $thAjaran = $thAwal . '/' . ($thAwal + 1);
+                    return [
+                        'tahun_ajaran' => $thAjaran,
+                        'semester' => $isGanjil ? '1 (Ganjil)' : '2 (Genap)',
+                        'label_lengkap' => 'Tahun Ajaran ' . $thAjaran . ' Semester ' . ($isGanjil ? '1 (Ganjil)' : '2 (Genap)'),
+                    ];
+                }
+
                 if (!Schema::hasTable('tahun')) {
                     return $default;
                 }

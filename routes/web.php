@@ -16,6 +16,8 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminManagementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\GuruJadwalController;
+use App\Http\Controllers\SiswaProfilController;
 use App\Models\Berita;
 use App\Models\Fasilitas;
 use App\Models\Galeri;
@@ -25,6 +27,7 @@ use App\Models\PublikGuru;
 use App\Models\PublikSiswa;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use App\Support\RoleDatabase;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,7 +62,7 @@ Route::prefix('profil')->group(function () {
     })->name('profile.structure');
 
     Route::get('/fasilitas', function () {
-        $dbFacilities = Fasilitas::published()->latest()->get();
+        $dbFacilities = (RoleDatabase::enabled() ? Fasilitas::on('mysql_public')->from('v_publik_fasilitas') : Fasilitas::published())->orderByDesc('id')->get();
         if ($dbFacilities->isNotEmpty()) {
             $facilities = $dbFacilities->map(fn($item) => [
                 'id'          => $item->id,
@@ -215,7 +218,7 @@ Route::prefix('kesiswaan')->group(function () {
     })->name('student-life.extracurriculars');
 
     Route::get('/prestasi', function () {
-        $dbAchievements = PrestasiPublik::published()->latest('tanggal')->get();
+        $dbAchievements = (RoleDatabase::enabled() ? PrestasiPublik::on('mysql_public')->from('v_publik_prestasi') : PrestasiPublik::published())->latest('tanggal')->get();
         if ($dbAchievements->isNotEmpty()) {
             $achievements = $dbAchievements->map(fn($item) => [
                 'id'          => $item->id,
@@ -236,8 +239,20 @@ Route::prefix('kesiswaan')->group(function () {
 
 // ─── Galeri ──────────────────────────────────────────────────────────────
 Route::get('/galeri', function () {
-    $dbGaleri = Galeri::published()->with('foto')->latest()->get();
-    if ($dbGaleri->isNotEmpty()) {
+    $dbGaleri = RoleDatabase::enabled()
+        ? collect() // handled using flat public view below
+        : Galeri::published()->with('foto')->latest()->get();
+    if (RoleDatabase::enabled()) {
+        $gallery = \Illuminate\Support\Facades\DB::connection('mysql_public')
+            ->table('v_publik_galeri')->orderBy('galeri_id')->orderBy('urutan')->get()
+            ->map(fn ($f) => [
+                'id' => $f->foto_id,
+                'title' => $f->judul,
+                'image' => asset('storage/'.$f->gambar_path),
+                'category' => 'Dokumentasi',
+                'date' => null, // view publik tidak menampilkan created_at
+            ])->all();
+    } elseif ($dbGaleri->isNotEmpty()) {
         $gallery = [];
         foreach ($dbGaleri as $g) {
             if ($g->foto->isNotEmpty()) {
@@ -269,7 +284,7 @@ Route::get('/galeri', function () {
 
 // ─── Berita ──────────────────────────────────────────────────────────────
 Route::get('/berita', function () {
-    $dbNews = Berita::published()->latest('published_at')->get();
+    $dbNews = (RoleDatabase::enabled() ? Berita::on('mysql_public')->from('v_publik_berita') : Berita::published())->latest('published_at')->get();
     if ($dbNews->isNotEmpty()) {
         $news = $dbNews->map(fn($item) => [
             'id'       => $item->id,
@@ -289,7 +304,7 @@ Route::get('/berita', function () {
 })->name('news.index');
 
 Route::get('/berita/{slug}', function (string $slug) {
-    $dbArticle = Berita::published()->where('slug', $slug)->first();
+    $dbArticle = (RoleDatabase::enabled() ? Berita::on('mysql_public')->from('v_publik_berita') : Berita::published())->where('slug', $slug)->first();
     if ($dbArticle) {
         $article = [
             'id'       => $dbArticle->id,
@@ -315,7 +330,7 @@ Route::get('/berita/{slug}', function (string $slug) {
 
 // ─── Pengumuman ──────────────────────────────────────────────────────────
 Route::get('/pengumuman', function () {
-    $dbAnnouncements = Pengumuman::published()->latest('tanggal')->get();
+    $dbAnnouncements = (RoleDatabase::enabled() ? Pengumuman::on('mysql_public')->from('v_publik_pengumuman') : Pengumuman::published())->latest('tanggal')->get();
     if ($dbAnnouncements->isNotEmpty()) {
         $announcements = $dbAnnouncements->map(fn($item) => [
             'id'        => $item->id,
@@ -336,7 +351,7 @@ Route::get('/pengumuman', function () {
 
 Route::get('/pengumuman/{slug}', function (string $slug) {
     // Cari dari database berdasarkan slug / format slug-id
-    $dbItem = Pengumuman::published()->get()->first(fn($p) => $p->slug === $slug);
+    $dbItem = (RoleDatabase::enabled() ? Pengumuman::on('mysql_public')->from('v_publik_pengumuman') : Pengumuman::published())->get()->first(fn($p) => $p->slug === $slug);
     if ($dbItem) {
         $announcement = [
             'id'        => $dbItem->id,
@@ -371,6 +386,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Protected Dashboard Placeholders (Dengan middleware force.password)
     Route::middleware(['force.password'])->group(function () {
+        Route::middleware('role:admin')->group(function () {
         Route::get('/admin', [AdminDashboardController::class, 'index'])->name('dashboard.admin');
 
         // Manajemen Akun Admin — Khusus Hak Istimewa Admin Utama [ADMIN-AKN-001]
@@ -496,14 +512,19 @@ Route::middleware(['auth'])->group(function () {
         });
 
         // ─── Dashboard Guru & Wali Kelas ──────────────────────────────────
+        }); // akhir route Admin
+
+        Route::middleware('role:guru')->group(function () {
         Route::prefix('guru')->name('guru.')->group(function () {
             // Akademik & Pembelajaran
+
+            Route::get('/jadwal', [GuruJadwalController::class, 'index'])->name('jadwal');
             Route::get('/profil', [\App\Http\Controllers\UserProfileController::class, 'profileGuru'])->name('profil');
             Route::post('/profil/password', [\App\Http\Controllers\UserProfileController::class, 'updatePassword'])->name('profil.password');
 
-            Route::get('/jadwal', function () {
-                return view('pages.guru.jadwal');
-            })->name('jadwal');
+           // Route::get('/jadwal', function () {
+             //   return view('pages.guru.jadwal');
+            //})->name('jadwal');
 
             Route::get('/kelas-mapel', function () {
                 return view('pages.guru.kelas-mapel');
@@ -537,6 +558,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/guru-panel', [\App\Http\Controllers\GuruDashboardController::class, 'index'])->name('dashboard.guru');
 
         // ─── Dashboard Siswa ────────────────────────────────────────────────
+        }); // akhir route Guru
+
+        Route::middleware('role:siswa')->group(function () {
         Route::prefix('siswa')->name('siswa.')->group(function () {
             Route::get('/jadwal', function () {
                 return view('pages.siswa.jadwal');
@@ -546,6 +570,15 @@ Route::middleware(['auth'])->group(function () {
 
             Route::get('/absensi', [\App\Http\Controllers\SiswaAbsensiController::class, 'index'])->name('absensi');
 
+
+            //Route::get('/profil', [SiswaProfilController::class, 'index'])->name('profil');
+        });
+
+       // Route::get('/siswa-panel', function () {
+         //   return view('pages.siswa.dashboard');
+       // })->name('dashboard.siswa');
+       // }); // akhir route Siswa
+
             Route::get('/profil', [\App\Http\Controllers\UserProfileController::class, 'profileSiswa'])->name('profil');
             Route::post('/profil/password', [\App\Http\Controllers\UserProfileController::class, 'updatePassword'])->name('profil.password');
         });
@@ -554,5 +587,6 @@ Route::middleware(['auth'])->group(function () {
 
         // Route Unduh Materi Terproteksi (Otorisasi Guru Pemilik & Siswa Kelas Target)
         Route::get('/materi/{id}/download', [\App\Http\Controllers\SiswaMateriController::class, 'download'])->name('materi.download');
+
     });
 });

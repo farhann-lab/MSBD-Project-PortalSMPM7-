@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
+use App\Support\RoleDatabase;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
@@ -52,16 +53,16 @@ class AdminDashboardController extends Controller
             $row = null;
 
             // Coba dari tabel 'tahun' (skema RKM aktif = 'Y')
-            if (Schema::hasTable('tahun')) {
-                $row = DB::table('tahun')
+            if (Schema::connection(RoleDatabase::admin())->hasTable('tahun')) {
+                $row = DB::connection(RoleDatabase::admin())->table('tahun')
                     ->where('aktif', 'Y')
                     ->orderByDesc('id')
                     ->first();
             }
 
             // Fallback jika tidak ada yang aktif = 'Y', ambil record terakhir
-            if (!$row && Schema::hasTable('tahun')) {
-                $row = DB::table('tahun')->orderByDesc('id')->first();
+            if (!$row && Schema::connection(RoleDatabase::admin())->hasTable('tahun')) {
+                $row = DB::connection(RoleDatabase::admin())->table('tahun')->orderByDesc('id')->first();
             }
 
             if ($row) {
@@ -109,8 +110,8 @@ class AdminDashboardController extends Controller
 
         try {
             // Hitung data Guru dari m_guru
-            if (Schema::hasTable('m_guru')) {
-                $guruCount = DB::table('m_guru')
+            if (Schema::connection(RoleDatabase::admin())->hasTable('m_guru')) {
+                $guruCount = DB::connection(RoleDatabase::admin())->table('m_guru')
                     ->selectRaw("COUNT(*) as total, SUM(CASE WHEN stat_data = 'A' THEN 1 ELSE 0 END) as aktif")
                     ->first();
 
@@ -124,8 +125,8 @@ class AdminDashboardController extends Controller
             }
 
             // Hitung data Siswa dari m_siswa
-            if (Schema::hasTable('m_siswa')) {
-                $siswaCount = DB::table('m_siswa')
+            if (Schema::connection(RoleDatabase::admin())->hasTable('m_siswa')) {
+                $siswaCount = DB::connection(RoleDatabase::admin())->table('m_siswa')
                     ->selectRaw("COUNT(*) as total, SUM(CASE WHEN stat_data = 'A' THEN 1 ELSE 0 END) as aktif")
                     ->first();
 
@@ -136,13 +137,13 @@ class AdminDashboardController extends Controller
             }
 
             // Hitung data Rombel / Kelas dari m_kelas
-            if (Schema::hasTable('m_kelas')) {
-                $stats['total_kelas'] = DB::table('m_kelas')->count();
+            if (Schema::connection(RoleDatabase::admin())->hasTable('m_kelas')) {
+                $stats['total_kelas'] = DB::connection(RoleDatabase::admin())->table('m_kelas')->count();
             }
 
             // Hitung data Mapel dari m_mapel
-            if (Schema::hasTable('m_mapel')) {
-                $stats['total_mapel'] = DB::table('m_mapel')->count();
+            if (Schema::connection(RoleDatabase::admin())->hasTable('m_mapel')) {
+                $stats['total_mapel'] = DB::connection(RoleDatabase::admin())->table('m_mapel')->count();
             }
         } catch (\Throwable $e) {
             // Jika ada query yang gagal, kembalikan nilai fallback

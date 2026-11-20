@@ -5,12 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Support\RoleDatabase;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
     protected $table = 'siakad_users';
+
+    public function getConnectionName()
+    {
+        return $this->connection ?? RoleDatabase::auth() ?? parent::getConnectionName();
+    }
 
     protected $fillable = [
         'username',

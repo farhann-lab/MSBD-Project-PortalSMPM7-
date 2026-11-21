@@ -1,0 +1,76 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'PROCEDURE',
+            'sp_akun_siswa_massal',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE PROCEDURE `sp_akun_siswa_massal`(IN p_data JSON)
+SQL SECURITY DEFINER MODIFIES SQL DATA
+BEGIN
+    DECLARE v_lock INT DEFAULT 0;
+    DECLARE v_tasm VARCHAR(5) DEFAULT NULL;
+    DECLARE v_naktif INT DEFAULT 0;
+    DECLARE v_ta SMALLINT UNSIGNED;
+    DECLARE v_total INT DEFAULT 0;
+    DECLARE v_berhasil INT DEFAULT 0;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        IF v_lock=1 THEN DO RELEASE_LOCK('siakad:akun:siswa:massal'); END IF;
+        RESIGNAL;
+    END;
+    IF p_data IS NULL OR JSON_TYPE(p_data)<>'ARRAY' OR JSON_LENGTH(p_data) NOT BETWEEN 1 AND 500 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Daftar akun JSON harus berisi 1-500 objek';
+    END IF;
+    SET v_total=JSON_LENGTH(p_data);
+    SELECT GET_LOCK('siakad:akun:siswa:massal',5) INTO v_lock;
+    IF v_lock IS NULL OR v_lock<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Pembuatan akun massal sedang berlangsung'; END IF;
+    START TRANSACTION;
+    SELECT COUNT(*),MAX(tahun) INTO v_naktif,v_tasm
+      FROM tahun WHERE aktif='Y' AND tahun REGEXP '^[0-9]{4}[12]$';
+    IF v_naktif<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Harus ada tepat satu periode aktif'; END IF;
+    SET v_ta=fn_ta_dari_tasm(v_tasm);
+    INSERT INTO siakad_users(username,password,role,id_guru,id_siswa,is_active,wajib_ganti_password,is_admin_utama,created_at,updated_at)
+    SELECT x.username,x.hash_bcrypt,'siswa',NULL,x.id_siswa,1,1,0,NOW(),NOW()
+    FROM JSON_TABLE(p_data,'$[*]' COLUMNS(
+           id_siswa INT PATH '$.id_siswa' NULL ON EMPTY NULL ON ERROR,
+           username VARCHAR(100) PATH '$.username' NULL ON EMPTY NULL ON ERROR,
+           hash_bcrypt VARCHAR(255) PATH '$.hash' NULL ON EMPTY NULL ON ERROR
+         )) AS x
+    JOIN m_siswa s ON s.id=x.id_siswa
+    WHERE x.id_siswa>0 AND x.username IS NOT NULL AND TRIM(x.username)<>''
+      AND x.username <> '0' AND BINARY x.username = BINARY s.nis
+      AND s.nis NOT IN ('','0')
+      AND x.hash_bcrypt IS NOT NULL AND CHAR_LENGTH(x.hash_bcrypt)=60
+      AND LEFT(x.hash_bcrypt,4) IN ('$2y$','$2b$','$2a$')
+      AND EXISTS(SELECT 1 FROM t_kelas_siswa ks WHERE ks.id_siswa=x.id_siswa AND ks.ta=v_ta)
+      AND (SELECT COUNT(*) FROM m_siswa s2 WHERE BINARY s2.nis=BINARY s.nis)=1
+      AND (SELECT COUNT(*) FROM JSON_TABLE(p_data,'$[*]' COLUMNS(
+                   id_siswa INT PATH '$.id_siswa' NULL ON EMPTY NULL ON ERROR,
+                   username VARCHAR(100) PATH '$.username' NULL ON EMPTY NULL ON ERROR
+              )) AS x2
+           WHERE x2.id_siswa=x.id_siswa OR BINARY x2.username=BINARY x.username)=1
+      AND NOT EXISTS(SELECT 1 FROM siakad_users u WHERE u.id_siswa=x.id_siswa OR BINARY u.username=BINARY x.username);
+    SET v_berhasil=ROW_COUNT();
+    COMMIT;
+    DO RELEASE_LOCK('siakad:akun:siswa:massal');
+    SELECT v_total AS diajukan, v_berhasil AS dibuat, v_total-v_berhasil AS dilewati;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

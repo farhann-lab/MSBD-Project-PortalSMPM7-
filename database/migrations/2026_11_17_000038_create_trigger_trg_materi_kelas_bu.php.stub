@@ -1,0 +1,31 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'TRIGGER',
+            'trg_materi_kelas_bu',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE TRIGGER `trg_materi_kelas_bu` BEFORE UPDATE ON `siakad_materi_kelas` FOR EACH ROW BEGIN
+    IF NOT EXISTS(SELECT 1 FROM siakad_materi m
+                  JOIN t_guru_mapel gm ON gm.id=NEW.id_guru_mapel
+                  WHERE m.id=NEW.materi_id AND m.id_guru=gm.id_guru AND m.id_mapel=gm.id_mapel) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Materi, guru, mapel dan penugasan tidak cocok';
+    END IF;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

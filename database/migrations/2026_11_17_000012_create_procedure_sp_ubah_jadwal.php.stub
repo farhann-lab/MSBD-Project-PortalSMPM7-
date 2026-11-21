@@ -1,0 +1,55 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'PROCEDURE',
+            'sp_ubah_jadwal',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE PROCEDURE `sp_ubah_jadwal`(IN p_id BIGINT UNSIGNED,IN p_id_guru_mapel INT,IN p_tasm VARCHAR(5),IN p_hari VARCHAR(10),IN p_mulai TIME,IN p_selesai TIME)
+SQL SECURITY DEFINER MODIFIES SQL DATA
+BEGIN
+    DECLARE v_lock INT DEFAULT 0;
+    DECLARE v_nama_lock VARCHAR(64);
+    DECLARE v_tasm VARCHAR(5) DEFAULT NULL;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        IF v_lock=1 THEN DO RELEASE_LOCK(v_nama_lock); END IF;
+        RESIGNAL;
+    END;
+    IF p_tasm IS NULL OR p_tasm NOT REGEXP '^[0-9]{4}[12]$' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Periode jadwal tidak valid';
+    END IF;
+    SET v_nama_lock=CONCAT('siakad:jadwal:',p_tasm);
+    SELECT GET_LOCK(v_nama_lock,5) INTO v_lock;
+    IF v_lock IS NULL OR v_lock<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Lock jadwal sibuk'; END IF;
+    START TRANSACTION;
+    SELECT tasm INTO v_tasm FROM siakad_jadwal WHERE id=p_id LIMIT 1 FOR UPDATE;
+    IF v_tasm IS NULL OR v_tasm<>p_tasm THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Jadwal tidak ada atau pindah periode tidak didukung';
+    END IF;
+    UPDATE siakad_jadwal
+       SET id_guru_mapel=p_id_guru_mapel,hari=p_hari,jam_mulai=p_mulai,
+           jam_selesai=p_selesai,updated_at=NOW()
+     WHERE id=p_id AND tasm=p_tasm;
+    COMMIT;
+    DO RELEASE_LOCK(v_nama_lock);
+    SELECT p_id AS jadwal_id;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

@@ -1,0 +1,25 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'VIEW',
+            'v_jadwal_lengkap',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `v_jadwal_lengkap` AS select `j`.`id` AS `jadwal_id`,`j`.`tasm` AS `tasm`,`j`.`hari` AS `hari`,`j`.`jam_mulai` AS `jam_mulai`,`j`.`jam_selesai` AS `jam_selesai`,`pg`.`id_guru_mapel` AS `id_guru_mapel`,`pg`.`id_guru` AS `id_guru`,`pg`.`nama_guru` AS `nama_guru`,`pg`.`id_kelas` AS `id_kelas`,`pg`.`nama_kelas` AS `nama_kelas`,`pg`.`id_mapel` AS `id_mapel`,`pg`.`nama_mapel` AS `nama_mapel` from (`siakad_jadwal` `j` join `v_penugasan_aktif` `pg` on(((`pg`.`id_guru_mapel` = `j`.`id_guru_mapel`) and (`pg`.`tasm` = `j`.`tasm`)))) where (`j`.`aktif` = 1)
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

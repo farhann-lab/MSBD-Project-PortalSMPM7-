@@ -1,0 +1,25 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'VIEW',
+            'v_publik_siswa',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `v_publik_siswa` AS select `s`.`id` AS `id`,`s`.`nama` AS `nama`,`k`.`nama` AS `nama_kelas`,`k`.`tingkat` AS `tingkat` from ((((`m_siswa` `s` join `t_kelas_siswa` `ks` on((`ks`.`id_siswa` = `s`.`id`))) join (select `t_kelas_siswa`.`id_siswa` AS `id_siswa`,`t_kelas_siswa`.`ta` AS `ta`,max(`t_kelas_siswa`.`id`) AS `id_terbaru` from `t_kelas_siswa` group by `t_kelas_siswa`.`id_siswa`,`t_kelas_siswa`.`ta`) `x` on(((`x`.`id_terbaru` = `ks`.`id`) and (`x`.`id_siswa` = `ks`.`id_siswa`) and (`x`.`ta` = `ks`.`ta`)))) join `m_kelas` `k` on((`k`.`id` = `ks`.`id_kelas`))) join `v_periode_aktif` `p` on((`ks`.`ta` = `p`.`ta`)))
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

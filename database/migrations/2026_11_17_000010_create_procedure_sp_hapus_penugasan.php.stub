@@ -1,0 +1,58 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'PROCEDURE',
+            'sp_hapus_penugasan',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE PROCEDURE `sp_hapus_penugasan`(IN p_id INT)
+SQL SECURITY DEFINER MODIFIES SQL DATA
+BEGIN
+    DECLARE v_lock INT DEFAULT 0;
+    DECLARE v_nama_lock VARCHAR(64);
+    DECLARE v_tasm VARCHAR(5) DEFAULT NULL;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        IF v_lock=1 THEN DO RELEASE_LOCK(v_nama_lock); END IF;
+        RESIGNAL;
+    END;
+    SELECT tasm INTO v_tasm FROM t_guru_mapel WHERE id=p_id LIMIT 1;
+    IF v_tasm IS NULL OR v_tasm NOT REGEXP '^[0-9]{4}[12]$' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Penugasan tidak ditemukan atau periode tidak valid';
+    END IF;
+    SET v_nama_lock=CONCAT('siakad:penugasan:',v_tasm);
+    SELECT GET_LOCK(v_nama_lock,5) INTO v_lock;
+    IF v_lock IS NULL OR v_lock<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Lock penugasan sibuk'; END IF;
+    START TRANSACTION;
+    IF EXISTS(SELECT 1 FROM siakad_jadwal WHERE id_guru_mapel=p_id) OR
+       EXISTS(SELECT 1 FROM siakad_materi_kelas WHERE id_guru_mapel=p_id) OR
+       EXISTS(SELECT 1 FROM t_nilai WHERE id_guru_mapel=p_id) OR
+       EXISTS(SELECT 1 FROM t_nilai_ket WHERE id_guru_mapel=p_id) OR
+       EXISTS(SELECT 1 FROM t_nilai_sikap_so WHERE id_guru_mapel=p_id) OR
+       EXISTS(SELECT 1 FROM t_nilai_sikap_sp WHERE id_guru_mapel=p_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Penugasan sudah dipakai jadwal/materi/nilai RKM';
+    END IF;
+    DELETE FROM t_guru_mapel WHERE id=p_id AND tasm=v_tasm;
+    IF ROW_COUNT()<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Penugasan berubah atau tidak ditemukan'; END IF;
+    COMMIT;
+    DO RELEASE_LOCK(v_nama_lock);
+    SELECT p_id AS penugasan_dihapus;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

@@ -1,0 +1,66 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// Exact table DDL from the provided MySQL 8.0.30 schema-only dump.
+// Existing tables are preserved; no destructive rollback.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::table(
+            'siakad_impor_siswa_baris',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE TABLE `siakad_impor_siswa_baris` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `impor_id` bigint unsigned NOT NULL,
+  `nomor_baris` int unsigned NOT NULL,
+  `nis` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `nisn` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
+  `nama` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `jk` enum('L','P') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'L',
+  `tmp_lahir` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `tgl_lahir` date NOT NULL DEFAULT '0000-00-00',
+  `agama` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `status` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `anakke` int NOT NULL DEFAULT '1',
+  `alamat` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `notelp` varchar(13) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `sek_asal` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `sek_asal_alamat` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `diterima_kelas` varchar(5) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `diterima_tgl` date NOT NULL DEFAULT '0000-00-00',
+  `diterima_smt` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `ijazah_no` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `ijazah_thn` varchar(4) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `skhun_no` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `skhun_thn` varchar(4) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `ortu_ayah` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `ortu_ibu` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `ortu_alamat` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `ortu_notelp` varchar(13) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `ortu_ayah_pkj` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `ortu_ibu_pkj` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `wali` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `wali_alamat` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `notelp_rumah` varchar(13) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `wali_pkj` varchar(13) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `status_validasi` enum('valid','duplikat','error') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'valid',
+  `pesan_error` text COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`id`),
+  KEY `siakad_impor_siswa_baris_impor_id_status_validasi_index` (`impor_id`,`status_validasi`),
+  KEY `siakad_impor_siswa_baris_nis_index` (`nis`),
+  CONSTRAINT `siakad_impor_siswa_baris_impor_id_foreign` FOREIGN KEY (`impor_id`) REFERENCES `siakad_impor_siswa` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+SIAKAD_SQL_TEXT,
+            ['id', 'impor_id', 'nomor_baris', 'nis', 'nisn', 'nama', 'jk', 'tmp_lahir', 'tgl_lahir', 'agama', 'status', 'anakke', 'alamat', 'notelp', 'sek_asal', 'sek_asal_alamat', 'diterima_kelas', 'diterima_tgl', 'diterima_smt', 'ijazah_no', 'ijazah_thn', 'skhun_no', 'skhun_thn', 'ortu_ayah', 'ortu_ibu', 'ortu_alamat', 'ortu_notelp', 'ortu_ayah_pkj', 'ortu_ibu_pkj', 'wali', 'wali_alamat', 'notelp_rumah', 'wali_pkj', 'status_validasi', 'pesan_error'],
+            ['siakad_impor_siswa']
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop a school table that may contain pre-existing data.
+    }
+};

@@ -1,0 +1,39 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// Exact table DDL from the provided MySQL 8.0.30 schema-only dump.
+// Existing tables are preserved; no destructive rollback.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::table(
+            'siakad_audit_presensi',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE TABLE `siakad_audit_presensi` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `presensi_id` bigint unsigned NOT NULL,
+  `diubah_oleh` bigint unsigned NOT NULL,
+  `sebelum_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sesudah_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `alasan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_siakad_audit_presensi_presensi_id` (`presensi_id`),
+  KEY `fk_siakad_audit_presensi_diubah_oleh` (`diubah_oleh`),
+  CONSTRAINT `fk_siakad_audit_presensi_diubah_oleh` FOREIGN KEY (`diubah_oleh`) REFERENCES `siakad_users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `fk_siakad_audit_presensi_presensi_id` FOREIGN KEY (`presensi_id`) REFERENCES `siakad_presensi_harian` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+SIAKAD_SQL_TEXT,
+            ['id', 'presensi_id', 'diubah_oleh', 'sebelum_json', 'sesudah_json', 'alasan', 'created_at'],
+            ['siakad_presensi_harian', 'siakad_users']
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop a school table that may contain pre-existing data.
+    }
+};

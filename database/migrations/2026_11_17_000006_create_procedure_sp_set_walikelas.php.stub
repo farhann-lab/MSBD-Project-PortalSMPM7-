@@ -1,0 +1,64 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'PROCEDURE',
+            'sp_set_walikelas',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE PROCEDURE `sp_set_walikelas`(IN p_tasm VARCHAR(5),IN p_id_guru INT,IN p_id_kelas INT)
+SQL SECURITY DEFINER MODIFIES SQL DATA
+BEGIN
+    DECLARE v_lock INT DEFAULT 0;
+    DECLARE v_nama_lock VARCHAR(64);
+    DECLARE v_n INT DEFAULT 0;
+    DECLARE v_lama INT DEFAULT NULL;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        IF v_lock=1 THEN DO RELEASE_LOCK(v_nama_lock); END IF;
+        RESIGNAL;
+    END;
+    IF p_tasm IS NULL OR p_tasm NOT REGEXP '^[0-9]{4}[12]$' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Periode wali kelas tidak valid';
+    END IF;
+    SET v_nama_lock=CONCAT('siakad:walikelas:',p_tasm);
+    SELECT GET_LOCK(v_nama_lock,5) INTO v_lock;
+    IF v_lock IS NULL OR v_lock<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Lock wali kelas sibuk'; END IF;
+    START TRANSACTION;
+    IF NOT EXISTS (SELECT 1 FROM m_guru WHERE id=p_id_guru AND stat_data='A') OR
+       NOT EXISTS (SELECT 1 FROM m_kelas WHERE id=p_id_kelas) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Guru aktif atau kelas tidak ditemukan';
+    END IF;
+    IF EXISTS (SELECT 1 FROM t_walikelas
+               WHERE tasm=p_tasm AND id_guru=p_id_guru AND id_kelas<>p_id_kelas) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Guru sudah menjadi wali kelas lain di periode ini';
+    END IF;
+    SELECT COUNT(*),MAX(id_guru) INTO v_n,v_lama FROM t_walikelas
+      WHERE tasm=p_tasm AND id_kelas=p_id_kelas;
+    IF v_n>1 OR (v_n=1 AND (v_lama IS NULL OR v_lama<>p_id_guru)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Kelas sudah memiliki wali lain atau data ganda';
+    END IF;
+    IF v_n=0 THEN
+        INSERT INTO t_walikelas(tasm,id_guru,id_kelas) VALUES(p_tasm,p_id_guru,p_id_kelas);
+    END IF;
+    COMMIT;
+    DO RELEASE_LOCK(v_nama_lock);
+    SELECT p_tasm AS periode,p_id_guru AS id_guru,p_id_kelas AS id_kelas;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

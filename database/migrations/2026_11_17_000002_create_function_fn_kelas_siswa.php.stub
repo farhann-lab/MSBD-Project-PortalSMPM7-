@@ -1,0 +1,40 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'FUNCTION',
+            'fn_kelas_siswa',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE FUNCTION `fn_kelas_siswa`(p_id_siswa INT, p_ta SMALLINT UNSIGNED)
+RETURNS INT
+NOT DETERMINISTIC
+READS SQL DATA
+SQL SECURITY DEFINER
+BEGIN
+    DECLARE v_id_kelas INT DEFAULT NULL;
+    IF p_id_siswa IS NULL OR p_ta IS NULL OR p_ta < 2000 OR p_ta > 2100 THEN
+        RETURN NULL;
+    END IF;
+    SELECT ks.id_kelas INTO v_id_kelas
+      FROM t_kelas_siswa AS ks
+     WHERE ks.id_siswa = p_id_siswa AND ks.ta = p_ta
+     ORDER BY ks.id DESC LIMIT 1;
+    RETURN v_id_kelas;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

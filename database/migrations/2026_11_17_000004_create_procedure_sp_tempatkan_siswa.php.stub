@@ -1,0 +1,73 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'PROCEDURE',
+            'sp_tempatkan_siswa',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE PROCEDURE `sp_tempatkan_siswa`(IN p_ta SMALLINT UNSIGNED, IN p_id_kelas INT, IN p_ids JSON)
+SQL SECURITY DEFINER MODIFIES SQL DATA
+BEGIN
+    DECLARE v_lock INT DEFAULT 0;
+    DECLARE v_nama_lock VARCHAR(64);
+    DECLARE v_total INT DEFAULT 0;
+    DECLARE v_unik INT DEFAULT 0;
+    DECLARE v_masalah INT DEFAULT 0;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        IF v_lock=1 THEN DO RELEASE_LOCK(v_nama_lock); END IF;
+        RESIGNAL;
+    END;
+    IF p_ta IS NULL OR p_ta<2000 OR p_ta>2100 OR p_ids IS NULL OR
+       JSON_TYPE(p_ids)<>'ARRAY' OR JSON_LENGTH(p_ids) NOT BETWEEN 1 AND 500 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Tahun atau daftar siswa tidak valid (1-500 ID)';
+    END IF;
+    SET v_nama_lock=CONCAT('siakad:penempatan:',p_ta);
+    SELECT GET_LOCK(v_nama_lock,5) INTO v_lock;
+    IF v_lock IS NULL OR v_lock<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Penempatan sedang diproses'; END IF;
+    START TRANSACTION;
+    IF NOT EXISTS(SELECT 1 FROM m_kelas WHERE id=p_id_kelas) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Kelas tujuan tidak ditemukan';
+    END IF;
+    SELECT COUNT(*),COUNT(DISTINCT j.id_siswa)
+      INTO v_total,v_unik
+      FROM JSON_TABLE(p_ids,'$[*]' COLUMNS(id_siswa INT PATH '$' ERROR ON EMPTY ERROR ON ERROR)) AS j;
+    IF v_total<>v_unik OR v_total<>JSON_LENGTH(p_ids) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Daftar mengandung siswa duplikat';
+    END IF;
+    SELECT COUNT(*) INTO v_masalah
+      FROM JSON_TABLE(p_ids,'$[*]' COLUMNS(id_siswa INT PATH '$' ERROR ON EMPTY ERROR ON ERROR)) AS j
+      LEFT JOIN m_siswa s ON s.id=j.id_siswa
+     WHERE j.id_siswa IS NULL OR j.id_siswa<=0 OR s.id IS NULL;
+    IF v_masalah>0 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Terdapat ID siswa yang tidak valid'; END IF;
+    SELECT COUNT(*) INTO v_masalah
+      FROM JSON_TABLE(p_ids,'$[*]' COLUMNS(id_siswa INT PATH '$' ERROR ON EMPTY ERROR ON ERROR)) AS j
+      JOIN t_kelas_siswa ks ON ks.id_siswa=j.id_siswa AND ks.ta=p_ta;
+    IF v_masalah>0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Sebagian siswa sudah punya penempatan di tahun ini';
+    END IF;
+    INSERT INTO t_kelas_siswa(id_kelas,id_siswa,ta)
+    SELECT p_id_kelas,j.id_siswa,p_ta
+      FROM JSON_TABLE(p_ids,'$[*]' COLUMNS(id_siswa INT PATH '$' ERROR ON EMPTY ERROR ON ERROR)) AS j;
+    COMMIT;
+    DO RELEASE_LOCK(v_nama_lock);
+    SELECT v_total AS jumlah_berhasil,p_ta AS tahun_penempatan,p_id_kelas AS kelas_tujuan;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

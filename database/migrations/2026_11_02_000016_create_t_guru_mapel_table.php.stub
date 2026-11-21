@@ -1,0 +1,39 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// Exact table DDL from the provided MySQL 8.0.30 schema-only dump.
+// Existing tables are preserved; no destructive rollback.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::legacyTable(
+            't_guru_mapel',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE TABLE `t_guru_mapel` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `tasm` varchar(5) DEFAULT NULL,
+  `id_guru` int NOT NULL,
+  `id_kelas` int NOT NULL,
+  `id_mapel` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_guru` (`id_guru`),
+  KEY `id_kelas` (`id_kelas`),
+  KEY `id_mapel` (`id_mapel`),
+  CONSTRAINT `FK_t_guru_mapel_m_guru` FOREIGN KEY (`id_guru`) REFERENCES `m_guru` (`id`),
+  CONSTRAINT `FK_t_guru_mapel_m_kelas` FOREIGN KEY (`id_kelas`) REFERENCES `m_kelas` (`id`),
+  CONSTRAINT `FK_t_guru_mapel_m_mapel` FOREIGN KEY (`id_mapel`) REFERENCES `m_mapel` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3101 DEFAULT CHARSET=latin1;
+SIAKAD_SQL_TEXT,
+            ['id', 'tasm', 'id_guru', 'id_kelas', 'id_mapel'],
+            ['m_guru', 'm_kelas', 'm_mapel']
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop a school table that may contain pre-existing data.
+    }
+};

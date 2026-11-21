@@ -1,0 +1,44 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'PROCEDURE',
+            'sp_rekap_absensi_kelas',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE PROCEDURE `sp_rekap_absensi_kelas`(IN p_id_kelas INT,IN p_awal DATE,IN p_akhir DATE)
+SQL SECURITY DEFINER READS SQL DATA
+BEGIN
+    IF p_awal IS NULL OR p_akhir IS NULL OR p_awal>p_akhir THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Rentang tanggal rekap tidak valid';
+    END IF;
+    SELECT a.id_siswa,s.nama,
+       SUM(a.status='H') AS hadir,
+       SUM(a.status='S') AS sakit,
+       SUM(a.status='I') AS izin,
+       SUM(a.status='A') AS tanpa_keterangan
+    FROM siakad_absensi_siswa a
+    JOIN m_siswa s ON s.id=a.id_siswa
+    JOIN siakad_pertemuan p ON p.id=a.pertemuan_id
+    JOIN siakad_jadwal j ON j.id=p.jadwal_id
+    JOIN t_guru_mapel gm ON gm.id=j.id_guru_mapel
+    WHERE gm.id_kelas=p_id_kelas AND p.tanggal BETWEEN p_awal AND p_akhir
+      AND fn_kelas_siswa(a.id_siswa,fn_ta_dari_tasm(j.tasm))=p_id_kelas
+    GROUP BY a.id_siswa,s.nama ORDER BY s.nama;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

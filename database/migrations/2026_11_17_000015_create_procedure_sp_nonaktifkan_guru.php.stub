@@ -1,0 +1,33 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'PROCEDURE',
+            'sp_nonaktifkan_guru',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE PROCEDURE `sp_nonaktifkan_guru`(IN p_id_guru INT)
+SQL SECURITY DEFINER MODIFIES SQL DATA
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM m_guru WHERE id=p_id_guru) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Guru tidak ditemukan';
+    END IF;
+    SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT='DIBLOKIR TBD-38: arti status nonaktif guru RKM belum dikonfirmasi';
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

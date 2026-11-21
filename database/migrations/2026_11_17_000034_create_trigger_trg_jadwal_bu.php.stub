@@ -1,0 +1,44 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'TRIGGER',
+            'trg_jadwal_bu',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE TRIGGER `trg_jadwal_bu` BEFORE UPDATE ON `siakad_jadwal` FOR EACH ROW BEGIN
+    DECLARE v_n INT DEFAULT 0;
+    IF NEW.jam_mulai IS NULL OR NEW.jam_selesai IS NULL OR NEW.jam_mulai >= NEW.jam_selesai THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Jam mulai harus lebih kecil dari jam selesai';
+    END IF;
+    IF NEW.tasm IS NULL OR NEW.tasm NOT REGEXP '^[0-9]{4}[12]$' OR
+       NOT EXISTS (SELECT 1 FROM t_guru_mapel gm
+                   WHERE gm.id=NEW.id_guru_mapel AND gm.tasm=NEW.tasm) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Penugasan dan periode jadwal tidak cocok';
+    END IF;
+    IF NEW.aktif = 1 THEN
+        SELECT COUNT(*) INTO v_n FROM siakad_jadwal j
+        JOIN t_guru_mapel a ON a.id=j.id_guru_mapel
+        JOIN t_guru_mapel b ON b.id=NEW.id_guru_mapel
+        WHERE j.id<>OLD.id AND j.aktif=1 AND j.tasm=NEW.tasm AND j.hari=NEW.hari
+          AND j.jam_mulai<NEW.jam_selesai AND NEW.jam_mulai<j.jam_selesai
+          AND (a.id_guru=b.id_guru OR a.id_kelas=b.id_kelas);
+        IF v_n>0 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Bentrok jadwal guru atau kelas'; END IF;
+    END IF;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

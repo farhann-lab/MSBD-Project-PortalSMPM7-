@@ -1,0 +1,29 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'TRIGGER',
+            'trg_pengumuman_bu',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE TRIGGER `trg_pengumuman_bu` BEFORE UPDATE ON `siakad_pengumuman` FOR EACH ROW BEGIN
+    IF NEW.status='published' AND (NEW.tanggal IS NULL OR YEAR(NEW.tanggal)=0) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Pengumuman published wajib memiliki tanggal yang valid';
+    END IF;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

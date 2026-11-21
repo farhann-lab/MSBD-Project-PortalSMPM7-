@@ -1,0 +1,112 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'PROCEDURE',
+            'sp_kenaikan_kelas_commit',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE PROCEDURE `sp_kenaikan_kelas_commit`(
+    IN p_tasm_asal VARCHAR(5),IN p_ta_tujuan SMALLINT UNSIGNED,
+    IN p_peta JSON,IN p_konfirmasi TINYINT)
+SQL SECURITY DEFINER MODIFIES SQL DATA
+BEGIN
+    DECLARE v_lock INT DEFAULT 0;
+    DECLARE v_nama_lock VARCHAR(64);
+    DECLARE v_total INT DEFAULT 0;
+    DECLARE v_peta_n INT DEFAULT 0;
+    DECLARE v_peta_unik INT DEFAULT 0;
+    DECLARE v_masalah INT DEFAULT 0;
+    DECLARE v_disimpan INT DEFAULT 0;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        IF v_lock=1 THEN DO RELEASE_LOCK(v_nama_lock); END IF;
+        RESIGNAL;
+    END;
+    IF p_konfirmasi IS NULL OR p_konfirmasi<>1 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Konfirmasi admin wajib sebelum commit kenaikan';
+    END IF;
+    IF p_tasm_asal IS NULL OR p_tasm_asal NOT REGEXP '^[0-9]{4}2$' OR
+       p_ta_tujuan IS NULL OR p_ta_tujuan<>fn_ta_dari_tasm(p_tasm_asal)+1 OR
+       p_peta IS NULL OR JSON_TYPE(p_peta)<>'ARRAY' OR JSON_LENGTH(p_peta)=0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Periode/JSON peta kenaikan tidak valid';
+    END IF;
+    SET v_nama_lock=CONCAT('siakad:penempatan:',p_ta_tujuan);
+    SELECT GET_LOCK(v_nama_lock,5) INTO v_lock;
+    IF v_lock IS NULL OR v_lock<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Penempatan tahun tujuan sedang diproses'; END IF;
+    START TRANSACTION;
+    SELECT COUNT(*),COUNT(DISTINCT mp.kelas_asal) INTO v_peta_n,v_peta_unik
+    FROM JSON_TABLE(p_peta,'$[*]' COLUMNS(
+         kelas_asal INT PATH '$.kelas_asal' ERROR ON EMPTY ERROR ON ERROR,
+         kelas_tujuan INT PATH '$.kelas_tujuan' ERROR ON EMPTY ERROR ON ERROR)) AS mp;
+    IF v_peta_n<>v_peta_unik THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Pemetaan kelas asal berulang';
+    END IF;
+    -- Sumber dianggap layak bila keputusan terbaru di RKM untuk semester 2 adalah Y
+    -- dan siswa mempunyai penempatan asal yang dapat dipetakan.
+    SELECT COUNT(*) INTO v_total FROM t_naikkelas nk
+      WHERE nk.ta=p_tasm_asal AND nk.naik='Y'
+        AND nk.id=(SELECT MAX(n2.id) FROM t_naikkelas n2
+                   WHERE n2.id_siswa=nk.id_siswa AND n2.ta=nk.ta)
+        AND EXISTS (SELECT 1 FROM t_kelas_siswa ks
+                    WHERE ks.id_siswa=nk.id_siswa AND ks.ta=fn_ta_dari_tasm(p_tasm_asal));
+    IF v_total=0 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Tidak ada siswa dengan keputusan naik Y dan kelas asal'; END IF;
+    SELECT COUNT(*) INTO v_masalah FROM t_naikkelas nk
+    JOIN t_kelas_siswa ks ON ks.id_siswa=nk.id_siswa
+       AND ks.ta=fn_ta_dari_tasm(p_tasm_asal)
+       AND ks.id=(SELECT MAX(y.id) FROM t_kelas_siswa y
+                  WHERE y.id_siswa=nk.id_siswa AND y.ta=fn_ta_dari_tasm(p_tasm_asal))
+    LEFT JOIN JSON_TABLE(p_peta,'$[*]' COLUMNS(
+        kelas_asal INT PATH '$.kelas_asal' ERROR ON EMPTY ERROR ON ERROR,
+        kelas_tujuan INT PATH '$.kelas_tujuan' ERROR ON EMPTY ERROR ON ERROR
+        )) AS mp ON mp.kelas_asal=ks.id_kelas
+    LEFT JOIN m_kelas kt ON kt.id=mp.kelas_tujuan
+    WHERE nk.ta=p_tasm_asal AND nk.naik='Y'
+      AND nk.id=(SELECT MAX(n2.id) FROM t_naikkelas n2
+                 WHERE n2.id_siswa=nk.id_siswa AND n2.ta=nk.ta)
+      AND (mp.kelas_tujuan IS NULL OR kt.id IS NULL OR
+           EXISTS(SELECT 1 FROM t_kelas_siswa x
+                  WHERE x.id_siswa=nk.id_siswa AND x.ta=p_ta_tujuan));
+    IF v_masalah>0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Ada siswa belum dipetakan, tujuan tidak ada, atau sudah ditempatkan';
+    END IF;
+    INSERT INTO t_kelas_siswa(id_kelas,id_siswa,ta)
+    SELECT mp.kelas_tujuan,nk.id_siswa,p_ta_tujuan
+    FROM t_naikkelas nk
+    JOIN t_kelas_siswa ks ON ks.id_siswa=nk.id_siswa
+       AND ks.ta=fn_ta_dari_tasm(p_tasm_asal)
+       AND ks.id=(SELECT MAX(y.id) FROM t_kelas_siswa y
+                  WHERE y.id_siswa=nk.id_siswa AND y.ta=fn_ta_dari_tasm(p_tasm_asal))
+    JOIN JSON_TABLE(p_peta,'$[*]' COLUMNS(
+        kelas_asal INT PATH '$.kelas_asal' ERROR ON EMPTY ERROR ON ERROR,
+        kelas_tujuan INT PATH '$.kelas_tujuan' ERROR ON EMPTY ERROR ON ERROR
+        )) AS mp ON mp.kelas_asal=ks.id_kelas
+    JOIN m_kelas kt ON kt.id=mp.kelas_tujuan
+    WHERE nk.ta=p_tasm_asal AND nk.naik='Y'
+      AND nk.id=(SELECT MAX(n2.id) FROM t_naikkelas n2
+                 WHERE n2.id_siswa=nk.id_siswa AND n2.ta=nk.ta);
+    SET v_disimpan=ROW_COUNT();
+    IF v_disimpan<>v_total THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Jumlah insert kenaikan tidak cocok; rollback';
+    END IF;
+    COMMIT;
+    DO RELEASE_LOCK(v_nama_lock);
+    SELECT v_disimpan AS siswa_ditempatkan,p_ta_tujuan AS tahun_tujuan;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

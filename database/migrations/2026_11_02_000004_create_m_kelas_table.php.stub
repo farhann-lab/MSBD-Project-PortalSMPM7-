@@ -1,0 +1,31 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// Exact table DDL from the provided MySQL 8.0.30 schema-only dump.
+// Existing tables are preserved; no destructive rollback.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::legacyTable(
+            'm_kelas',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE TABLE `m_kelas` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `tingkat` int DEFAULT NULL,
+  `nama` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
+SIAKAD_SQL_TEXT,
+            ['id', 'tingkat', 'nama'],
+            []
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop a school table that may contain pre-existing data.
+    }
+};

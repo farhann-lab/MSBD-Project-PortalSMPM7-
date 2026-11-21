@@ -386,7 +386,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Protected Dashboard Placeholders (Dengan middleware force.password)
     Route::middleware(['force.password'])->group(function () {
-        Route::middleware('role:admin')->group(function () {
+        Route::middleware(['role:admin', 'db.role'])->group(function () {
         Route::get('/admin', [AdminDashboardController::class, 'index'])->name('dashboard.admin');
 
         // Manajemen Akun Admin — Khusus Hak Istimewa Admin Utama [ADMIN-AKN-001]
@@ -514,7 +514,7 @@ Route::middleware(['auth'])->group(function () {
         // ─── Dashboard Guru & Wali Kelas ──────────────────────────────────
         }); // akhir route Admin
 
-        Route::middleware('role:guru')->group(function () {
+        Route::middleware(['role:guru', 'db.role'])->group(function () {
         Route::prefix('guru')->name('guru.')->group(function () {
             // Akademik & Pembelajaran
 
@@ -560,7 +560,7 @@ Route::middleware(['auth'])->group(function () {
         // ─── Dashboard Siswa ────────────────────────────────────────────────
         }); // akhir route Guru
 
-        Route::middleware('role:siswa')->group(function () {
+        Route::middleware(['role:guru', 'db.role'])->group(function () {
         Route::prefix('siswa')->name('siswa.')->group(function () {
             Route::get('/jadwal', function () {
                 return view('pages.siswa.jadwal');

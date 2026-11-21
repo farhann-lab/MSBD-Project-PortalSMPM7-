@@ -1,0 +1,25 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'VIEW',
+            'v_publik_ekstra',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `v_publik_ekstra` AS select `e`.`id` AS `id_ekstra`,`e`.`nama` AS `nama`,`p`.`deskripsi` AS `deskripsi`,`p`.`gambar_path` AS `gambar_path` from (`m_ekstra` `e` join `siakad_ekstra_publik` `p` on((`p`.`id_ekstra` = `e`.`id`))) where (`p`.`status` = 'published')
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

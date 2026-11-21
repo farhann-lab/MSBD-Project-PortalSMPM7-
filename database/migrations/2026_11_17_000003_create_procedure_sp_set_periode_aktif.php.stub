@@ -1,0 +1,51 @@
+<?php
+
+use App\Support\Migrations\SharedSchemaBaseline;
+use Illuminate\Database\Migrations\Migration;
+
+// OPTIONAL DEV-only object baseline, never replaced or dropped on existing database.
+// Requires migration owner privileges and prior schema review.
+return new class extends Migration
+{
+    public function up(): void
+    {
+        SharedSchemaBaseline::object(
+            'PROCEDURE',
+            'sp_set_periode_aktif',
+            <<<'SIAKAD_SQL_TEXT'
+CREATE PROCEDURE `sp_set_periode_aktif`(IN p_tasm VARCHAR(5))
+SQL SECURITY DEFINER MODIFIES SQL DATA
+BEGIN
+    DECLARE v_lock INT DEFAULT 0;
+    DECLARE v_n INT DEFAULT 0;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        IF v_lock=1 THEN DO RELEASE_LOCK('siakad:periode:aktif'); END IF;
+        RESIGNAL;
+    END;
+    IF p_tasm IS NULL OR p_tasm NOT REGEXP '^[0-9]{4}[12]$' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Format periode YYYY1 / YYYY2 tidak valid';
+    END IF;
+    SELECT GET_LOCK('siakad:periode:aktif',5) INTO v_lock;
+    IF v_lock IS NULL OR v_lock<>1 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Aktivasi periode sedang berlangsung';
+    END IF;
+    START TRANSACTION;
+    SELECT COUNT(*) INTO v_n FROM tahun WHERE tahun=p_tasm;
+    IF v_n<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Periode tidak ditemukan atau duplikat'; END IF;
+    UPDATE tahun SET aktif='N' WHERE aktif='Y';
+    UPDATE tahun SET aktif='Y' WHERE tahun=p_tasm;
+    COMMIT;
+    DO RELEASE_LOCK('siakad:periode:aktif');
+    SELECT p_tasm AS periode_aktif_baru;
+END
+SIAKAD_SQL_TEXT
+        );
+    }
+
+    public function down(): void
+    {
+        // NO-OP: do not drop existing functions, procedures, triggers or views.
+    }
+};

@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'force.password' => \App\Http\Middleware\EnsurePasswordChanged::class,
             'admin.utama'    => \App\Http\Middleware\AdminUtamaOnly::class,
             'role'           => \App\Http\Middleware\EnsureRole::class,
+            'db.role' => \App\Http\Middleware\UseRoleDatabaseConnection::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

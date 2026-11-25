@@ -7,7 +7,7 @@
     ]"
 >
     <div class="space-y-6">
-
+<!-- diaz jelek -->
         <!-- Header Action Card -->
         <div class="p-6 rounded-3xl bg-white border border-border-soft shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>

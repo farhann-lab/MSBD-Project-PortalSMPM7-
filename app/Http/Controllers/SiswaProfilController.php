@@ -10,10 +10,10 @@ use Illuminate\View\View;
 /** Identitas siswa hanya diambil berdasarkan ID sesi dan view publik yang minim data. */
 class SiswaProfilController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, UserProfileController $profiles): View
     {
         if (! RoleDatabase::enabled()) {
-            return view('pages.siswa.profil', ['identitasSiswa' => null]);
+            return $profiles->profileSiswa();
         }
 
         $idSiswa = $request->user()->id_siswa;
@@ -25,6 +25,9 @@ class SiswaProfilController extends Controller
             ->where('id', (int) $idSiswa)
             ->first();
 
-        return view('pages.siswa.profil', ['identitasSiswa' => $profil]);
+        return view('pages.siswa.profil', [
+            'identitasSiswa' => $profil,
+            'kelasPenempatan' => null,
+        ]);
     }
 }

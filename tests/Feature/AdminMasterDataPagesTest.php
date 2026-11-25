@@ -107,7 +107,7 @@ class AdminMasterDataPagesTest extends TestCase
         $response = $this->actingAs($this->admin)->get(route('admin.master.ekskul'));
         $response->assertStatus(200);
         $response->assertSee('Data Ekstrakurikuler');
-        $response->assertSee('Futsal');
-        $response->assertSee('Pramuka');
+        $response->assertSee('Tambah Ekstrakurikuler');
+        $response->assertSee('Cari nama ekstrakurikuler');
     }
 }

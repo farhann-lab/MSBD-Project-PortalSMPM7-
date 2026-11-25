@@ -176,8 +176,7 @@
                 <div class="p-6 rounded-3xl bg-white border border-border-soft shadow-xs space-y-4">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 class="text-base font-bold text-darkgreen">Aktivitas Terkini Konten & Data (Log Aktivitas)</h3>
-                            <p class="text-xs text-muted-text">Riwayat aksi pengelolaan konten CMS dan operasional</p>
+                            <h3 class="text-base font-bold text-darkgreen">Log Aktivitas Konten</h3>
                         </div>
                     </div>
 
@@ -200,13 +199,16 @@
                                         </p>
                                         <p class="text-[11px] text-muted-text">
                                             Oleh: <span class="font-medium text-darkgreen">{{ $log->user->nama ?? ($log->user->username ?? 'Sistem') }}</span>
-                                            &bull; Entitas: <span class="uppercase tracking-wider font-semibold">{{ $log->entity_type }}</span>
+                                            &bull; {{ ucfirst(str_replace('_', ' ', $log->entity_type)) }}
+                                            &bull; {{ ucfirst($log->aksi) }}
                                         </p>
                                     </div>
                                 </div>
-                                <span class="text-[11px] text-muted-text shrink-0 font-medium">
-                                    {{ $log->created_at ? $log->created_at->diffForHumans() : '-' }}
-                                </span>
+                                @if($log->created_at)
+                                    <time datetime="{{ $log->created_at->toIso8601String() }}" class="text-[11px] text-muted-text shrink-0 font-medium">
+                                        {{ $log->created_at->copy()->setTimezone('Asia/Jakarta')->format('d/m/Y H:i') }} WIB
+                                    </time>
+                                @endif
                             </div>
                         @empty
                             <div class="py-4 text-center text-xs text-muted-text italic">
@@ -220,7 +222,23 @@
 
             <!-- System Info & Admin Help Card -->
             <div class="space-y-6">
-                
+
+                <a href="{{ route('admin.akademik.absensi', ['tasm' => $semesterAbsensi, 'tanggal_mulai' => $tanggalAbsensi, 'tanggal_akhir' => $tanggalAbsensi]) }}"
+                    class="block p-6 rounded-3xl bg-white border border-border-soft shadow-xs space-y-3 hover:border-forest/40 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest transition-shadow">
+                    <h3 class="text-base font-bold text-darkgreen">Absensi Hari Ini</h3>
+                    @if($rombelTerabsen === null)
+                        <p class="text-sm text-muted-text">Ringkasan absensi belum tersedia.</p>
+                    @elseif($rombelTerabsen === 0)
+                        <p class="text-sm text-muted-text">Belum ada absensi tercatat hari ini.</p>
+                    @else
+                        <p class="text-sm text-muted-text"><strong class="text-2xl font-extrabold text-darkgreen">{{ $rombelTerabsen }}</strong> rombel sudah mencatat absensi</p>
+                    @endif
+                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-forest">
+                        Buka Pemantauan Absensi
+                        <x-icon name="arrow-right" class="w-3.5 h-3.5" />
+                    </span>
+                </a>
+
                 <!-- School Info Card -->
                 <div class="p-6 rounded-3xl bg-white border border-border-soft shadow-xs space-y-4">
                     <h3 class="text-base font-bold text-darkgreen">Informasi Satuan Pendidikan</h3>

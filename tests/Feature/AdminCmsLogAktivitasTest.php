@@ -53,6 +53,8 @@ class AdminCmsLogAktivitasTest extends TestCase
             'entity_id' => $berita->id,
             'user_id' => $this->adminUser->id,
         ]);
+
+        $this->get(route('dashboard.admin'))->assertOk()->assertSee($judul);
     }
 
     public function test_updating_and_publishing_berita_triggers_log_aktivitas(): void
@@ -88,8 +90,9 @@ class AdminCmsLogAktivitasTest extends TestCase
         $pengumuman = Pengumuman::create([
             'judul' => 'Pengumuman Uji Hapus ' . rand(1000, 9999),
             'isi' => '<p>Isi pengumuman</p>',
+            'tanggal' => today()->toDateString(),
             'status' => 'draft',
-            'penulis_user_id' => $this->adminUser->id,
+            'pembuat_user_id' => $this->adminUser->id,
         ]);
 
         $response = $this->actingAs($this->adminUser)
@@ -107,13 +110,19 @@ class AdminCmsLogAktivitasTest extends TestCase
 
     public function test_dashboard_displays_recent_activities(): void
     {
-        // Masukkan log aktivitas dummy
         LogAktivitas::catat(
             $this->adminUser->id,
             'tambah',
             'fasilitas',
             101,
             'Menambahkan fasilitas Lab Komputer Modern'
+        );
+        LogAktivitas::catat(
+            $this->adminUser->id,
+            'ubah',
+            'absensi_siswa',
+            102,
+            'Koreksi absensi di luar feed CMS'
         );
 
         $response = $this->actingAs($this->adminUser)
@@ -122,5 +131,6 @@ class AdminCmsLogAktivitasTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Log Aktivitas');
         $response->assertSee('Menambahkan fasilitas Lab Komputer Modern');
+        $response->assertDontSee('Koreksi absensi di luar feed CMS');
     }
 }

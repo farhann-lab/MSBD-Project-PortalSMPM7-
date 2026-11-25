@@ -30,8 +30,15 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
+        // Pastikan input username selalu bertipe string (misal NIS angka seperti 3901)
+        if ($request->has('username')) {
+            $request->merge([
+                'username' => (string) $request->input('username'),
+            ]);
+        }
+
         $credentials = $request->validate([
-            'username' => ['required', 'string'],
+            'username' => ['required'],
             'password' => ['required', 'string'],
         ], [
             'username.required' => 'Username atau ID wajib diisi.',

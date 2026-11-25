@@ -27,14 +27,15 @@ class GuruDashboardController extends Controller
         }
 
         $guru = $user->guru;
+        $idGuru = $guru ? $guru->id : ($user->id_guru ?? 0);
         $tasmAktif = Tahun::getTasmAktif();
         $taAktif = Tahun::getTaAktif();
 
         // 1. Data Penugasan Mengajar (Rombel & Mapel) pada semester aktif
-        $penugasanList = GuruMapel::with(['kelas', 'mapel'])
-            ->where('id_guru', $guru->id)
+        $penugasanList = $idGuru ? GuruMapel::with(['kelas', 'mapel'])
+            ->where('id_guru', $idGuru)
             ->where('tasm', $tasmAktif)
-            ->get();
+            ->get() : collect();
 
         $rombelCount = $penugasanList->pluck('id_kelas')->unique()->count();
         $rombelNames = $penugasanList->pluck('kelas.nama')->filter()->unique()->values();
@@ -52,15 +53,15 @@ class GuruDashboardController extends Controller
         $hariIniIndex = Carbon::now()->dayOfWeekIso; // 1 (Senin) .. 7 (Minggu)
         $namaHariIni = $mapHariIndo[$hariIniIndex] ?? 'Senin';
 
-        $jadwalHariIni = Jadwal::with(['guruMapel.kelas', 'guruMapel.mapel'])
-            ->whereHas('guruMapel', function ($q) use ($guru, $tasmAktif) {
-                $q->where('id_guru', $guru->id)
+        $jadwalHariIni = $idGuru ? Jadwal::with(['guruMapel.kelas', 'guruMapel.mapel'])
+            ->whereHas('guruMapel', function ($q) use ($idGuru, $tasmAktif) {
+                $q->where('id_guru', $idGuru)
                   ->where('tasm', $tasmAktif);
             })
             ->where('hari', $namaHariIni)
             ->where('aktif', true)
             ->orderBy('jam_mulai', 'asc')
-            ->get();
+            ->get() : collect();
 
         // Periksa apakah jadwal hari ini sudah diisi absensi pertemuannya untuk tanggal hari ini
         $tanggalHariIni = Carbon::today()->toDateString();
@@ -70,26 +71,26 @@ class GuruDashboardController extends Controller
             ->keyBy('jadwal_id');
 
         // 3. Notifikasi Pertemuan Belum Diisi Absensinya (v_pertemuan_tanpa_absensi)
-        $pertemuanTanpaAbsensi = DB::table('v_pertemuan_tanpa_absensi')
-            ->where('id_guru', $guru->id)
-            ->get();
+        $pertemuanTanpaAbsensi = $idGuru ? DB::table('v_pertemuan_tanpa_absensi')
+            ->where('id_guru', $idGuru)
+            ->get() : collect();
         $countTanpaAbsensi = $pertemuanTanpaAbsensi->count();
 
         // 4. Hitung Total Materi yang Dikelola Guru
-        $countMateri = Materi::where('id_guru', $guru->id)->count();
+        $countMateri = $idGuru ? Materi::where('id_guru', $idGuru)->count() : 0;
 
         // 5. Materi Terakhir Diunggah (hingga 3 item)
-        $materiTerakhir = Materi::with('mapel')
-            ->where('id_guru', $guru->id)
+        $materiTerakhir = $idGuru ? Materi::with('mapel')
+            ->where('id_guru', $idGuru)
             ->orderBy('created_at', 'desc')
             ->take(3)
-            ->get();
+            ->get() : collect();
 
         // 6. Deteksi Peran Wali Kelas pada Semester Aktif (WKL-1 s.d. WKL-8)
-        $waliKelasRecord = Walikelas::with('kelas')
-            ->where('id_guru', $guru->id)
+        $waliKelasRecord = $idGuru ? Walikelas::with('kelas')
+            ->where('id_guru', $idGuru)
             ->where('tasm', $tasmAktif)
-            ->first();
+            ->first() : null;
 
         $isWaliKelas = !is_null($waliKelasRecord);
         $kelasPerwalian = $waliKelasRecord ? ($waliKelasRecord->kelas->nama ?? '-') : null;

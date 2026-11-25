@@ -121,6 +121,7 @@
                 {{-- Form Login Utama --}}
                 <form action="{{ route('login.post') }}" method="POST" class="space-y-4">
                     @csrf
+                    <input type="hidden" name="role_hint" id="role_hint" value="siswa">
 
                     {{-- Username / ID Input --}}
                     <div>
@@ -237,11 +238,15 @@
             const roleButtons = document.querySelectorAll('.role-switcher-btn');
             const usernameInput = document.getElementById('username');
             const usernameHelper = document.getElementById('username-helper');
+            const roleHintInput = document.getElementById('role_hint');
 
             // Switch role tab
             roleButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const selectedRole = btn.getAttribute('data-role');
+                    if (roleHintInput) {
+                        roleHintInput.value = selectedRole;
+                    }
 
                     roleButtons.forEach(b => {
                         b.setAttribute('aria-selected', 'false');

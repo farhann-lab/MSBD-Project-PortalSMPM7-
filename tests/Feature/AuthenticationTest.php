@@ -18,16 +18,22 @@ class AuthenticationTest extends TestCase
             'admin_utama',
             'guru_test',
             'siswa_test',
+            'siswa_auth_test',
             'user_nonaktif',
             'user_force_pwd',
             'user_change_val',
             'user_change_ok',
             'user_logout',
+            'siswa_baru_auth_test',
+            'guru_mat_auth_test',
+            'guru_sukses_auth_test',
+            'admin_logout_auth_test',
         ])->delete();
 
         RateLimiter::clear('admin_utama|127.0.0.1');
         RateLimiter::clear('guru_test|127.0.0.1');
         RateLimiter::clear('siswa_test|127.0.0.1');
+        RateLimiter::clear('siswa_auth_test|127.0.0.1');
         RateLimiter::clear('user_nonaktif|127.0.0.1');
     }
 
@@ -37,11 +43,16 @@ class AuthenticationTest extends TestCase
             'admin_utama',
             'guru_test',
             'siswa_test',
+            'siswa_auth_test',
             'user_nonaktif',
             'user_force_pwd',
             'user_change_val',
             'user_change_ok',
             'user_logout',
+            'siswa_baru_auth_test',
+            'guru_mat_auth_test',
+            'guru_sukses_auth_test',
+            'admin_logout_auth_test',
         ])->delete();
 
         parent::tearDown();
@@ -92,7 +103,7 @@ class AuthenticationTest extends TestCase
             'username' => 'guru_test',
             'password' => Hash::make('password123'),
             'role' => 'guru',
-            'id_guru' => 1,
+            'id_guru' => null,
             'is_active' => true,
             'wajib_ganti_password' => false,
         ]);
@@ -112,16 +123,16 @@ class AuthenticationTest extends TestCase
     public function test_student_can_login_and_redirects_to_student_panel(): void
     {
         $siswa = User::create([
-            'username' => '3901', // NIS
+            'username' => 'siswa_auth_test',
             'password' => Hash::make('password123'),
             'role' => 'siswa',
-            'id_siswa' => 356,
+            'id_siswa' => null,
             'is_active' => true,
             'wajib_ganti_password' => false,
         ]);
 
         $response = $this->post('/login', [
-            'username' => '3901',
+            'username' => 'siswa_auth_test',
             'password' => 'password123',
         ]);
 
@@ -196,7 +207,7 @@ class AuthenticationTest extends TestCase
     public function test_user_with_wajib_ganti_password_is_forced_to_change_password(): void
     {
         $user = User::create([
-            'username' => 'siswa_baru',
+            'username' => 'siswa_baru_auth_test',
             'password' => Hash::make('temp12345'),
             'role' => 'siswa',
             'is_active' => true,
@@ -205,7 +216,7 @@ class AuthenticationTest extends TestCase
 
         // Login sukses, harus redirect ke /ubah-password
         $response = $this->post('/login', [
-            'username' => 'siswa_baru',
+            'username' => 'siswa_baru_auth_test',
             'password' => 'temp12345',
         ]);
 
@@ -226,7 +237,7 @@ class AuthenticationTest extends TestCase
     public function test_change_password_validations(): void
     {
         $user = User::create([
-            'username' => 'guru_matematika',
+            'username' => 'guru_mat_auth_test',
             'password' => Hash::make('passwordLama123'),
             'role' => 'guru',
             'is_active' => true,
@@ -236,32 +247,32 @@ class AuthenticationTest extends TestCase
         // 1. Password lama salah
         $responseWrongOld = $this->actingAs($user)->post(route('password.change.update'), [
             'current_password' => 'passwordSalah',
-            'password' => 'passwordBaru123',
-            'password_confirmation' => 'passwordBaru123',
+            'password' => 'PasswordBaru@123',
+            'password_confirmation' => 'PasswordBaru@123',
         ]);
         $responseWrongOld->assertSessionHasErrors('current_password');
 
         // 2. Kurang dari 8 karakter
         $responseShort = $this->actingAs($user)->post(route('password.change.update'), [
             'current_password' => 'passwordLama123',
-            'password' => 'pendek',
-            'password_confirmation' => 'pendek',
+            'password' => 'P@1s',
+            'password_confirmation' => 'P@1s',
         ]);
         $responseShort->assertSessionHasErrors('password');
 
         // 3. Sama dengan username
         $responseSameUser = $this->actingAs($user)->post(route('password.change.update'), [
             'current_password' => 'passwordLama123',
-            'password' => 'guru_matematika',
-            'password_confirmation' => 'guru_matematika',
+            'password' => 'guru_mat_auth_test',
+            'password_confirmation' => 'guru_mat_auth_test',
         ]);
         $responseSameUser->assertSessionHasErrors('password');
 
         // 4. Konfirmasi tidak cocok
         $responseMismatch = $this->actingAs($user)->post(route('password.change.update'), [
             'current_password' => 'passwordLama123',
-            'password' => 'passwordBaru123',
-            'password_confirmation' => 'passwordLain123',
+            'password' => 'PasswordBaru@123',
+            'password_confirmation' => 'PasswordLain@123',
         ]);
         $responseMismatch->assertSessionHasErrors('password');
     }
@@ -272,7 +283,7 @@ class AuthenticationTest extends TestCase
     public function test_change_password_success_clears_flag_and_redirects(): void
     {
         $user = User::create([
-            'username' => 'guru_sukses',
+            'username' => 'guru_sukses_auth_test',
             'password' => Hash::make('passwordLama123'),
             'role' => 'guru',
             'is_active' => true,
@@ -281,15 +292,15 @@ class AuthenticationTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('password.change.update'), [
             'current_password' => 'passwordLama123',
-            'password' => 'passwordBaruKuat123',
-            'password_confirmation' => 'passwordBaruKuat123',
+            'password' => 'PasswordBaruKuat@123',
+            'password_confirmation' => 'PasswordBaruKuat@123',
         ]);
 
         $response->assertRedirect('/guru-panel');
 
         $user->refresh();
         $this->assertFalse($user->wajib_ganti_password);
-        $this->assertTrue(Hash::check('passwordBaruKuat123', $user->password));
+        $this->assertTrue(Hash::check('PasswordBaruKuat@123', $user->password));
 
         // Sekarang user bisa akses dashboard tanpa dicegat
         $dashboardResponse = $this->actingAs($user)->get('/guru-panel');
@@ -302,7 +313,7 @@ class AuthenticationTest extends TestCase
     public function test_user_can_logout(): void
     {
         $user = User::create([
-            'username' => 'admin_test',
+            'username' => 'admin_logout_auth_test',
             'password' => Hash::make('password123'),
             'role' => 'admin',
             'is_active' => true,

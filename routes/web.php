@@ -560,30 +560,22 @@ Route::middleware(['auth'])->group(function () {
         // ─── Dashboard Siswa ────────────────────────────────────────────────
         }); // akhir route Guru
 
-        Route::middleware(['role:guru', 'db.role'])->group(function () {
-        Route::prefix('siswa')->name('siswa.')->group(function () {
-            Route::get('/jadwal', function () {
-                return view('pages.siswa.jadwal');
-            })->name('jadwal');
+        Route::middleware(['role:siswa', 'db.role'])->group(function () {
+            Route::prefix('siswa')->name('siswa.')->group(function () {
+                Route::get('/jadwal', function () {
+                    return view('pages.siswa.jadwal');
+                })->name('jadwal');
 
-            Route::get('/materi', [\App\Http\Controllers\SiswaMateriController::class, 'index'])->name('materi');
+                Route::get('/materi', [\App\Http\Controllers\SiswaMateriController::class, 'index'])->name('materi');
 
-            Route::get('/absensi', [\App\Http\Controllers\SiswaAbsensiController::class, 'index'])->name('absensi');
+                Route::get('/absensi', [\App\Http\Controllers\SiswaAbsensiController::class, 'index'])->name('absensi');
 
+                Route::get('/profil', [\App\Http\Controllers\UserProfileController::class, 'profileSiswa'])->name('profil');
+                Route::post('/profil/password', [\App\Http\Controllers\UserProfileController::class, 'updatePassword'])->name('profil.password');
+            });
 
-            //Route::get('/profil', [SiswaProfilController::class, 'index'])->name('profil');
+            Route::get('/siswa-panel', [\App\Http\Controllers\SiswaDashboardController::class, 'index'])->name('dashboard.siswa');
         });
-
-       // Route::get('/siswa-panel', function () {
-         //   return view('pages.siswa.dashboard');
-       // })->name('dashboard.siswa');
-       // }); // akhir route Siswa
-
-            Route::get('/profil', [\App\Http\Controllers\UserProfileController::class, 'profileSiswa'])->name('profil');
-            Route::post('/profil/password', [\App\Http\Controllers\UserProfileController::class, 'updatePassword'])->name('profil.password');
-        });
-
-        Route::get('/siswa-panel', [\App\Http\Controllers\SiswaDashboardController::class, 'index'])->name('dashboard.siswa');
 
         // Route Unduh Materi Terproteksi (Otorisasi Guru Pemilik & Siswa Kelas Target)
         Route::get('/materi/{id}/download', [\App\Http\Controllers\SiswaMateriController::class, 'download'])->name('materi.download');

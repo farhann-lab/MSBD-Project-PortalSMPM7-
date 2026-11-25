@@ -458,7 +458,7 @@
 
     @push('scripts')
     <script>
-        function jadwalApp() {
+        window.jadwalApp = function() {
             return {
                 filterHari: 'all',
                 modalTambahTerbuka: false,
@@ -489,7 +489,7 @@
                     this.modalSalinTerbuka = true;
                 }
             }
-        }
+        };
     </script>
     @endpush
 </x-layouts.admin>

@@ -6,17 +6,9 @@
 ])
 
 @php
-    $currentUser = auth()->user();
-    $currentSiswa = $currentUser?->siswa;
-    $taAktif = \App\Models\Tahun::getTaAktif();
-
-    if (is_null($kelasSiswa)) {
-        if ($currentSiswa) {
-            $penempatan = $currentSiswa->kelasAktif($taAktif);
-            $kelasSiswa = $penempatan ? ($penempatan->kelas->nama ?? '-') : '-';
-        } else {
-            $kelasSiswa = '-';
-        }
+    if ($kelasSiswa === null) {
+        $penempatan = auth()->user()?->siswa?->kelasAktif();
+        $kelasSiswa = $penempatan?->kelas?->nama ?? '-';
     }
 @endphp
 

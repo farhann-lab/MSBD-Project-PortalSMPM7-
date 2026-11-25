@@ -171,8 +171,7 @@ class PublicPagesMvpTest extends TestCase
         $response = $this->get('/kesiswaan/ekstrakurikuler');
         $response->assertStatus(200);
         $response->assertSee('Ekstrakurikuler');
-        $response->assertSee('Futsal');
-        $response->assertSee('Tahfidz Quran');
+        $response->assertSee('Beragam pilihan kegiatan pengembangan minat');
     }
 
     /**

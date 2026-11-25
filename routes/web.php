@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminBeritaController;
+use App\Http\Controllers\Admin\AdminEkstrakurikulerController;
 use App\Http\Controllers\Admin\AdminFasilitasController;
 use App\Http\Controllers\Admin\AdminGaleriController;
 use App\Http\Controllers\Admin\AdminGuruController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\Admin\AdminTahunAjaranController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminManagementController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EkstrakurikulerPublikController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\GuruJadwalController;
 use App\Http\Controllers\SiswaProfilController;
@@ -212,10 +214,9 @@ Route::prefix('kesiswaan')->group(function () {
         return view('pages.student-life.organizations', compact('organizations'));
     })->name('student-life.organizations');
 
-    Route::get('/ekstrakurikuler', function () {
-        $extracurriculars = require database_path('dummy/extracurriculars.php');
-        return view('pages.student-life.extracurriculars', compact('extracurriculars'));
-    })->name('student-life.extracurriculars');
+    Route::get('/ekstrakurikuler', [EkstrakurikulerPublikController::class, 'index'])->name('student-life.extracurriculars');
+    Route::get('/ekstrakurikuler/{ekskul}/gambar', [EkstrakurikulerPublikController::class, 'image'])
+        ->whereNumber('ekskul')->name('student-life.extracurriculars.image');
 
     Route::get('/prestasi', function () {
         $dbAchievements = (RoleDatabase::enabled() ? PrestasiPublik::on('mysql_public')->from('v_publik_prestasi') : PrestasiPublik::published())->latest('tanggal')->get();
@@ -471,10 +472,16 @@ Route::middleware(['auth'])->group(function () {
                 return redirect()->route('admin.master.tahun-ajaran.index');
             })->name('tahun-ajaran');
 
-            Route::get('/ekskul', function () {
-                $extracurriculars = require database_path('dummy/extracurriculars.php');
-                return view('pages.admin.master.ekskul', compact('extracurriculars'));
-            })->name('ekskul');
+            Route::controller(AdminEkstrakurikulerController::class)->prefix('ekskul')->group(function () {
+                Route::get('/', 'index')->name('ekskul');
+                Route::get('/tambah', 'create')->name('ekskul.create');
+                Route::post('/', 'store')->name('ekskul.store');
+                Route::get('/{ekskul}/edit', 'edit')->whereNumber('ekskul')->name('ekskul.edit');
+                Route::put('/{ekskul}', 'update')->whereNumber('ekskul')->name('ekskul.update');
+                Route::get('/{ekskul}/publik', 'editPublication')->whereNumber('ekskul')->name('ekskul.publik.edit');
+                Route::put('/{ekskul}/publik', 'updatePublication')->whereNumber('ekskul')->name('ekskul.publik.update');
+                Route::get('/{ekskul}/gambar', 'image')->whereNumber('ekskul')->name('ekskul.image');
+            });
         });
 
         // Modul Akademik Admin
@@ -486,10 +493,8 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/jadwal/salin', [\App\Http\Controllers\Admin\AdminJadwalController::class, 'salin'])->name('jadwal.salin');
             Route::get('/jadwal/penugasan-ajax', [\App\Http\Controllers\Admin\AdminJadwalController::class, 'getPenugasanByKelas'])->name('jadwal.penugasan-ajax');
 
-            Route::get('/kenaikan', function () {
-                $students = require database_path('dummy/students_dummy.php');
-                return view('pages.admin.akademik.kenaikan', compact('students'));
-            })->name('kenaikan');
+            Route::get('/kenaikan', [\App\Http\Controllers\Admin\AdminKenaikanKelasController::class, 'index'])->name('kenaikan');
+            Route::post('/kenaikan/eksekusi', [\App\Http\Controllers\Admin\AdminKenaikanKelasController::class, 'eksekusi'])->name('kenaikan.eksekusi');
 
             Route::get('/absensi', [\App\Http\Controllers\Admin\AdminPemantauanAbsensiController::class, 'index'])->name('absensi');
         });
@@ -568,17 +573,24 @@ Route::middleware(['auth'])->group(function () {
 
                 Route::get('/materi', [\App\Http\Controllers\SiswaMateriController::class, 'index'])->name('materi');
 
+
                 Route::get('/absensi', [\App\Http\Controllers\SiswaAbsensiController::class, 'index'])->name('absensi');
 
                 Route::get('/profil', [\App\Http\Controllers\UserProfileController::class, 'profileSiswa'])->name('profil');
                 Route::post('/profil/password', [\App\Http\Controllers\UserProfileController::class, 'updatePassword'])->name('profil.password');
             });
 
+
+            //     Route::get('/absensi', [\App\Http\Controllers\SiswaAbsensiController::class, 'index'])->name('absensi');
+            //     Route::get('/profil', [SiswaProfilController::class, 'index'])->name('profil');
+            //     Route::post('/profil/password', [\App\Http\Controllers\UserProfileController::class, 'updatePassword'])->name('profil.password');
+            // });
+
+
             Route::get('/siswa-panel', [\App\Http\Controllers\SiswaDashboardController::class, 'index'])->name('dashboard.siswa');
+
+            // Route Unduh Materi Terproteksi (Otorisasi Guru Pemilik & Siswa Kelas Target)
+            Route::get('/materi/{id}/download', [\App\Http\Controllers\SiswaMateriController::class, 'download'])->name('materi.download');
         });
-
-        // Route Unduh Materi Terproteksi (Otorisasi Guru Pemilik & Siswa Kelas Target)
-        Route::get('/materi/{id}/download', [\App\Http\Controllers\SiswaMateriController::class, 'download'])->name('materi.download');
-
     });
 });

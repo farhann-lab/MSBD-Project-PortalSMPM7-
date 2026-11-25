@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
+use App\Models\LogAktivitas;
 use App\Support\RoleDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
@@ -20,16 +21,47 @@ class AdminDashboardController extends Controller
         // 2. Data Statistik Utama
         $stats = $this->getDashboardStats($periodeAktif['tahun_kode'] ?? null);
 
-        // 3. Log Aktivitas Terkini (DSH-4, CMS-LOG-001)
+        // 3. Ringkasan absensi hari ini (DSH-3)
+        $tanggalAbsensi = today('Asia/Jakarta')->toDateString();
+        $semesterAbsensi = $periodeAktif['is_aktif'] ? $periodeAktif['tahun_kode'] : null;
+        $rombelTerabsen = $this->getRombelTerabsen($tanggalAbsensi, $semesterAbsensi);
+
+        // 4. Log Aktivitas Terkini (DSH-4, CMS-LOG-001)
         $aktivitasTerkini = collect();
         if (Schema::hasTable('siakad_log_aktivitas')) {
-            $aktivitasTerkini = \App\Models\LogAktivitas::with('user')
+            $aktivitasTerkini = LogAktivitas::with('user')
+                ->whereIn('entity_type', ['berita', 'pengumuman', 'fasilitas', 'galeri', 'galeri_foto', 'prestasi'])
+                ->latest('created_at')
                 ->orderByDesc('id')
                 ->limit(6)
                 ->get();
         }
 
-        return view('pages.admin.dashboard', compact('stats', 'periodeAktif', 'aktivitasTerkini'));
+        return view('pages.admin.dashboard', compact(
+            'stats', 'periodeAktif', 'tanggalAbsensi', 'semesterAbsensi', 'rombelTerabsen', 'aktivitasTerkini'
+        ));
+    }
+
+    private function getRombelTerabsen(string $tanggal, ?string $semester): ?int
+    {
+        if ($semester === null) {
+            return null;
+        }
+
+        foreach (['siakad_absensi_siswa', 'siakad_pertemuan', 'siakad_jadwal', 't_guru_mapel'] as $table) {
+            if (! Schema::hasTable($table)) {
+                return null;
+            }
+        }
+
+        return DB::table('siakad_absensi_siswa as a')
+            ->join('siakad_pertemuan as p', 'p.id', '=', 'a.pertemuan_id')
+            ->join('siakad_jadwal as j', 'j.id', '=', 'p.jadwal_id')
+            ->join('t_guru_mapel as gm', 'gm.id', '=', 'j.id_guru_mapel')
+            ->where('p.tanggal', $tanggal)
+            ->where('j.tasm', $semester)
+            ->distinct()
+            ->count('gm.id_kelas');
     }
 
     /**
@@ -45,7 +77,7 @@ class AdminDashboardController extends Controller
             'semester_tipe'=> 'Ganjil',
             'label_lengkap'=> 'Tahun Ajaran 2026/2027 Semester 1 (Ganjil)',
             'label_topbar' => '2026/2027 Semester 1',
-            'is_aktif'     => true,
+            'is_aktif'     => false,
             'kepala_sekolah'=> 'M. Reza Akbar, S.Pd',
         ];
 

@@ -695,7 +695,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [KNK-001] Modul Kenaikan Kelas (Pratinjau Status RKM & Eksekusi Transaksi)
 - **Phase:** Phase 6
 - **Priority:** P1
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Academic Progression
 - **Description:** Membangun antarmuka pratinjau kenaikan kelas yang membaca keputusan dari `t_naikkelas` RKM (read-only), memungkinkan admin memetakan rombel kelas baru, dan mengeksekusi penempatan siswa ke tahun ajaran baru via Stored Procedure.
@@ -707,8 +707,8 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Siswa kelas 9 yang lulus ditandai "Lulus, tidak ditempatkan" (tidak diubah statusnya menjadi L pada data RKM sesuai PRD).
   - Eksekusi memanggil `sp_proses_kenaikan_kelas` dalam 1 transaksi penuh.
 - **Acceptance Criteria:**
-  - [ ] Tidak ada penyimpanan otomatis sebelum admin menekan tombol konfirmasi.
-  - [ ] Penempatan siswa pada tahun ajaran baru terisi dengan benar di `t_kelas_siswa`.
+  - [x] Tidak ada penyimpanan otomatis sebelum admin menekan tombol konfirmasi.
+  - [x] Penempatan siswa pada tahun ajaran baru terisi dengan benar di `t_kelas_siswa`.
 - **Verification:** Uji alur pratinjau kenaikan kelas dari kelas 7A ke 8A di database dev.
 
 ---
@@ -716,7 +716,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [DASH-002] Integrasi Metrik Absensi & Feed Aktivitas Konten di Dashboard Admin
 - **Phase:** Phase 6
 - **Priority:** P2
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin
 - **Category:** Dashboard & Analytics
 - **Description:** Mengintegrasikan kartu ringkasan absensi harian (`DSH-3`) yang mengarah ke modul Pemantauan Absensi (`ADMIN-PAS-001`), serta widget feed catatan aktivitas pengelolaan konten publik (`DSH-4`) yang bersumber dari tabel `siakad_log_aktivitas` (`CMS-LOG-001`).
@@ -726,8 +726,8 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - Menambahkan baris widget aktivitas konten terbaru di dashboard utama admin.
   - Kartu statistik pemantauan absensi (berapa rombel sudah diabsen hari ini).
 - **Acceptance Criteria:**
-  - [ ] Dashboard admin menampilkan ringkasan kehadiran siswa hari berjalan.
-  - [ ] Feed riwayat aktivitas admin (artikel/fasilitas baru ditambah) tampil di dashboard.
+  - [x] Dashboard admin menampilkan ringkasan kehadiran siswa hari berjalan.
+  - [x] Feed riwayat aktivitas admin (artikel/fasilitas baru ditambah) tampil di dashboard.
 - **Verification:** Buka `/admin` dan verifikasi kartu absensi dan log aktivitas memuat data dinamis.
 
 ---
@@ -735,7 +735,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 #### [EKS-001] Manajemen Ekstrakurikuler Akademik & Pemisahan Konten Promosi
 - **Phase:** Phase 6
 - **Priority:** P2
-- **Status:** Not Started
+- **Status:** Done
 - **Role/Panel:** 🛡️ Admin & 🌐 Publik
 - **Category:** Master Data
 - **Description:** Mengelola data master ekstrakurikuler sekolah pada tabel bersama RKM `m_ekstra` dan menghubungkannya dengan deskripsi promosi publik pada `siakad_ekstra_publik`.
@@ -743,17 +743,18 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 - **Dependencies:** `DASH-001`, `DB-MIGRATE-001`
 - **Implementation Notes:**
   - Penilaian ekstrakurikuler untuk rapor tetap berada di RKM. SIAKAD hanya mengelola master daftar kegiatan dan informasi publiknya.
+  - EKS-4 masih memerlukan keputusan. Hak akses pada `m_ekstra` mengikuti `ARCHITECTURE.md` Bagian 8.1 dan 8.7 (baca, tambah, ubah). Admin dapat mengarsipkan promosi publik.
 - **Acceptance Criteria:**
-  - [ ] Admin dapat menambah jenis ekstrakurikuler baru.
-  - [ ] Informasi ekskul terbarui di halaman publik `/kesiswaan/ekstrakurikuler`.
-- **Verification:** Tambah ekskul baru dan cek kemunculannya di halaman kesiswaan publik.
+  - [x] Admin dapat menambah jenis ekstrakurikuler baru.
+  - [x] Informasi ekskul terbarui di halaman publik `/kesiswaan/ekstrakurikuler`.
+- **Verification:** Alur tambah, draft, terbit, ubah, dan arsip lulus pada database MySQL 8.0 `siakad_rkm_dev` terisolasi dengan akun admin dan publik terpisah.
 
 ---
 
 #### [REL-001] Audit Keamanan, Pengujian E2E, & Deployment Demo Tugas Besar
 - **Phase:** Phase 6
 - **Priority:** P0
-- **Status:** Not Started
+- **Status:** In Progress
 - **Role/Panel:** 🔧 Infrastruktur & QA
 - **Category:** Release & Testing
 - **Description:** Menjalankan audit menyeluruh terhadap performa query, keamanan hak akses database, kestabilan aplikasi di lingkungan lokal (target demo awal Desember 2026), dan persiapan migrasi ke hosting Niagahoster.
@@ -767,6 +768,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
   - [ ] Seluruh skenario inti (Login, Dashboard, Data Master, Presensi, Kenaikan Kelas, dan Web Publik) berjalan mulus tanpa error 500.
   - [ ] Kesiapan demonstrasi tugas besar basis data terpenuhi 100%.
 - **Verification:** Lakukan simulasi demo tugas besar end-to-end dari login hingga rekap presensi dan kenaikan kelas.
+- **Hasil verifikasi:** 154 tes lulus dan 29 gagal. Simulasi lokal lulus 29/29 pada mode kompatibilitas dan 23/29 dengan RBAC. Presensi, dashboard siswa, dan kenaikan kelas masih terhambat pada mode RBAC. Lihat [hasil audit dan panduan staging](docs/REL-001_RILIS_DEMO.md).
 
 ---
 
@@ -777,7 +779,7 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 | **NAV, BRD, PRF, KSW, GAL, BRT, PGM** | Antarmuka Publik & Fitur Website Sekolah | `FE-SETUP-001` s.d. `FE-QA-004` | 🌐 Publik | **Done** ✅ |
 | **AUT-1 s.d. AUT-9** | Sistem Autentikasi, Guard Multi-Role, Ubah Password, Profil | `AUTH-001`, `AUTH-002`, `AUTH-003` | 🔧 Infrastruktur | **AUTH-001/002: Done ✅**<br>`AUTH-003: Not Started` |
 | **AKN-1 s.d. AKN-11** | Manajemen Akun Admin, Guru, Siswa (Satuan, Massal & Reset) | `ADMIN-AKN-001`, `MASTER-AKN-001`, `MASTER-AKN-002` | 🛡️ Admin | **ADMIN-AKN-001: Done ✅**<br>`MASTER-AKN: Not Started` |
-| **DSH-1 s.d. DSH-8** | Dashboard Admin, Guru, Wali Kelas, dan Siswa | `DASH-001`, `DASH-002`, `GURU-PANEL-001`, `SISWA-PANEL-001` | Multi-role | **DASH-001: Done ✅**<br>`Lainnya: Not Started` |
+| **DSH-1 s.d. DSH-8** | Dashboard Admin, Guru, Wali Kelas, dan Siswa | `DASH-001`, `DASH-002`, `GURU-PANEL-001`, `SISWA-PANEL-001` | Multi-role | **DASH-001 dan DASH-002: Done ✅**<br>`Lainnya: Not Started` |
 | **ADM-1 s.d. ADM-11** | CMS Pengelolaan Konten Publik oleh Admin & Log Aktivitas | `CMS-PUB-001`, `CMS-PUB-002`, `CMS-LOG-001`, `BE-HOME-001` | 🛡️ Admin | **CMS-PUB / BE-HOME: Done ✅**<br>`CMS-LOG-001: Not Started` |
 | **DIR-1 s.d. DIR-11** | Direktori Guru & Siswa terhubung Database Master | `DB-VIEW-001`, `BE-DIR-001` | 🌐 Publik & 🛡️ Admin | **BE-DIR-001: Done ✅** |
 | **GRU-1 s.d. GRU-6** | Manajemen Data Guru & Status Keaktifan | `MASTER-GRU-001` | 🛡️ Admin | **Done** ✅ |
@@ -791,8 +793,8 @@ Setiap task diberi label **Role/Panel** untuk memudahkan paralelisasi pengerjaan
 | **WKL-1 s.d. WKL-8** | Rekap Absensi Kelas Binaan Wali Kelas & Pintasan RKM | `GURU-PANEL-001` | 👨‍🏫 Panel Guru | Not Started |
 | **MTR-1 s.d. MTR-8** | Materi Pembelajaran (Unggah Guru, Akses Terproteksi) | `OPS-MTR-001` | 👨‍🏫 Guru & 👩‍🎓 Siswa | Not Started |
 | **SSW-1 s.d. SSW-7** | Portal & Jadwal, Materi, Absensi Pribadi Siswa | `SISWA-PANEL-001` | 👩‍🎓 Panel Siswa | Not Started |
-| **KNK-1 s.d. KNK-9** | Kenaikan Kelas & Penempatan Tahun Ajaran Baru | `KNK-001` | 🛡️ Admin | Not Started |
-| **EKS-1 s.d. EKS-4** | Ekstrakurikuler Akademik & Pemisahan Konten Promosi | `EKS-001` | 🛡️ Admin & 🌐 Publik | Not Started |
+| **KNK-1 s.d. KNK-9** | Kenaikan Kelas & Penempatan Tahun Ajaran Baru | `KNK-001` | 🛡️ Admin | Done ✅ |
+| **EKS-1 s.d. EKS-4** | Ekstrakurikuler Akademik & Pemisahan Konten Promosi | `EKS-001` | 🛡️ Admin & 🌐 Publik | Done ✅<br>EKS-4 menunggu keputusan hak hapus |
 | **DBMS Objects** | Views, Triggers, Stored Procedures, Privileges | `DB-MIGRATE-001`, `DB-VIEW-001`, `DB-SP-001`, `DB-TRIGGER-001`, `DB-PRIV-001` | 🔧 Infrastruktur | Not Started |
 
 ---

@@ -5,7 +5,7 @@
         ['label' => 'Siswa', 'url' => route('dashboard.siswa')],
         ['label' => 'Profil Siswa', 'url' => ''],
     ]"
-    :kelasSiswa="$kelasPenempatan ? 'Kelas ' . ($kelasPenempatan->kelas->nama ?? '-') : '-'"
+    :kelasSiswa="$identitasSiswa->nama_kelas ?? $kelasPenempatan?->kelas?->nama ?? '-'"
 >
     @if(config('siakad_rbac.enabled'))
     <section class="space-y-4">

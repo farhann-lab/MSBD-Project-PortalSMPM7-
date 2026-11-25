@@ -26,18 +26,16 @@
     <section class="py-10 sm:py-14">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            {{-- Extracurricular Grid --}}
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                @foreach($extracurriculars as $ekskul)
+                @forelse($extracurriculars as $ekskul)
+                    @php($gambarUrl = $ekskul->imageUrl(route('student-life.extracurriculars.image', $ekskul->id_ekstra)))
                     <div class="group flex flex-col justify-between overflow-hidden rounded-2xl border border-border-soft bg-white transition-all duration-200 hover:shadow-md hover:border-sage/50">
-
                         <div>
-                            {{-- Image Area --}}
-                            @if(!empty($ekskul['image']))
+                            @if($gambarUrl)
                                 <div class="aspect-video w-full overflow-hidden bg-soft">
                                     <img
-                                        src="{{ $ekskul['image'] }}"
-                                        alt="{{ $ekskul['name'] }}"
+                                        src="{{ $gambarUrl }}"
+                                        alt="{{ $ekskul->nama }}"
                                         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                         loading="lazy"
                                     />
@@ -45,46 +43,28 @@
                             @else
                                 <div class="aspect-video w-full overflow-hidden">
                                     <x-image-placeholder
-                                        :label="$ekskul['name']"
+                                        :label="$ekskul->nama"
                                         icon="academic-cap"
                                         class="h-full w-full"
                                     />
                                 </div>
                             @endif
 
-                            {{-- Card Body --}}
                             <div class="p-5">
-                                {{-- Category Badge --}}
-                                @if(!empty($ekskul['kategori']))
-                                    <div class="mb-2.5">
-                                        <x-badge variant="sage" size="sm">{{ $ekskul['kategori'] }}</x-badge>
-                                    </div>
-                                @endif
-
-                                {{-- Name --}}
                                 <h3 class="font-bold text-lg text-darkgreen group-hover:text-forest transition-colors leading-snug">
-                                    {{ $ekskul['name'] }}
+                                    {{ $ekskul->nama }}
                                 </h3>
-
-                                {{-- Description --}}
-                                <p class="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-text">
-                                    {{ $ekskul['description'] }}
-                                </p>
+                                @if($ekskul->deskripsi)
+                                    <p class="mt-2 whitespace-pre-line wrap-break-word text-sm leading-relaxed text-muted-text">{{ $ekskul->deskripsi }}</p>
+                                @endif
                             </div>
                         </div>
-
-                        {{-- Schedule Footer --}}
-                        @if(!empty($ekskul['jadwal']))
-                            <div class="px-5 pb-5 pt-0">
-                                <div class="flex items-center gap-2 border-t border-border-soft pt-3 text-xs text-forest font-medium">
-                                    <x-icon name="clock" class="h-4 w-4 shrink-0 text-sage" />
-                                    <span>{{ $ekskul['jadwal'] }}</span>
-                                </div>
-                            </div>
-                        @endif
-
                     </div>
-                @endforeach
+                @empty
+                    <x-empty-state title="Belum ada ekstrakurikuler yang dipublikasikan"
+                        message="Informasi kegiatan akan tampil setelah diterbitkan oleh sekolah."
+                        icon="academic-cap" class="col-span-full" />
+                @endforelse
             </div>
 
         </div>
